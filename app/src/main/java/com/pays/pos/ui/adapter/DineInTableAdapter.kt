@@ -281,10 +281,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 var isApplied = false
                 serviceChargeList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+
+                        val currentGuestCount = getList().count { it.isHeader==0 }
+
                         if (isInRange(
                                 it.min_guest_count!!,
                                 it.max_guest_count!!,
-                                list[0].eligibleGuestsForDivision
+                                currentGuestCount //list[0].eligibleGuestsForDivision
                             )
                         ) {
                             isApplied = true
