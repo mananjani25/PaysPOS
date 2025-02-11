@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.pays.pos.data.db.AppDatabase
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCard
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
@@ -13,20 +15,18 @@ import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequest
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.ENDPOINT_URL
+import com.pays.pos.data.remote.Constants.PHYSICAL_GIFT_CARD_NUMBER
+import com.pays.pos.data.remote.Constants.SOAP_ACTION
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import com.pays.pos.data.model.requestModel.CashLogRequest
-import com.pays.pos.data.remote.Constants.ENDPOINT_URL
-import com.pays.pos.data.remote.Constants.PHYSICAL_GIFT_CARD_NUMBER
-import com.pays.pos.data.remote.Constants.SOAP_ACTION
-import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,12 +37,11 @@ import org.greenrobot.eventbus.EventBus
 import org.json.XML
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-
-import java.util.TimeZone
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -549,6 +548,8 @@ class GiftCardViewModel @Inject constructor(
 
                                 sellGiftCardResponse.data?.let {
 
+                                    prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, true)
+
                                     prefProvider.setValueInt(
                                         Constants.PAYMENT_ID,
                                         sellGiftCardResponse.data.gift_card.payments[0].id
@@ -871,6 +872,8 @@ class GiftCardViewModel @Inject constructor(
                             resource.data?.let { addValueInGiftCardResponse ->
 
                                 addValueInGiftCardResponse.data?.let {
+
+                                    prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, true)
 
                                     prefProvider.setValueInt(
                                         Constants.PAYMENT_ID,

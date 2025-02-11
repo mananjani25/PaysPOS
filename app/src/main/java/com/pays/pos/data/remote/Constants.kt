@@ -868,6 +868,7 @@ object Constants {
     const val PHYSICAL_GIFT_CARD_NUMBER = "physical_gift_card_number"
     const val GIFT_CARD_PIN = "gift_card_pin"
     const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
+    const val IS_SELL_OR_ADD_VALUE_GIFT_CARD = "is_sell_or_add_value_gift_card"
 
     const val SELL_CARD = "Sell Card"
     const val ADD_VALUE = "Add Value"
