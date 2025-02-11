@@ -6294,6 +6294,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                        presentation.shouldHighlightNoTip()
 //                        presentation.updateTotals(
 //                            binding.tvCash.text.toString(),
 //                            binding.tvCard.text.toString()

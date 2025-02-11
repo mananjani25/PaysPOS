@@ -3072,6 +3072,11 @@ class CustomDisplay(
 
     }
 
+    fun shouldHighlightNoTip() {
+        activeTipsListAdapter?.clearSelectedItem()
+        binding.txtNoTipLabelTipBefore.setTextColor(Color.parseColor("#FFFFFF"))
+    }
+
     private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
