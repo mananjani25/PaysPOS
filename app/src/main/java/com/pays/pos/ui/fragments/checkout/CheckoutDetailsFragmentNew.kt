@@ -4236,34 +4236,104 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             for (i in 0 until this.length) {
 
                                 when ((this.item(i) as Element).tagName.toString()) {
-                                    "Message" -> Message =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "RefId" -> RefId =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "RegisterId" -> RegisterId =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "TPN" -> TPN =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "AuthCode" -> AuthCode =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "PNRef" -> PNRef =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "TransNum" -> TransNum =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "ResultCode" -> ResultCode =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "RespMSG" -> RespMSG =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "PaymentType" -> PaymentType =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "Voided" -> Voided =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "TransType" -> TransType =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "SN" -> SN =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "ExtData" -> ExtData =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "Message" ->{
+                                        try {
+                                            Message =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RefId" -> {
+                                        try {
+                                            RefId =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RegisterId" -> {
+                                        try {
+                                            RegisterId =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "TPN" -> {
+                                        try {
+                                            TPN =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "AuthCode" -> {
+                                        try {
+                                            AuthCode =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "PNRef" -> {
+                                        try {
+                                            PNRef =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "TransNum" -> {
+                                        try {
+                                            TransNum =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "ResultCode" -> {
+                                        try {
+                                            ResultCode =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RespMSG" -> {
+                                        try {
+                                            RespMSG =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "PaymentType" -> {
+                                        try {
+                                            PaymentType =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "Voided" -> {
+                                        try {
+                                            Voided =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "TransType" -> {
+                                        try {
+                                            TransType =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "SN" -> {
+                                        try {
+                                            SN =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "ExtData" -> {
+                                        try {
+                                            ExtData =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
                                     else -> {
 
                                     }
