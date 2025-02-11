@@ -5125,7 +5125,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -5149,7 +5149,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -5256,7 +5256,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -5280,7 +5280,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),

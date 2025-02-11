@@ -2300,7 +2300,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
         customerPrinterDineIn?.forEach { cpd ->
-            if (cpd.status) {
+            if (cpd.customerStatus) {
 
                 if (shouldCheckForAutoPrinting && !isGuest) {
                     cpd.orderTypes.forEach {
@@ -9974,7 +9974,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                 if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                                     for (i in 0 until kitchenPrinterList.size) {
-                                                        if (kitchenPrinterList[i].status) {
+                                                        if (kitchenPrinterList[i].kitchenStatus) {
                                                             kitchenPrinterList[i].orderTypes.forEach {
 
                                                                 if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
@@ -10102,7 +10102,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     isFirstKitPrint = true
                                                     if (kitchenPrinterList.isNotEmpty()) {
                                                         for (i in 0 until kitchenPrinterList.size) {
-                                                            if (kitchenPrinterList[i].status) {
+                                                            if (kitchenPrinterList[i].kitchenStatus) {
                                                                 kitchenPrinterList[i].orderTypes.forEach {
 
                                                                     if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderTypeName == receiptModel?.order?.orderTypeName
@@ -10214,7 +10214,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 ) {
                                     for (i in kitchenPrinterList.indices) {
 //                                        Log.d("KioskOpenOrderKitchenPrint", "1 -> Index$i, ${kitchenPrinterList[i].name}")
-                                        if (kitchenPrinterList[i].status) {
+                                        if (kitchenPrinterList[i].kitchenStatus) {
 //                                            Log.d("KioskOpenOrderKitchenPrint", "2 -> Index$i, ${kitchenPrinterList[i].name}")
                                             kitchenPrinterList[i].orderTypes.forEach { orderTypes ->
 
@@ -10509,7 +10509,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 )
 
                             customerList.forEach {
-                                if (it.status) {
+                                if (it.customerStatus) {
                                     initPrinter(it, CUSTOMER, autoPrintCheck)
                                 }
                             }
@@ -10549,13 +10549,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     )
 
                                 customerList.forEach { cus ->
-                                    if (cus.status) {
+                                    if (cus.customerStatus) {
                                         EventBus.getDefault()
                                             .post(
                                                 MessageEvent(
                                                     "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach { cus -> ${
                                                         Gson().toJson(
-                                                            cus.status
+                                                            cus.customerStatus
                                                         )
                                                     }"
                                                 )
@@ -10653,7 +10653,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  autoPrintCheck_ else"))
 
                                 customerList.forEach {
-                                    if (it.status) {
+                                    if (it.customerStatus) {
                                         initPrinter(
                                             it,
                                             CUSTOMER,
@@ -10841,7 +10841,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             if (IS_GIFT_CARD_TYPE) {
                                 generatePrintForGiftCard(customerReceiptPrinters, type)
                             } else {
-                                if (customerReceiptPrinters.status) {
+                                if (customerReceiptPrinters.customerStatus) {
                                     generatePrint(customerReceiptPrinters, type, isAutoPrint)
                                 }
                             }

@@ -80,6 +80,8 @@ import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.databinding.FragmentPrinterBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.ui.adapter.CustomerPrinterListAdapter
+import com.pays.pos.ui.adapter.KitchenPrinterListAdapter
 import com.pays.pos.ui.adapter.PrinterListAdapter
 import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.getSaltString
@@ -140,7 +142,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback,
-    SearchCallback, UpdatePrinters, ReceiveListener {
+    SearchCallback, UpdatePrinters, ReceiveListener,
+    KitchenPrinterListAdapter.PrinterListInterface,
+    CustomerPrinterListAdapter.PrinterListInterface {
     private var cloudPrinter: CloudPrinter? = null
     private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
@@ -155,8 +159,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
 
     //private var mFilterOption: FilterOption? = null
-    private lateinit var customerAdapter: PrinterListAdapter
-    private lateinit var kitchenAdapter: PrinterListAdapter
+    private lateinit var customerAdapter: CustomerPrinterListAdapter
+    private lateinit var kitchenAdapter: KitchenPrinterListAdapter
     private lateinit var availableNetworkAdapter: PrinterListAdapter
     var printerList: ArrayList<HashMap<String, String>> = arrayListOf()
 
@@ -353,7 +357,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             _manager = StarDeviceDiscoveryManagerFactory.create(
                 interfaceTypes,
-                context!!
+                requireContext()
             )
             _manager?.discoveryTime = 10000
             _manager?.callback = object : StarDeviceDiscoveryManager.Callback {
@@ -463,8 +467,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         } catch (e: SearchException) {
             e.printStackTrace()
         }
-        kitchenAdapter = PrinterListAdapter()
-        customerAdapter = PrinterListAdapter()
+        kitchenAdapter = KitchenPrinterListAdapter()
+        customerAdapter = CustomerPrinterListAdapter()
         availableNetworkAdapter = PrinterListAdapter()
 
         observeShowProgress()
@@ -472,7 +476,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
 
-        kitchenAdapter = PrinterListAdapter()
+        kitchenAdapter = KitchenPrinterListAdapter()
         kitchenAdapter.setList(kitchenPrintList)
         kitchenAdapter.setListner(this)
 
@@ -741,6 +745,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             WIFI
                                         },
                                         isActive = customerData[i].status,
+                                        isCustomerActive = customerData[i].customerStatus,
+                                        isKitchenActive = customerData[i].kitchenStatus,
                                         type = customerData[i].receiptPrintType,
                                         deviceModel = DeviceInfo(
                                             if (customerData[i].printer_type == BLUETOOTH) {
@@ -1014,6 +1020,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     WIFI
                 },
                 isActive = kitchenData[i].status,
+                isKitchenActive = kitchenData[i].kitchenStatus,
+                isCustomerActive = kitchenData[i].customerStatus,
                 type = kitchenData[i].receiptPrintType,
                 deviceModel = DeviceInfo(
                     if (kitchenData[i].printer_type == BLUETOOTH) {
@@ -2581,6 +2589,34 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         viewModel.updatePrinterStatus(
             printerListModel.type,
+            printerListModel.id!!,
+            prefProvider.getValueInt(TERMINAL_ID, 1),
+            isChecked
+        )
+        syncPrinterList()
+    }
+
+    override fun onUpdateKitchenPrinterStatus(
+        printerListModel: PrinterListModel,
+        isChecked: Boolean,
+        type: String
+    ) {
+        viewModel.updatePrinterStatus(
+            type,
+            printerListModel.id!!,
+            prefProvider.getValueInt(TERMINAL_ID, 1),
+            isChecked
+        )
+        syncPrinterList()
+    }
+
+    override fun onUpdateCustomerPrinterStatus(
+        printerListModel: PrinterListModel,
+        isChecked: Boolean,
+        type: String
+    ) {
+        viewModel.updatePrinterStatus(
+            type,
             printerListModel.id!!,
             prefProvider.getValueInt(TERMINAL_ID, 1),
             isChecked

@@ -42,8 +42,8 @@ data class PrinterResponse(
             @SerializedName("is_report_print_enable") var isReportPrintEnable: Boolean,
             @SerializedName("is_automatic_two_customer_receipt") var isAutomaticTwoCustomerReceipt: Boolean,
             @SerializedName("receipt_print_type") var receiptPrintType: String,
-           /* @SerializedName("kitchen_status") var kitchenStatus: Boolean,
-            @SerializedName("customer_status") var customerStatus: Boolean,*/
+            @SerializedName("kitchen_status") var kitchenStatus: Boolean,
+            @SerializedName("customer_status") var customerStatus: Boolean,
 
             @SerializedName("printer_categories") var printerCategories: List<PrinterCategories>,
             @SerializedName("terminal_ids") var terminalIds: List<Int>,
@@ -78,8 +78,8 @@ data class PrinterResponse(
             @SerializedName("receipt_print_type") var receiptPrintType: String,
             @SerializedName("printer_categories") var printerCategories: List<PrinterCategories>,
             @SerializedName("terminal_ids") var terminalIds: List<Int>,
-           /* @SerializedName("kitchen_status") var kitchenStatus: Boolean,
-            @SerializedName("customer_status") var customerStatus: Boolean,*/
+            @SerializedName("kitchen_status") var kitchenStatus: Boolean,
+            @SerializedName("customer_status") var customerStatus: Boolean,
             @SerializedName("unpaid_receipt_auto_print_terminal_ids") var unpaidReceiptAutoPrintTerminalIds: String,
             @SerializedName("order_types") var orderTypes: List<OrderTypes>,
             @SerializedName("is_deleted")
