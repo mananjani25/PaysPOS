@@ -239,6 +239,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var pd: Dialog? = null
     private var sunmiFrameworkVersion: Array<String>? = null
 
+    //This will be used to show
+    private var tipAfterAmount = 0.0
+
     var omniDriver: OmniDriver? = null
 
     private val TAG2 = "Printer_Queue"
@@ -650,6 +653,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var paidAmountToShow = 0.0
                 var changeAmount = 0.0
 
+
                 viewModelDashBoard.apply {
                     finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
                         .toDouble() + MethodUtils.roundOffAmountString(
@@ -661,6 +665,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     finalAmountToShow = totalAmount + totalTipAmount
                     paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
 
+                    tipAfterAmount = tipToShow
 
                     changeAmount = paidAmountToShow - finalAmountToShow
 
@@ -19255,6 +19260,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val order = receiptModel?.order
 
+                        if(tipAmount == 0.0)
+                            tipAmount = tipAfterAmount
                         if (tipAmount > 0) {
 
                             val str8 = padLine(
