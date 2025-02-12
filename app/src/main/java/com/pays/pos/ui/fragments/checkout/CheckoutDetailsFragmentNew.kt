@@ -5016,6 +5016,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //            CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
 
+            /*Remove the tip before screen and show the mainCartLayout in Customer Display*/
+            withContext(Dispatchers.Main){
+                dashboardViewModel.paymentInProgress.value = true
+            }
+
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
