@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -106,6 +107,7 @@ import com.pays.pos.utils.TimeFormatUtils.prefProvider
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.paxUtils.SettingINI
+import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -311,12 +313,90 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
 
-
+        getLoyaltyPointListObserver()
         setUpData()
         setUpdateCartFooterObservable()
         return binding.root
     }
 
+    private fun getLoyaltyPointListObserver() {
+        viewModel.loyaltyPoints.observe(viewLifecycleOwner) {
+            it.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        try {
+                            ProgressUtils.dismissProgressDialog()
+                            run breaking@{
+                                resource.data?.forEach {
+                                    if (it.isEnable && !it.isDeleted) {
+                                        var data: TbCustomer? = prefProvider.getCustomerData()
+                                        if (data != null) {
+                                            if (viewModel.loyaltyPointCondition(data)) {
+
+                                                binding.liinearInfoLayout.layoutParams.height =
+                                                    resources.getDimension(R.dimen._70sdp).toInt()
+
+                                                if (prefProvider.getValue(
+                                                        ORDER_TYPE,
+                                                        ""
+                                                    ) != DINE_IN
+                                                )
+                                                    binding.relativeLoylatyPoints.visibility =
+                                                        View.VISIBLE
+                                                binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                                binding.lblLoyaltyBalance.visibility = View.VISIBLE
+                                                LogUtil.logE(TAG, "InsideLoyalty")
+                                                LogUtil.logE(
+                                                    TAG,
+                                                    Gson().toJson(viewModel.redeemLoyaltyInfo)
+                                                )
+                                                binding.txtLoyaltyAmount.text = "- $${
+                                                    String.format(
+                                                        "%.2f",
+                                                        viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                    )
+                                                }"
+                                                binding.txtLoyaltyPoints.text =
+                                                    "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                                binding.txtLoyaltyBalance.text = "${
+                                                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                        viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                                    } else {
+                                                        viewModel.redeemLoyaltyInfo.availablePoints
+                                                    }
+                                                }"
+                                                binding.checkloylaty.isChecked =
+                                                    viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+
+                                            }
+                                        }
+                                        return@breaking
+                                    } else {
+                                        if (!isFromPayment) {
+                                            binding.relativeLoylatyPoints.gone()
+                                            binding.lblLoyaltyPoints.gone()
+                                            binding.lblLoyaltyBalance.gone()
+                                            binding.checkloylaty.isChecked = false
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            //                            binding.btnSignUpOrCheckIn.gone()
+                            //                            binding.tvRewards.gone()
+                            //                            binding.tvMessage.text="Please login to start"
+                        }
+                    }
+
+                    Status.ERROR -> {
+                    }
+
+                    Status.LOADING -> {
+                    }
+                }
+            }
+        }
+    }
 
     private fun setUpdateCartFooterObservable() {
         viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,
