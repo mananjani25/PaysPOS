@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.os.SystemClock
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -32,7 +31,6 @@ import com.google.gson.reflect.TypeToken
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.ReportRequest
 import com.pays.payments.design.Dejavoo
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
@@ -96,14 +94,12 @@ import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
-import com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
-import com.pays.pos.utils.TimeFormatUtils.prefProvider
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.paxUtils.SettingINI
@@ -127,7 +123,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -313,70 +308,74 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
 
-        getLoyaltyPointListObserver()
         setUpData()
         setUpdateCartFooterObservable()
         return binding.root
     }
 
-    private fun getLoyaltyPointListObserver() {
+    private fun getLoyaltyPointListObserver(view: View?) {
         viewModel.loyaltyPoints.observe(viewLifecycleOwner) {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         try {
-                            ProgressUtils.dismissProgressDialog()
-                            run breaking@{
-                                resource.data?.forEach {
-                                    if (it.isEnable && !it.isDeleted) {
-                                        var data: TbCustomer? = prefProvider.getCustomerData()
-                                        if (data != null) {
-                                            if (viewModel.loyaltyPointCondition(data)) {
+                            if (view != null) {
+                                ProgressUtils.dismissProgressDialog()
+                                run breaking@{
+                                    resource.data?.forEach {
+                                        if (it.isEnable && !it.isDeleted) {
+                                            var data: TbCustomer? = prefProvider.getCustomerData()
+                                            if (data != null) {
+                                                if (viewModel.loyaltyPointCondition(data)) {
 
-                                                binding.liinearInfoLayout.layoutParams.height =
-                                                    resources.getDimension(R.dimen._70sdp).toInt()
+                                                    binding.liinearInfoLayout.layoutParams.height =
+                                                        resources.getDimension(R.dimen._70sdp)
+                                                            .toInt()
 
-                                                if (prefProvider.getValue(
-                                                        ORDER_TYPE,
-                                                        ""
-                                                    ) != DINE_IN
-                                                )
-                                                    binding.relativeLoylatyPoints.visibility =
-                                                        View.VISIBLE
-                                                binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                                binding.lblLoyaltyBalance.visibility = View.VISIBLE
-                                                LogUtil.logE(TAG, "InsideLoyalty")
-                                                LogUtil.logE(
-                                                    TAG,
-                                                    Gson().toJson(viewModel.redeemLoyaltyInfo)
-                                                )
-                                                binding.txtLoyaltyAmount.text = "- $${
-                                                    String.format(
-                                                        "%.2f",
-                                                        viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                    if (prefProvider.getValue(
+                                                            ORDER_TYPE,
+                                                            ""
+                                                        ) != DINE_IN
                                                     )
-                                                }"
-                                                binding.txtLoyaltyPoints.text =
-                                                    "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                                binding.txtLoyaltyBalance.text = "${
-                                                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                                        viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
-                                                    } else {
-                                                        viewModel.redeemLoyaltyInfo.availablePoints
-                                                    }
-                                                }"
-                                                binding.checkloylaty.isChecked =
-                                                    viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                                        binding.relativeLoylatyPoints.visibility =
+                                                            View.VISIBLE
+                                                    binding.lblLoyaltyPoints.visibility =
+                                                        View.VISIBLE
+                                                    binding.lblLoyaltyBalance.visibility =
+                                                        View.VISIBLE
+                                                    LogUtil.logE(TAG, "InsideLoyalty")
+                                                    LogUtil.logE(
+                                                        TAG,
+                                                        Gson().toJson(viewModel.redeemLoyaltyInfo)
+                                                    )
+                                                    binding.txtLoyaltyAmount.text = "- $${
+                                                        String.format(
+                                                            "%.2f",
+                                                            viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                        )
+                                                    }"
+                                                    binding.txtLoyaltyPoints.text =
+                                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                                    binding.txtLoyaltyBalance.text = "${
+                                                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                            viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                                        } else {
+                                                            viewModel.redeemLoyaltyInfo.availablePoints
+                                                        }
+                                                    }"
+                                                    binding.checkloylaty.isChecked =
+                                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
+                                                }
                                             }
-                                        }
-                                        return@breaking
-                                    } else {
-                                        if (!isFromPayment) {
-                                            binding.relativeLoylatyPoints.gone()
-                                            binding.lblLoyaltyPoints.gone()
-                                            binding.lblLoyaltyBalance.gone()
-                                            binding.checkloylaty.isChecked = false
+                                            return@breaking
+                                        } else {
+                                            if (!isFromPayment) {
+                                                binding.relativeLoylatyPoints.gone()
+                                                binding.lblLoyaltyPoints.gone()
+                                                binding.lblLoyaltyBalance.gone()
+                                                binding.checkloylaty.isChecked = false
+                                            }
                                         }
                                     }
                                 }
@@ -798,6 +797,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         addObserver()
         setupTaxAdapter()
         getOrderTypes()
+        getLoyaltyPointListObserver(view)
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) {
