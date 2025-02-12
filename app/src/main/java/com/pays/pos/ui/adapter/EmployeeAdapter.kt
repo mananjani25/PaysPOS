@@ -19,6 +19,12 @@ class EmployeeAdapter :
         fun bind(employee: Employee) {
             binding.emp = employee
             binding.executePendingBindings()
+
+            var value = binding.txtRefunds.text
+            if (!value.contains("$0.00") && !value.contains("-")) {
+                value = "-$value"
+            }
+            binding.txtRefunds.text = value
         }
     }
 

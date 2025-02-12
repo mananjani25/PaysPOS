@@ -45,6 +45,14 @@ class PaymentDetailsAdapter(val hideRefund: Boolean) :
                     binding.txtRefund.text = obj2.showData()
                 }
             }
+
+            if (keyValueList[0].key.toString().toLowerCase().contains("Total Refund".toLowerCase())) {
+                var value = binding.txtPrice.text
+                if (!value.contains("$0.00") && !value.contains("-")) {
+                    value = "-$value"
+                }
+                binding.txtPrice.text = value
+            }
         }
     }
 
