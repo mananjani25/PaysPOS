@@ -15291,7 +15291,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
 
                         } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
-                            printKitchenFromLandiInner(data)
+                            if (isAdded) {
+                                printKitchenFromLandiInner(data)
+                            }else{
+                                delay(2000)
+                                if (isAdded){
+                                    printKitchenFromLandiInner(data)
+                                }
+                            }
                         } else {
 
                             if (isNotPrinted) {
