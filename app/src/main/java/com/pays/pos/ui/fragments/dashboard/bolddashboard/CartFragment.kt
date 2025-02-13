@@ -2244,6 +2244,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
+                                        if (isAdded)
                                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
                                             binding.txtAddCustomer.gone()
                                         }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
@@ -2676,8 +2677,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             /* binding.rvCartList.removeAllViews()
                                          binding.rvCartList.removeAllViewsInLayout()*/
                                         })
-
-
                                     }
 
                                     runOnUiThread(kotlinx.coroutines.Runnable {
@@ -2712,11 +2711,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
-                                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.gone()
-                                        }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.visible()
-                                            binding.txtAddCustomer.isEnabled = false
+                                        if (isAdded) {
+                                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.gone()
+                                            } else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.visible()
+                                                binding.txtAddCustomer.isEnabled = false
+                                            }
                                         }
                                     }
 
@@ -3048,6 +3055,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
                         }
+                        if (isAdded)
                         if (findNavController().currentDestination!!.label!!.contains("Dashboard", ignoreCase = true)){
                             isFromPayment=false
                             arguments?.apply {
@@ -4345,6 +4353,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     )
                                 )
 
+                                if (isAdded)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
@@ -4354,6 +4363,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     )
                                 }
                             } else {
+                                if (isAdded)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
