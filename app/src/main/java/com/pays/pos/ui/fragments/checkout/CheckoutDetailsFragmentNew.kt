@@ -8564,6 +8564,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "Cash"
         }
 
+        giftCardViewModel.customCashAmount = custom_paymentAmount
+
         if (cartList == null) {
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO) {
@@ -8634,9 +8636,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
                 myRequest.gift_card.gift_card_type = "Physical"
+                giftCardViewModel.customCashAmount = custom_paymentAmount
                 giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
             } else {
-
+                giftCardViewModel.customCashAmount = custom_paymentAmount
                 giftCardViewModel.addValueInGiftCard(true, myRequest)
             }
         }
