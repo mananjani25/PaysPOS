@@ -4105,13 +4105,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.e("ObserverdGiftCardProgress", it.toString())
                     if (it) {
                         closePaxRequest()
-                        Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
-                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                        Log.e("checkGiftCardNumber", "giftCardNumber:  ${giftCardNumber}")
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(
+                            GiftCardCheckBalanceRequest(name = giftCardNumber)
+                        )
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             "This gift card has not been activated.",
-                            object : DialogInterface.OnClickListener{
+                            object : DialogInterface.OnClickListener {
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     binding.edtGiftCardNumber.text?.clear()
                                     /*binding.frameLayoutId.gone()
@@ -4119,59 +4121,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     binding.llManualCard.visible()
                                     binding.llGiftCard.gone()*/
                                 }
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.are_you_sure_proceed),
-                "Ok"
-            ) { dialogInterface, clickedButton ->
-                if (clickedButton == 0) {
-                    dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
-                    dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
-                        event.getContentIfNotHandled()?.let {
-                            Log.e("ObserverdGiftCardProgress", it.toString())
-                            if (it) {
-                                closePaxRequest()
-                                Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
-                                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
-                            } else {
-                                AlertUtils.showCustomAlertWithListenerWithOK(
-                                    requireContext(),
-                                    "This gift card has not been activated.",
-                                    object : DialogInterface.OnClickListener{
-                                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                                            binding.edtGiftCardNumber.text?.clear()
-                                            binding.frameLayoutId.gone()
-                                            binding.relativeMain.visible()
-                                            binding.llManualCard.visible()
-                                            binding.llGiftCard.gone()
-                                        }
-
-
-                                    }
-
-                                )
-                            }
-                        }
-
+                            })
                     }
-                } else {
-                    dialogInterface?.dismiss()
+
+
                 }
             }
 
-        } else {
-
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.are_you_sure_proceed),
-                "Ok"
-            ) { dialogInterface, clickedButton ->
-                if (clickedButton == 0) {
-                    giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
-                } else {
-                    dialogInterface?.dismiss()
-                }
-            }
         }
         /**
          * Added to prevent multiple api calls on multiple clicks.
