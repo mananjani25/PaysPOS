@@ -3820,11 +3820,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
 
             if (it.asJsonObject.has("customer_sync")) {
-                if (it.asJsonObject.get("customer_sync").toString().equals("true")) {
+                if (it.asJsonObject.get("customer_sync").toString().equals("true") && !it.asJsonObject.get("is_deleted").toString().equals("true")) {
                     var firstName = it.asJsonObject.get("first_name")
                     var lastName = it.asJsonObject.get("last_name")
-                    var customerId = it.asJsonObject.get("customer_id")
+                    val customerId = it.asJsonObject.get("customer_id")
                     syncCustomer(it, customerId.asInt)
+                } else if (it.asJsonObject.get("is_deleted").toString().equals("true")) {
+                    val customerId = it.asJsonObject.get("customer_id")
+                    val isDeleted = it.asJsonObject.get("is_deleted").toString().equals("true")
+                    deleteCustomer(it, customerId.asInt, isDeleted)
                 }
             }
 
@@ -3863,6 +3867,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         } catch (e: Exception) {
             Log.e(TAG2, "Exception ${e.message}")
         }
+    }
+
+    private fun deleteCustomer(value: JsonElement, customerId: Int, isDeleted:Boolean = false) {
+        addCustomerViewModel.deleteCustomerFromDatabaseSync(
+            value,
+            customerID = customerId,
+            sync = true,
+            isDeleted
+        )
     }
 
     private fun syncCustomer(value: JsonElement, customerId: Int) {
