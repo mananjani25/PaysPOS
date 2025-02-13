@@ -1328,9 +1328,8 @@ class CustomDisplay(
                     dashBoardCategoryViewModel.reloadCustomerDisplay(false)
 //                }
             } else {
-                /*binding.tvLoyaltyBalance.invisible()
+                binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
-                */
 //                Handler(Looper.getMainLooper()).post(Runnable {
 
 //              CoroutineScope(Dispatchers.Main).launch {
