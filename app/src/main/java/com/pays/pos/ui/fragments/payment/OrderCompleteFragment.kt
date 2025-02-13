@@ -11220,6 +11220,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              * Print Tips
                                              */
 
+//                                            var tipBefore = order?.payments?.last()?.tips ?: 0.0
+//
+//                                            if(tipBefore == 0.0)
+//                                                order?.payments?.last()?.tips = tipAfterAmount
+
                                             if (order?.payments?.last()?.tips != 0.0) {
 
 
@@ -11231,6 +11236,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 it + if (order.cash_discount_type.lowercase() == "cashdiscount" && order.payments.last().paymentType.toLowerCase() == "card") order.payments.last().cash_discount_or_surcharge else 0.0
                                                             )
                                                         },
+                                                        48
+                                                    ).toString()
+
+                                                printLeft(tipsToPrint)
+                                                lineBreak()
+                                            } else {
+                                                val tipsToPrint =
+                                                    padLine(
+                                                        "Tips",
+                                                        "$" + MethodUtils.roundOffAmountString(tipAfterAmount),
                                                         48
                                                     ).toString()
 
