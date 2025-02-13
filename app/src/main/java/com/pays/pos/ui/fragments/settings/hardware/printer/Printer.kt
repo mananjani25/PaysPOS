@@ -937,8 +937,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                             ) || kitchenData[i].name.contains(
                                                 "SP",
                                                 ignoreCase = true
-                                            )||kitchenData[i].name.contains(
+                                            )|| kitchenData[i].name.contains(
                                                 "Cloud",
+                                                ignoreCase = true
+                                            ) || kitchenData[i].name.contains(
+                                                "TM-U220",
                                                 ignoreCase = true
                                             )
                                         ) {

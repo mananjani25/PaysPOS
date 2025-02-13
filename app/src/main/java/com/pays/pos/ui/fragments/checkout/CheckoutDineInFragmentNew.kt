@@ -1255,6 +1255,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         var remainingValue = 0.0
+
+                        cashDiscountSurcharge = MethodUtils.calculateCashDiscount(wholePrice/isSelectedCount,prefProvider,requireContext())
+
                         remainingValue = if (cashDiscountType == "SurCharge") {
                             String.format("%.2f", wholePrice + cashDiscountSurcharge)
                                 .toDouble() - paymentAmount
@@ -2171,6 +2174,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.imgBackGiftCard.setOnSingleClickListener {
             binding.llGiftCard.gone()
             binding.relativeMain.visible()
+            binding.edtGiftCardNumber.text?.clear()
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
@@ -2832,6 +2836,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         )
 
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
+
+        cashDiscountSurcharge = cashDiscountAmount
     }
 
     // To calculate tip added by user
@@ -2850,7 +2856,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+                getCashDiscountOrSurcharge(WholetotalPrice, false) / isSelectedCount
             )
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
@@ -2875,7 +2881,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
+                (getCashDiscountOrSurcharge(WholetotalPrice, false) / isSelectedCount) + tipAmount
             )
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ")"
@@ -2922,6 +2928,35 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         } else {
             if (cashDiscountType == "SurCharge") {
                 totalprice + viewModel.cashdiscountAmount
+            } else {
+                totalprice
+            }
+        }
+        return totalprice
+    }
+
+    private fun getCashDiscountOrSurcharge(totalprice: Double, isCash: Boolean): Double {
+        return if (isCash) {
+            if (cashDiscountType == "CashDiscount") {
+                cashDiscountSurcharge =   MethodUtils.calculateCashDiscount(
+                    totalprice,
+                    prefProvider,
+                    requireContext()
+                )
+
+                totalPrice - cashDiscountSurcharge
+            } else {
+                totalprice
+            }
+        } else {
+            if (cashDiscountType == "SurCharge") {
+
+                cashDiscountSurcharge =   MethodUtils.calculateCashDiscount(
+                    totalprice,
+                    prefProvider,
+                    requireContext()
+                )
+                totalprice + cashDiscountSurcharge
             } else {
                 totalprice
             }

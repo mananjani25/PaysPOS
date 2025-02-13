@@ -7335,11 +7335,11 @@ class TransactionDetailsFragment : Fragment() {
                         )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
-                        PrintSunmiUtils.cardDetailsInnerNew(
+                        PrintSunmiUtils.cardDetailsInnerTransactionNew(
                             paymentDetailsResponse.data.card_name,
                             /*paymentDetailsResponse.data.card_type ?: ""*/
                             MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                            paymentDetailsResponse.data.card_number,
+                            "  " + paymentDetailsResponse.data.card_number,
                             customerSettingModel.fonts
                         )
                     } else {
