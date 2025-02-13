@@ -73,7 +73,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
-                android:paddingVertical="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_6sdp"
                 android:text="Kitchen Receipt"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"

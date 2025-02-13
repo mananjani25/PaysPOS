@@ -246,6 +246,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentDestination = ""
 
 
+    /** PRE AUTH **/
+    val isPreAuthCartOpened = MutableLiveData<Boolean>(false)
+
+
     /**
      * Get SUNMI OS VERSION
      */
@@ -497,6 +501,30 @@ class DashBoardCategoryViewModel @Inject constructor(
         taxDynamicList = arrayListOf()
         taxDynamicList.clear()
     }
+
+    /*-----------Customer Create----------------*/
+    private val _createCustomerObservable = MutableLiveData<Pair<Boolean,OrderRequestModel?>>()
+    val createCustomerObservable: LiveData<Pair<Boolean,OrderRequestModel?>> get()  = _createCustomerObservable
+
+    fun createCustomer(createCustomerRequestModel: CreateCustomerRequestModel, orderRequestModel:OrderRequestModel){
+        viewModelScope.launch {
+            val result = posRepository.createCustomer(createCustomerRequestModel)
+            when(result.status){
+                Status.SUCCESS->{
+                    _createCustomerObservable.postValue(Pair(true,orderRequestModel))
+                }
+                Status.ERROR->{
+                    _createCustomerObservable.postValue(Pair(true,null))
+                    _snackbarText.value = Event(result.message?:"Unable to sync customer")
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING->{}
+            }
+        }
+    }
+
+    fun getCustomerDetailsFromId(customerId:String):LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
+    /*-----------Customer Create----------------*/
 
     fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
@@ -6243,44 +6271,48 @@ class DashBoardCategoryViewModel @Inject constructor(
         var guestCount = cartModel.dineInList?.size?.minus(1)
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
-        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
-            var isApplied = false
-            serviceChargesList.forEach {
-                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                    if (isInRange(
-                            it.min_guest_count!!, it.max_guest_count!!, guestCount!!
-                        )
-                    ) {
-                        val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                        orderServiceChargesAttribute.amount =
-                            MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                        orderServiceChargesAttribute.name = it.name
-                        orderServiceChargesAttribute.rate = it.percentage
-                        orderServiceChargesAttribute.serviceChargeId = it.id
-                        orderServiceChargesAttribute.order_type = it.order_type
-                        orderServiceChargesAttribute.max_guest_count = it.max_guest_count
-                        orderServiceChargesAttribute.min_guest_count = it.min_guest_count
-                        orderServiceChargesAttribute.serviceChargeId = it.id
-                        orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+        try {
+            if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+                var isApplied = false
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!, it.max_guest_count!!, guestCount!!
+                            )
+                        ) {
+                            val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                            orderServiceChargesAttribute.amount =
+                                MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                            orderServiceChargesAttribute.name = it.name
+                            orderServiceChargesAttribute.rate = it.percentage
+                            orderServiceChargesAttribute.serviceChargeId = it.id
+                            orderServiceChargesAttribute.order_type = it.order_type
+                            orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                            orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                            orderServiceChargesAttribute.serviceChargeId = it.id
+                            orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
 
-                        isApplied = true
-                        Log.d(
-                            TAG,
-                            "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
-                        )
-                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
-                        return@forEach
+                            isApplied = true
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            return@forEach
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargesList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                            return@forEach
+                        }
                     }
                 }
             }
-            if (!isApplied) {
-                serviceChargesList.forEach { service ->
-                    if (service.id == checkMaxGuestCountId()) {
-                        totalServiceCharge += (subTotalPrice * service.percentage) / 100
-                        return@forEach
-                    }
-                }
-            }
+        }catch (e:Exception) {
+            e.printStackTrace()
         }
         return orderServiceChargesAttributeList
     }
@@ -7871,6 +7903,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     prefProvider.setValueboolean(
                                         Constants.IS_MASTER_TERMINAL, false
                                     )
+                                }
+
+                                //pre auth option ON / OFF
+
+                                try {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_PRE_AUTH_ENABLE,
+                                        it.settingData.data.isPreAuthEnable
+                                    )
+                                    isPreAuthCartOpened.value = it.settingData.data.isPreAuthEnable
+                                }catch (e:Exception) {
+
                                 }
 
 

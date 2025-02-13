@@ -140,13 +140,21 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
                 when (menuItem.itemId) {
                     R.id.assign_customer -> {
 
-                        if (list.get(layoutPosition).customer != null) {
-                            //list.get(layoutPosition).customer = null
-                            listner.onCustomerClicked(layoutPosition, true)
-                            binding.llCustomerDialog.visibility = View.GONE
+                        if (dashBoardCategoryViewModel?.isItemEditInProgress != true) {
 
+                            if (list.get(layoutPosition).customer != null) {
+                                //list.get(layoutPosition).customer = null
+                                listner.onCustomerClicked(layoutPosition, true)
+                                binding.llCustomerDialog.visibility = View.GONE
+
+                            } else {
+                                listner.onCustomerClicked(layoutPosition, false)
+                            }
                         } else {
-                            listner.onCustomerClicked(layoutPosition, false)
+                            AlertUtils.showCustomAlert(
+                                itemView.context,
+                                "Cannot add guest as already updating another item"
+                            )
                         }
 
                     }

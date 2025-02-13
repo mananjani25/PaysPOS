@@ -1,26 +1,34 @@
 package com.pays.pos.ui.dialog
 
-import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.pays.pos.R
 import com.pays.pos.data.model.OptionListModel
 import com.pays.pos.data.remote.Constants
@@ -31,18 +39,9 @@ import com.pays.pos.ui.adapter.ChooseColorsAdapter
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.FileUtils.handleImageOnKitkat
 import com.pays.pos.utils.MethodUtils
-import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
-import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -138,27 +137,29 @@ class ItemEditTitleDialog : DialogFragment() {
     }
 
     private fun requestPermissionDialog(selectOption: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(
-                    requireActivity(),
-                    Manifest.permission.CAMERA
-                ) == PackageManager.PERMISSION_DENIED || checkSelfPermission(
-                    requireActivity(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_DENIED
-            ) {
-                //permission was not enabled
-                val permission =
-                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                //show popup to request permission
-                requestPermissions(permission, PERMISSION)
-            } else if (selectOption.equals("1")) {
-                //permission already granted
-                capturePhoto()
-            } else {
-                openGallery()
-            }
-        } else if (selectOption.equals("1")) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (checkSelfPermission(
+//                    requireActivity(),
+//                    Manifest.permission.CAMERA
+//                ) == PackageManager.PERMISSION_DENIED || checkSelfPermission(
+//                    requireActivity(),
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                ) == PackageManager.PERMISSION_DENIED
+//            ) {
+//                openGallery()
+//                //permission was not enabled
+////                val permission =
+////                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                //show popup to request permission
+////                requestPermissions(permission, PERMISSION)
+//            } else if (selectOption.equals("1")) {
+//                //permission already granted
+//                capturePhoto()
+//            } else {
+//                openGallery()
+//            }
+//        }
+        if (selectOption.equals("1")) {
             //system os is < marshmallow
             capturePhoto()
         } else {

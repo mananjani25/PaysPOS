@@ -55,13 +55,53 @@ class ItemModifierAdapter(
         init {
 
             binding.llMain.setOnLongClickListener(object : View.OnLongClickListener {
+
                 override fun onLongClick(v: View?): Boolean {
-                    mLongClickcallback?.onLongClickListener(
-                        list[position].id,
-                        bindingAdapterPosition,
-                        list[position].modifier_quantity
-                    )
-                    return true
+                    if (!list[position].isChecked) {
+                        if (maxLogicForLongPress(
+                                maxAllowed,
+                                list
+                            )
+                        ) {
+                            LogUtil.logE("minRequired", "ture")
+                            mLongClickcallback?.onLongClickListener(
+                                list[position].id,
+                                bindingAdapterPosition,
+                                list[position].modifier_quantity
+                            )
+                            return true
+                        } else {
+                            LogUtil.logE("minRequired", "false")
+                            var message = ""
+
+                            if (maxAllowed == 1) {
+                                message =
+                                    binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                                        R.string.item
+                                    )
+                            } else {
+                                message =
+                                    binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                                        R.string.items
+                                    )
+                            }
+                            AlertUtils.showCustomAlert(
+                                binding.root.context,
+                                message
+                            )
+
+                            return false
+                        }
+                    } else {
+                        LogUtil.logE("minRequired", "ture")
+                        mLongClickcallback?.onLongClickListener(
+                            list[position].id,
+                            bindingAdapterPosition,
+                            list[position].modifier_quantity
+                        )
+                        return true
+                    }
+
                 }
 
             })
@@ -179,5 +219,24 @@ class ItemModifierAdapter(
         }
 
         return maxCount >= totalMinMax
+    }
+
+    private fun maxLogicForLongPress(
+        maxCount: Int,
+        modifiers: List<Modifier>
+    ): Boolean {
+
+        if (maxCount == 0) {
+            return true
+        }
+        var totalMinMax = 0
+
+        modifiers.forEach {
+            if (it.isChecked) {
+                totalMinMax += 1
+            }
+        }
+
+        return maxCount > totalMinMax
     }
 }

@@ -126,27 +126,39 @@
                         android:gravity="end"
                         android:paddingVertical="@dimen/_2sdp">
 
-                        <androidx.appcompat.widget.AppCompatSpinner
-                            android:id="@+id/spnFloorName"
-                            style="@style/CustomFontSemiBold"
+<!--                        <androidx.appcompat.widget.AppCompatSpinner-->
+<!--                            android:id="@+id/spnFloorName"-->
+<!--                            style="@style/CustomFontSemiBold"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="end"-->
+<!--                            android:layout_marginStart="@dimen/_5sdp"-->
+<!--                            android:background="@null"-->
+<!--                            android:gravity="end"-->
+<!--                            android:padding="@dimen/_5sdp"-->
+<!--                            android:spinnerMode="dialog"-->
+<!--                            android:textColor="@color/color96"-->
+<!--                            android:textSize="@dimen/_5mdpi" />-->
+
+                        <Spinner
+                            android:id="@+id/dropdownSpinnerFloor"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:layout_marginStart="@dimen/_5sdp"
-                            android:background="@null"
-                            android:gravity="end"
-                            android:padding="@dimen/_5sdp"
-                            android:spinnerMode="dialog"
-                            android:textColor="@color/color96"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="14dp"
-                            android:layout_height="19dp"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:layout_marginEnd="@dimen/_10sdp"
+                            android:spinnerMode="dialog"
                             app:srcCompat="@drawable/ic_down_solid_arrow" />
+
+<!--                        <androidx.appcompat.widget.AppCompatSpinner-->
+<!--                            android:id="@+id/dropdownSpinnerFloor"-->
+<!--                            android:layout_width="14dp"-->
+<!--                            android:layout_height="19dp"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginStart="@dimen/_5sdp"-->
+<!--                            android:spinnerMode="dialog"-->
+<!--                            android:layout_marginEnd="@dimen/_10sdp"-->
+<!--                            app:srcCompat="@drawable/ic_down_solid_arrow" />-->
 
                     </LinearLayout>
                 </RelativeLayout>
@@ -185,25 +197,27 @@
                         android:layout_centerVertical="true"
                         android:paddingVertical="@dimen/_2sdp">
 
-                        <Spinner
-                            android:id="@+id/spnTableName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="@dimen/_5sdp"
-                            android:background="@null"
-                            android:gravity="start"
-                            android:padding="@dimen/_5sdp"
-                            android:spinnerMode="dialog"
-                            android:textColor="@color/color96"
-                            android:textSize="@dimen/_5mdpi" />
+<!--                        <Spinner-->
+<!--                            android:id="@+id/spnTableName"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:layout_marginStart="@dimen/_5sdp"-->
+<!--                            android:background="@null"-->
+<!--                            android:gravity="start"-->
+<!--                            android:padding="@dimen/_5sdp"-->
+<!--                            android:spinnerMode="dialog"-->
+<!--                            android:textColor="@color/color96"-->
+<!--                            android:textSize="@dimen/_5mdpi" />-->
 
-                        <androidx.appcompat.widget.AppCompatImageView
+                        <Spinner
+                            android:id="@+id/dropdownSpinnerTable"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:layout_marginEnd="@dimen/_10sdp"
+                            android:spinnerMode="dialog"
                             app:srcCompat="@drawable/ic_down_solid_arrow" />
 
                     </LinearLayout>
