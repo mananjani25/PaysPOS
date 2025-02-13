@@ -4099,6 +4099,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.txtChargeGC.isEnabled = true
             return
         } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
+            dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.e("ObserverdGiftCardProgress", it.toString())
+                    if (it) {
+                        closePaxRequest()
+                        Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            "This gift card has not been activated.",
+                            object : DialogInterface.OnClickListener{
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    binding.edtGiftCardNumber.text?.clear()
+                                    /*binding.frameLayoutId.gone()
+                                    binding.relativeMain.visible()
+                                    binding.llManualCard.visible()
+                                    binding.llGiftCard.gone()*/
+                                }
             AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
                 requireContext(),
                 getString(R.string.are_you_sure_proceed),
@@ -4125,6 +4145,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             binding.llManualCard.visible()
                                             binding.llGiftCard.gone()
                                         }
+
 
                                     }
 
