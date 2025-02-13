@@ -502,6 +502,30 @@ class DashBoardCategoryViewModel @Inject constructor(
         taxDynamicList.clear()
     }
 
+    /*-----------Customer Create----------------*/
+    private val _createCustomerObservable = MutableLiveData<Pair<Boolean,OrderRequestModel?>>()
+    val createCustomerObservable: LiveData<Pair<Boolean,OrderRequestModel?>> get()  = _createCustomerObservable
+
+    fun createCustomer(createCustomerRequestModel: CreateCustomerRequestModel, orderRequestModel:OrderRequestModel){
+        viewModelScope.launch {
+            val result = posRepository.createCustomer(createCustomerRequestModel)
+            when(result.status){
+                Status.SUCCESS->{
+                    _createCustomerObservable.postValue(Pair(true,orderRequestModel))
+                }
+                Status.ERROR->{
+                    _createCustomerObservable.postValue(Pair(true,null))
+                    _snackbarText.value = Event(result.message?:"Unable to sync customer")
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING->{}
+            }
+        }
+    }
+
+    fun getCustomerDetailsFromId(customerId:String):LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
+    /*-----------Customer Create----------------*/
+
     fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
         if (txtTotalAmount != null) {

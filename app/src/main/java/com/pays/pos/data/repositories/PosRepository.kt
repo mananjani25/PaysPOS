@@ -682,7 +682,7 @@ class PosRepository @Inject constructor(
         appDatabase.customerDao()
             .updateLoyaltyRewardsSyncEmail(finalrewards, firstName, lastName, email)
 
-    fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
+    fun getCustomerDetailsByID(id: String?): LiveData<TbCustomer> {
 
         return appDatabase.customerDao().getCustomerDetailsByID(id)
     }
