@@ -8189,12 +8189,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it1
                                     )
                                 }
-//                                posRepository.deleteLoyaltyProgramFromDb()
+                                posRepository.deleteLoyaltyProgramFromDb()
                                 if (it.settingData.data.loyaltyPrograms.isNotEmpty()) {
                                     posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
-                                } else {
-                                    posRepository.deleteLoyaltyProgramFromDb()
                                 }
+
 //                                posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
                                 posRepository.deleteEODReportSettings()
