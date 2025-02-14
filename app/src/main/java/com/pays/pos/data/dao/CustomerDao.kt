@@ -47,7 +47,7 @@ interface CustomerDao {
     suspend fun deleteCustomerTb()
 
     @Query("SELECT * from TbCustomer where TbCustomer.id = :id")
-    fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer>
+    fun getCustomerDetailsByID(id: String?): LiveData<TbCustomer>
 
     @Query("SELECT COUNT(id) FROM TbCustomer")
     fun getTotalCustomersCount(): Int

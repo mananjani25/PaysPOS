@@ -138,6 +138,10 @@ open class PaymentViewModel @Inject constructor(
     val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
     /*-----------Customer Loyalty------------*/
 
+    private val _orderFailedDueToCustomerObservable = MutableLiveData<Event<OrderRequestModel>>()
+    val orderFailedDueToCustomerObservable: LiveData<Event<OrderRequestModel>> = _orderFailedDueToCustomerObservable
+
+
     var serviceChargeListApplied: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     public var actual_Total: Double = 0.0
@@ -351,12 +355,19 @@ open class PaymentViewModel @Inject constructor(
                 Status.ERROR -> {
                     /*Action Cable will connect automatically after the transaction is processed */
 
-                    _transactionErrorText.value = Event(resource.message)
+                    if (resource.message.equals("Couldn't find Customer with")){
+                        resource?.message?.let {
+                            _orderFailedDueToCustomerObservable.postValue(Event(orderRequestModel))
+                        }
+                    }
+                   else{
+                        _transactionErrorText.value = Event(resource.message)
 
-                    if (cashPaymentType(orderRequestModel)) {
-                        _showProgressCash.value = Event(false)
-                    } else _showProgress.value = Event(false)
+                        if (cashPaymentType(orderRequestModel)) {
+                            _showProgressCash.value = Event(false)
+                        } else _showProgress.value = Event(false)
 
+                    }
 //                    _showProgress.value = Event(false)
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_ERROR -> ${
@@ -1913,7 +1924,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.note = cartModel.note
         if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
-                orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
+                orderAttributeRequestModel.cash_discount_or_surcharge = finaldiscount
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
                 orderAttributeRequestModel.totalAmount =
                     actual_CardAmount + actual_CashDiscountSurCharge

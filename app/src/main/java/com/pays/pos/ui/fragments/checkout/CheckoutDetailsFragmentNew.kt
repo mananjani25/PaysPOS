@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -70,12 +71,7 @@ import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
-import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
-import com.pays.pos.data.model.requestModel.OrderRequestModel
-import com.pays.pos.data.model.requestModel.PaymentAttributes
-import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -338,9 +334,76 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setLoyaltyEarnedObserver()
 //        setCommSetting()
 
+        setPaymentErrorHandlerForCustomerIssue()
         initProgressObserver()
         initClickListener()
         return binding.root
+    }
+
+    private fun setPaymentErrorHandlerForCustomerIssue() {
+        paymentviewModel.orderFailedDueToCustomerObservable.observe(requireActivity(),object :Observer<Event<OrderRequestModel>>{
+            override fun onChanged(event: Event<OrderRequestModel>?) {
+                event?.getContentIfNotHandled().let {
+                    syncCustomerWithServer(it)
+                }
+            }
+
+            private fun syncCustomerWithServer(it: OrderRequestModel?) {
+                it?.order?.customer_id?.let {customerId->
+
+                    /*--------------Set observer--------------*/
+                    dashboardViewModel.createCustomerObservable.observe(viewLifecycleOwner,object : Observer<Pair<Boolean,OrderRequestModel?>>{
+                        override fun onChanged(t: Pair<Boolean, OrderRequestModel?>?) {
+                            t?.let {
+                                if (it.first && it.second!=null){
+                                    paymentviewModel.submit(it.second!!)
+                                }else{
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        dismissProgressDialog()
+                                        ProgressUtils.dismissProgressDialog()
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    /*--------------Set observer--------------*/
+
+                    var customer:TbCustomer?=null
+                    runBlocking {
+                        async {
+                            dashboardViewModel.getCustomerDetailsFromId(customerId).value?.let {
+                                customer = it
+                            }
+                        }.await()
+                    }
+
+                    customer?.let {nonNullCustomer->
+                        var customerToCreate = CreateCustomerRequestModel()
+                        customerToCreate.data?.apply {
+                            first_name = nonNullCustomer.first_name?:""
+                            last_name = nonNullCustomer.last_name?:""
+                            company = nonNullCustomer.company?:""
+                            email=nonNullCustomer.email
+                            var phonesList= arrayListOf<CreateCustomerRequestModel.Customer.Phone>()
+                            nonNullCustomer.phones.forEach {
+                                phonesList.add(CreateCustomerRequestModel.Customer.Phone(it.id,it.phone_number))
+                            }
+                            phones_attributes=phonesList
+
+                            var addresses = arrayListOf<CreateCustomerRequestModel.Customer.Addresses>()
+                            nonNullCustomer.addresses.forEach {
+                                addresses.add(CreateCustomerRequestModel.Customer.Addresses(it.id,it.address1,it.address2,it.city,it.state,it.country,it.postcode,it.type_of_address,it.latitude.toDouble(),it.longitude.toDouble()))
+                            }
+                            addresses_attributes=addresses
+                        }
+                        dashboardViewModel.createCustomer(customerToCreate, orderRequestModel = it)
+                    }
+
+                }
+
+            }
+        })
+
     }
 
     private fun initProgressObserver() {
@@ -670,6 +733,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 }
 
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 dynamicCashPaymentWithVariation(
                     dynamicPaymentName = name ?: "", dynamicPaymentId = id
                 )
@@ -3179,6 +3243,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (paymentAmount != 0.0) {
+                    prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                     if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.PAX, ignoreCase = true)){
                         if (prefProvider.getValueboolean(
                                 Constants.IS_PAX_CONNECTED,
@@ -3664,6 +3729,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 )
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3685,6 +3751,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3703,6 +3770,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3724,6 +3792,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3740,6 +3809,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     R.id.action_paymentBoldPosFragment_to_customAmountFragment,
                     bundleVal
                 )
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
             } else
                 errorDisplay("Please check your Network Connectivity.")
         }
@@ -4035,42 +4105,29 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.e("ObserverdGiftCardProgress", it.toString())
                     if (it) {
                         closePaxRequest()
-                        Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
-                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                        Log.e("checkGiftCardNumber", "giftCardNumber:  ${giftCardNumber}")
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(
+                            GiftCardCheckBalanceRequest(name = giftCardNumber)
+                        )
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             "This gift card has not been activated.",
-                            object : DialogInterface.OnClickListener{
+                            object : DialogInterface.OnClickListener {
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     binding.edtGiftCardNumber.text?.clear()
-                                    binding.frameLayoutId.gone()
+                                    /*binding.frameLayoutId.gone()
                                     binding.relativeMain.visible()
                                     binding.llManualCard.visible()
-                                    binding.llGiftCard.gone()
+                                    binding.llGiftCard.gone()*/
                                 }
-
-                            }
-
-                        )
+                            })
                     }
-                }
 
-            }
 
-        } else {
-
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.are_you_sure_proceed),
-                "Ok"
-            ) { dialogInterface, clickedButton ->
-                if (clickedButton == 0) {
-                    giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
-                } else {
-                    dialogInterface?.dismiss()
                 }
             }
+
         }
         /**
          * Added to prevent multiple api calls on multiple clicks.
@@ -6277,6 +6334,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                        presentation.shouldHighlightNoTip()
 //                        presentation.updateTotals(
 //                            binding.tvCash.text.toString(),
 //                            binding.tvCard.text.toString()
@@ -8483,6 +8541,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "Cash"
         }
 
+        giftCardViewModel.customCashAmount = custom_paymentAmount
+
         if (cartList == null) {
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO) {
@@ -8553,9 +8613,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
                 myRequest.gift_card.gift_card_type = "Physical"
+                giftCardViewModel.customCashAmount = custom_paymentAmount
                 giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
             } else {
-
+                giftCardViewModel.customCashAmount = custom_paymentAmount
                 giftCardViewModel.addValueInGiftCard(true, myRequest)
             }
         }

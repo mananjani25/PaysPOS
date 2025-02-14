@@ -1449,6 +1449,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         clearCustomer()
                         viewModel.clearListTax()
                         viewModel.deleteCart()
+                        prefProvider.setValue(ORDER_TYPE, "")
                     }
 
                     viewModel.updateActiveOrderFlagClear()

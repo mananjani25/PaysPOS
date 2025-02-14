@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 30
-        versionName "1.30"
+        versionCode 32
+        versionName "1.32"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
