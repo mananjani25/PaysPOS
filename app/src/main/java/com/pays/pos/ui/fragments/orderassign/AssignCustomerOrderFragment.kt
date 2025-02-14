@@ -75,7 +75,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     lateinit var prefProvider: PrefProvider
 
     private var currentpage = 1
-    private val perpagedata = 99
+    private val perpagedata = 50
     private var isLoading = false
     private var isLastPage = false
     private var firstDetailLoad = false
