@@ -6840,9 +6840,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
             )
 
-            PrintSunmiUtils.addHorizontalInner()
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+
+
+            if (sunmiFrameworkVersion?.get(0)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                    1
+                )
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.normalText("\n")
@@ -6869,12 +6874,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
 
-                        if (sunmiFrameworkVersion?.get(0)
-                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-                        ) {
-                            PrintSunmiUtils.normalText("\n")
-                        }
+                        PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
                         try {
                             if (kitchenSettingModel.showCustomerName) {
                                 PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
