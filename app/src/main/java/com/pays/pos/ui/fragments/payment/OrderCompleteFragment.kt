@@ -20856,7 +20856,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
-                        PrintSunmiUtils.cardDetailsInnerNew(
+                        PrintSunmiUtils.cardDetailsInnerTransactionNew(
                             str12,
                             str13,
                             str14,
