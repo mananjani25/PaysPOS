@@ -123,11 +123,13 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
             binding.txtCrtNewCustomer.setOnClickListener {
                 if (list.get(layoutPosition).customer != null) {
                     //list.get(layoutPosition).customer = null
+                    dashBoardCategoryViewModel?.order_note = dashBoardCategoryViewModel?.cartModel?.note ?: ""
                     listner.onCustomerClicked(layoutPosition, true)
                     binding.llCustomerDialog.visibility = View.GONE
 
                 } else {
                     list.get(0).selectedPosition = bindingAdapterPosition
+                    dashBoardCategoryViewModel?.order_note = dashBoardCategoryViewModel?.cartModel?.note ?: ""
                     listner.onCustomerClicked(layoutPosition, false)
                 }
 
@@ -144,10 +146,12 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
 
                             if (list.get(layoutPosition).customer != null) {
                                 //list.get(layoutPosition).customer = null
+                                dashBoardCategoryViewModel?.order_note = dashBoardCategoryViewModel?.cartModel?.note ?: ""
                                 listner.onCustomerClicked(layoutPosition, true)
                                 binding.llCustomerDialog.visibility = View.GONE
 
                             } else {
+                                dashBoardCategoryViewModel?.order_note = dashBoardCategoryViewModel?.cartModel?.note ?: ""
                                 listner.onCustomerClicked(layoutPosition, false)
                             }
                         } else {
