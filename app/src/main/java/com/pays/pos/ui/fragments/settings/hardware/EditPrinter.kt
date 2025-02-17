@@ -34,6 +34,8 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.WIFI
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -445,7 +447,11 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                                                 )
                                             )
 
+                                            if (printerModel?.printerName.equals(SUNMI_INNER_PRINTER) || printerModel?.printerName.equals(
+                                                    LANDI_INNER_PRINTER)){
 
+
+                                            }
                                         }
 
                                     }
