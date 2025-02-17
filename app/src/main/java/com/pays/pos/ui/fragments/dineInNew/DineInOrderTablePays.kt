@@ -6665,20 +6665,29 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     if (getOrderDetailsResponse?.totalDiscount != null) {
 
-                                        val discountToPrint =
+//                                        val discountToPrint =
+//                                            padLine(
+//                                                "Total Discount",
+//
+//                                                if (getOrderDetailsResponse?.totalDiscount == 0.0) {
+////                            "-$" + MethodUtils.roundOffAmountString(0.00)
+//                                                    "$" + MethodUtils.roundOffAmountString(0.00)
+//                                                } else {
+//                                                    getOrderDetailsResponse?.totalDiscount?.let {
+//                                                        "-$" + MethodUtils.roundOffAmountString(it)
+//                                                    }
+//                                                },
+//                                                48
+//                                            ).toString()
+
+                                            val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-
-                                                if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-//                            "-$" + MethodUtils.roundOffAmountString(0.00)
-                                                    "$" + MethodUtils.roundOffAmountString(0.00)
-                                                } else {
-                                                    getOrderDetailsResponse?.totalDiscount?.let {
-                                                        "-$" + MethodUtils.roundOffAmountString(it)
-                                                    }
-                                                },
+                                                "-$" + MethodUtils.roundOffAmountString(divideDiscount),
                                                 48
                                             ).toString()
+
+
 
                                         printLeft(discountToPrint)
                                         lineBreak()
