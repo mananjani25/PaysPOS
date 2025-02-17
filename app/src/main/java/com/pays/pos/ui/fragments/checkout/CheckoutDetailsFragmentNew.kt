@@ -3671,6 +3671,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.llManualCard.gone()
                     binding.llGiftCard.visible()
                     isManualCard = false
+                    binding.txtChargeGC.isEnabled = true
                 }
             } else {
                 errorDisplay(getString(R.string.payment_amount_is_zero))
@@ -4110,6 +4111,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             GiftCardCheckBalanceRequest(name = giftCardNumber)
                         )
                     } else {
+                        binding.txtChargeGC.isEnabled = true
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             "This gift card has not been activated.",
