@@ -6614,8 +6614,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                                    printCenter("Whole Table")
-                                    lineBreak()
+                                    if(listWTitems.size > 0) {
+                                        printCenter("Whole Table")
+                                        lineBreak()
+                                    }
 
 
 //                                    var guestCount: Int =
