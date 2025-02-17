@@ -3671,7 +3671,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.llManualCard.gone()
                     binding.llGiftCard.visible()
                     isManualCard = false
-                    binding.txtChargeGC.isEnabled = true
                 }
             } else {
                 errorDisplay(getString(R.string.payment_amount_is_zero))
