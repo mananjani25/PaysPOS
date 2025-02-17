@@ -4098,7 +4098,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             binding.txtChargeGC.isEnabled = true
             return
-        } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+        } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length >= 8) {
             dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
             dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
