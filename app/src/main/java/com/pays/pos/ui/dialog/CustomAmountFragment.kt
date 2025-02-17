@@ -1,24 +1,25 @@
 package com.pays.pos.ui.dialog
 
-import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
-import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.DailogCustomAmountBinding
-import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.AmountTextWatcher
 import dagger.hilt.android.AndroidEntryPoint
-import org.greenrobot.eventbus.EventBus
 
 
 @AndroidEntryPoint
@@ -62,7 +63,7 @@ class CustomAmountFragment : DialogFragment() {
         binding.txtSend.setOnClickListener {
             if (binding.edtAmount.text.toString().isNotEmpty()) {
                 var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
-                if (custom_amount > totalprice || custom_amount > amountToDisplay) {
+                if (custom_amount >= totalprice || custom_amount >= amountToDisplay) {
                     val result = Bundle().apply {
                         putDouble("amount", custom_amount)
                         putDouble("totalAmount", totalprice)
