@@ -15897,32 +15897,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 addHorizontalKitchenLineForU220(mPrinter)
             }
 
-            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true){
-
-                receiptModel?.order?.orderItems?.let {
-                    var printOrderItems = checkOrderItemsForOpenORderUpdate()
-
-                    addOrdersForKitchenU220(
-                        mPrinter,
-                        if (printOrderItems.isNotEmpty()) printOrderItems else it,
-                        fontSizeH,
-                        fontSizeW,
-                        data.printerCategories.toCollection(arrayListOf())
-                    )
+            receiptModel?.order?.orderItems?.let { orderItems ->
+                val printOrderItems = if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+                    checkOrderItemsForOpenORderUpdate().takeIf { it.isNotEmpty() } ?: orderItems
+                } else {
+                    orderItems
                 }
 
-            } else {
-
-                receiptModel?.order?.orderItems?.let {
-                    addOrdersForKitchenU220(
-                        mPrinter,
-                        it,
-                        fontSizeH,
-                        fontSizeW,
-                        data.printerCategories.toCollection(arrayListOf())
-                    )
-                }
+                addOrdersForKitchenU220(
+                    mPrinter,
+                    printOrderItems,
+                    fontSizeH,
+                    fontSizeW,
+                    data.printerCategories.toCollection(arrayListOf())
+                )
             }
+
             mPrinter.addFeedLine(1)
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
