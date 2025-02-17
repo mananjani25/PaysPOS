@@ -1,5 +1,6 @@
 package com.pays.pos.utils
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.ContentUris
 import android.content.Context
@@ -564,35 +565,40 @@ object FileUtils {
         var imagePath: String? = null
         val uri = data!!.data
         //DocumentsContract defines the contract between a documents provider and the platform.
-        if (DocumentsContract.isDocumentUri(activity, uri)) {
-            val docId = DocumentsContract.getDocumentId(uri)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (DocumentsContract.isDocumentUri(activity, uri)) {
+                val docId = DocumentsContract.getDocumentId(uri)
 
-            if (docId.startsWith("raw:")) {
-                return docId.replaceFirst("raw:", "");
-            }
+                if (docId.startsWith("raw:")) {
+                    return docId.replaceFirst("raw:", "");
+                }
 
-            if ("com.android.providers.media.documents" == uri?.authority) {
-                val id = docId.split(":")[1]
-                val selsetion = MediaStore.Images.Media._ID + "=" + id
-                imagePath = getImagePath(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion, activity
-                )
-            } else if ("com.android.providers.downloads.documents" == uri?.authority) {
-                val contentUri = ContentUris.withAppendedId(
-                    Uri.parse(
-                        "content://downloads/public_downloads"
-                    ), java.lang.Long.valueOf(docId)
-                )
-                imagePath = getImagePath(contentUri, null, activity)
+                if ("com.android.providers.media.documents" == uri?.authority) {
+                    val id = docId.split(":")[1]
+                    val selsetion = MediaStore.Images.Media._ID + "=" + id
+                    imagePath = getImagePath(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion, activity
+                    )
+                } else if ("com.android.providers.downloads.documents" == uri?.authority) {
+                    val contentUri = ContentUris.withAppendedId(
+                        Uri.parse(
+                            "content://downloads/public_downloads"
+                        ), java.lang.Long.valueOf(docId)
+                    )
+                    imagePath = getImagePath(contentUri, null, activity)
+                }
+            } else if ("content".equals(uri?.scheme, ignoreCase = true)) {
+                imagePath = getImagePath(uri, null, activity)
+            } else if ("file".equals(uri?.scheme, ignoreCase = true)) {
+                imagePath = uri?.path
             }
-        } else if ("content".equals(uri?.scheme, ignoreCase = true)) {
+        } else {
             imagePath = getImagePath(uri, null, activity)
-        } else if ("file".equals(uri?.scheme, ignoreCase = true)) {
-            imagePath = uri?.path
         }
         return imagePath
     }
 
+    @SuppressLint("Range")
     fun getImagePath(
         uri: Uri?, selection: String?, activity: Context
     ): String {
