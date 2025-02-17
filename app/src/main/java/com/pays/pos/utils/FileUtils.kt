@@ -43,7 +43,6 @@ object FileUtils {
     const val HIDDEN_PREFIX = "."
 
 
-
     /**
      * Gets the extension of a file name, like ".png" or ".jpg".
      *
@@ -148,7 +147,7 @@ object FileUtils {
     fun getContentType(fileString: String?): String {
         var type: String? = ""
         var contentType: String? = ""
-        fileString?.let{
+        fileString?.let {
             contentType = getFileExtensionFromUrl(fileString)
             if (TextUtils.isEmpty(contentType)) {
                 val i = fileString.lastIndexOf('.')
@@ -161,7 +160,7 @@ object FileUtils {
             }
         }
         LogUtil.logE("!_@_", "content type:  $type")
-        return type?:""
+        return type ?: ""
     }
 
     fun getFileExtensionFromUrl(url: String): String? {
@@ -565,36 +564,32 @@ object FileUtils {
         var imagePath: String? = null
         val uri = data!!.data
         //DocumentsContract defines the contract between a documents provider and the platform.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (DocumentsContract.isDocumentUri(activity, uri)) {
-                val docId = DocumentsContract.getDocumentId(uri)
 
-                if (docId.startsWith("raw:")) {
-                    return docId.replaceFirst("raw:", "");
-                }
+        if (DocumentsContract.isDocumentUri(activity, uri)) {
+            val docId = DocumentsContract.getDocumentId(uri)
 
-                if ("com.android.providers.media.documents" == uri?.authority) {
-                    val id = docId.split(":")[1]
-                    val selsetion = MediaStore.Images.Media._ID + "=" + id
-                    imagePath = getImagePath(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion, activity
-                    )
-                } else if ("com.android.providers.downloads.documents" == uri?.authority) {
-                    val contentUri = ContentUris.withAppendedId(
-                        Uri.parse(
-                            "content://downloads/public_downloads"
-                        ), java.lang.Long.valueOf(docId)
-                    )
-                    imagePath = getImagePath(contentUri, null, activity)
-                }
-            } else if ("content".equals(uri?.scheme, ignoreCase = true)) {
-                imagePath = getImagePath(uri, null, activity)
-            } else if ("file".equals(uri?.scheme, ignoreCase = true)) {
-                imagePath = uri?.path
+            if (docId.startsWith("raw:")) {
+                return docId.replaceFirst("raw:", "");
             }
-        } else {
+
+            if ("com.android.providers.media.documents" == uri?.authority) {
+                val id = docId.split(":")[1]
+                val selsetion = MediaStore.Images.Media._ID + "=" + id
+                imagePath = getImagePath(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion, activity
+                )
+            } else if ("com.android.providers.downloads.documents" == uri?.authority) {
+                val contentUri = ContentUris.withAppendedId(
+                    Uri.parse("content://downloads/public_downloads"), docId.split(":")[1].toLong()
+                )
+                imagePath = getImagePath(contentUri, null, activity)
+            }
+        } else if ("content".equals(uri?.scheme, ignoreCase = true)) {
             imagePath = getImagePath(uri, null, activity)
+        } else if ("file".equals(uri?.scheme, ignoreCase = true)) {
+            imagePath = uri?.path
         }
+
         return imagePath
     }
 
