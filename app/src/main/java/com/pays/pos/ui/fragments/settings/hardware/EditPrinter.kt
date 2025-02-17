@@ -58,6 +58,8 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     private var originalPrinterType: String = ""
     private var isFirstTimeAdapter: Boolean = false
 
+    lateinit var handleInnerPrinterSpecialCase:Triple<Boolean,String,PrinterListModel>
+
     @Inject
     lateinit var prefProvider: PrefProvider
     private val TAG = "EditPrinter"
@@ -454,9 +456,11 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                                                 if (it.printerName.equals(SUNMI_INNER_PRINTER) || it.printerName.equals(
                                                         LANDI_INNER_PRINTER)){
                                                     if (selectedValue.equals("Customer",ignoreCase = true)) {
-                                                        viewModel.deletePrinter(it, "Customer")
+                                                        handleInnerPrinterSpecialCase=Triple(true,"Customer",it)
+//                                                        viewModel.deletePrinter(it, "Customer")
                                                     }else if (selectedValue.equals("kitchen",ignoreCase = true)){
-                                                        viewModel.deletePrinter(it, "kitchen")
+                                                        handleInnerPrinterSpecialCase=Triple(true,"kitchen",it)
+//                                                        viewModel.deletePrinter(it, "kitchen")
                                                     }
                                                 }
                                             }
@@ -722,6 +726,18 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
                 return@setOnClickListener
             }
+
+            if (this::handleInnerPrinterSpecialCase.isInitialized) {
+                if (handleInnerPrinterSpecialCase.first) {
+                    viewModel.deletePrinter(handleInnerPrinterSpecialCase.third, handleInnerPrinterSpecialCase.second)
+                    if (handleInnerPrinterSpecialCase.second.equals("Customer",ignoreCase = true)){
+                        printerModel?.type="customer"
+                    }else if (handleInnerPrinterSpecialCase.second.equals("kitchen",ignoreCase = true)){
+                        printerModel?.type="kitchen"
+                    }
+                }
+            }
+
             val listCategories = categoryAdapter.getList()
             var listIds = ArrayList<Int>()
             listCategories.forEach {
