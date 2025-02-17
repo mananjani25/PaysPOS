@@ -4110,6 +4110,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             GiftCardCheckBalanceRequest(name = giftCardNumber)
                         )
                     } else {
+                        binding.txtChargeGC.isEnabled = true
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             "This gift card has not been activated.",
