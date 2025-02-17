@@ -1,6 +1,8 @@
 package com.pays.pos.ui.fragments.settings.hardware
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +40,7 @@ import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.WIFI
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -447,11 +450,17 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                                                 )
                                             )
 
-                                            if (printerModel?.printerName.equals(SUNMI_INNER_PRINTER) || printerModel?.printerName.equals(
-                                                    LANDI_INNER_PRINTER)){
-
-
+                                            printerModel?.let {
+                                                if (it.printerName.equals(SUNMI_INNER_PRINTER) || it.printerName.equals(
+                                                        LANDI_INNER_PRINTER)){
+                                                    if (selectedValue.equals("Customer",ignoreCase = true)) {
+                                                        viewModel.deletePrinter(it, "Customer")
+                                                    }else if (selectedValue.equals("kitchen",ignoreCase = true)){
+                                                        viewModel.deletePrinter(it, "kitchen")
+                                                    }
+                                                }
                                             }
+
                                         }
 
                                     }
@@ -825,6 +834,14 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
             }
 
+        })
+
+        viewModel.popBackStack.observe(viewLifecycleOwner,{
+            it.getContentIfNotHandled()?.let {
+                if (it){
+                    findNavController().popBackStack()
+                }
+            }
         })
     }
 

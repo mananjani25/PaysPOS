@@ -67,6 +67,9 @@ class PrinterViewModel @Inject constructor(
     private var _update = MutableLiveData<Event<String>>()
     val updatePrinter: LiveData<Event<String>> = _update
 
+    private var _popBackStack=MutableLiveData<Event<Boolean>>()
+    val popBackStack:LiveData<Event<Boolean>> = _popBackStack
+
     private var _localUpdatePrinter = MutableLiveData<Event<PrinterListModel>>()
     val localUpdatePrinter:LiveData<Event<PrinterListModel>> = _localUpdatePrinter
 
@@ -252,6 +255,9 @@ class PrinterViewModel @Inject constructor(
 
                 }
                 Status.ERROR -> {
+                    if (resource.message?.contains("Couldn't find PrinterSetting with")?:false){
+                        _popBackStack.value = Event(true)
+                    }
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
 
