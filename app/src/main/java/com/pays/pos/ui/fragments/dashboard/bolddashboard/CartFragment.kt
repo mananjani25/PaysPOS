@@ -402,11 +402,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     private fun setUpPreAuthData() {
 
-        viewModel.isPreAuthCartOpened.observe(viewLifecycleOwner) {
-            if(it) {
-                enablePreAuth()
-            } else {
-                binding.preAuthOption?.gone()
+        view?.let {
+            viewModel.isPreAuthCartOpened.observe(viewLifecycleOwner) {
+                if (it) {
+                    enablePreAuth()
+                } else {
+                    binding.preAuthOption?.gone()
+                }
             }
         }
 
