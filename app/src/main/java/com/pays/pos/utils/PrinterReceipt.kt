@@ -1267,7 +1267,7 @@ fun addCreditCardBreakDownData(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
     var spaceLast = 0
@@ -1287,7 +1287,7 @@ fun addCreditCardBreakDownDataInner(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
     var spaceLast = 0
@@ -1307,7 +1307,7 @@ fun addCreditCardBreakDownDataLandiInner(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
     var spaceLast = 0
@@ -1328,7 +1328,7 @@ fun addCreditCardBreakDownDataInnerNew(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
     var spaceLast = 0

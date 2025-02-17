@@ -65,6 +65,8 @@ object Constants {
     const val IS_MASTER_TERMINAL = "is_master_terminal"
     const val IS_PRINTER_QUEUE_STARTS = "is_printer_queue_starts"
 
+    const val IS_PRE_AUTH_ENABLE = "is_pre_auth_enable"
+
     const val MAX_ITEM_QUANTITY = 1000
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
 

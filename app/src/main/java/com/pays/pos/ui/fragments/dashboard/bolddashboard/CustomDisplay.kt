@@ -64,6 +64,7 @@ import com.pays.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.pays.pos.data.remote.Constants.MANUAL_SALE
+import com.pays.pos.data.remote.Constants.OPTION_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -1327,9 +1328,8 @@ class CustomDisplay(
                     dashBoardCategoryViewModel.reloadCustomerDisplay(false)
 //                }
             } else {
-                /*binding.tvLoyaltyBalance.invisible()
+                binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
-                */
 //                Handler(Looper.getMainLooper()).post(Runnable {
 
 //              CoroutineScope(Dispatchers.Main).launch {
@@ -3882,7 +3882,14 @@ class CustomDisplay(
 
     private fun setCashCardAmountObservers() {
         dashBoardCategoryViewModel.customerCashPrice.observe(lifecycleOwner,{
-            binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+            if (prefProvider.getValue(
+                    OPTION_TYPE, "CashDiscount"
+                ) == "CashDiscount"
+            ) {
+                setupTotalsNew(isDineIn = false)
+            } else
+                binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+
         })
 
         dashBoardCategoryViewModel.customerCardPrice.observe(lifecycleOwner,{
