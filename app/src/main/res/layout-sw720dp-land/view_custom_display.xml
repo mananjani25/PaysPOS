@@ -2172,7 +2172,6 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:background="?attr/selectableItemBackground"
             android:padding="@dimen/_6sdp"
-            android:tint="@color/drawable_ic_color"
             app:srcCompat="@mipmap/ic_left_arrow"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
