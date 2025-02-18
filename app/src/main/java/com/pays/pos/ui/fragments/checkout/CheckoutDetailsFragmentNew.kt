@@ -5911,7 +5911,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
 
             if (this::presentation.isInitialized) {
-                presentation.onDisplayChanged()
+
+                //comment to resolve TIP AMOUNT not reflecting in customer display for final total of cash and card
+
+               // presentation.onDisplayChanged()
             }
 
         }

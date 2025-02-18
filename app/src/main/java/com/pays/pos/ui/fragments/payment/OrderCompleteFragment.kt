@@ -239,6 +239,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var pd: Dialog? = null
     private var sunmiFrameworkVersion: Array<String>? = null
 
+    //This will be used to show
+    private var tipAfterAmount = 0.0
+
     var omniDriver: OmniDriver? = null
 
     private val TAG2 = "Printer_Queue"
@@ -650,6 +653,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var paidAmountToShow = 0.0
                 var changeAmount = 0.0
 
+
                 viewModelDashBoard.apply {
                     finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
                         .toDouble() + MethodUtils.roundOffAmountString(
@@ -661,6 +665,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     finalAmountToShow = totalAmount + totalTipAmount
                     paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
 
+                    tipAfterAmount = tipToShow
 
                     changeAmount = paidAmountToShow - finalAmountToShow
 
@@ -11215,6 +11220,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              * Print Tips
                                              */
 
+//                                            var tipBefore = order?.payments?.last()?.tips ?: 0.0
+//
+//                                            if(tipBefore == 0.0)
+//                                                order?.payments?.last()?.tips = tipAfterAmount
+
                                             if (order?.payments?.last()?.tips != 0.0) {
 
 
@@ -11226,6 +11236,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 it + if (order.cash_discount_type.lowercase() == "cashdiscount" && order.payments.last().paymentType.toLowerCase() == "card") order.payments.last().cash_discount_or_surcharge else 0.0
                                                             )
                                                         },
+                                                        48
+                                                    ).toString()
+
+                                                printLeft(tipsToPrint)
+                                                lineBreak()
+                                            } else {
+                                                val tipsToPrint =
+                                                    padLine(
+                                                        "Tips",
+                                                        "$" + MethodUtils.roundOffAmountString(tipAfterAmount),
                                                         48
                                                     ).toString()
 
@@ -19643,6 +19663,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val order = receiptModel?.order
 
+                        if(tipAmount == 0.0)
+                            tipAmount = tipAfterAmount
                         if (tipAmount > 0) {
 
                             val str8 = padLine(
