@@ -241,6 +241,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     var omniDriver: OmniDriver? = null
 
+    //This will be used to show
+    private var tipAfterAmount = 0.0
+
     private val TAG2 = "Printer_Queue"
 
     /*Star label printer - START*/
@@ -661,6 +664,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     finalAmountToShow = totalAmount + totalTipAmount
                     paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
 
+                    tipAfterAmount = tipToShow
 
                     changeAmount = paidAmountToShow - finalAmountToShow
 
@@ -11211,9 +11215,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 lineBreak()
                                             }
 
+
+
                                             /**
                                              * Print Tips
                                              */
+
+                                            var tipBefore = order?.payments?.last()?.tips ?: 0.0
+
+                                            if(tipBefore == 0.0)
+                                                order?.payments?.last()?.tips = tipAfterAmount
 
                                             if (order?.payments?.last()?.tips != 0.0) {
 
@@ -11229,6 +11240,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         48
                                                     ).toString()
 
+                                                printLeft(tipsToPrint)
+                                                lineBreak()
+                                            } else {
+                                                val tipsToPrint =
+                                                    padLine(
+                                                        "Tips",
+                                                        "$" + MethodUtils.roundOffAmountString(tipAfterAmount),
+                                                        48
+                                                    ).toString()
                                                 printLeft(tipsToPrint)
                                                 lineBreak()
                                             }
@@ -19359,6 +19379,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val order = receiptModel?.order
 
+                        if(tipAmount == 0.0)
+                            tipAmount = tipAfterAmount
                         if (tipAmount > 0) {
 
                             val str8 = padLine(

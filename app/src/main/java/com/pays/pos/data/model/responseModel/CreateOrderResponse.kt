@@ -90,6 +90,8 @@ data class CreateOrderResponse(
             val taxEnabled: Boolean,
             @SerializedName("terminal_id")
             val terminalId: Int,
+            @SerializedName("tips")
+            var tips: Double,
             @SerializedName("total_amount")
             val totalAmount: Double,
             @SerializedName("cash_discount_or_surcharge")
