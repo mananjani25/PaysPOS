@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.os.SystemClock
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -30,20 +31,13 @@ import com.google.gson.reflect.TypeToken
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.ReportRequest
 import com.pays.payments.design.Dejavoo
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
 import com.pays.payments.design.TransactionType
 import com.pays.pos.R
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.CashDiscountModel
-import com.pays.pos.data.entities.OrderTypeBackup
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.entities.TbOrderType
-import com.pays.pos.data.entities.TbServiceCharge
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
@@ -102,44 +96,19 @@ import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
+import com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.Event
-import com.pays.pos.utils.InternetUtils
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.callback.DineInOrderCallBack
-import com.pays.pos.utils.callback.ItemCallback
-import com.pays.pos.utils.callback.ItemClickListner
-import com.pays.pos.utils.callback.ItemListner
-import com.pays.pos.utils.callback.MyCallback
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.disableItemAnimator
-import com.pays.pos.utils.extensions.getColor
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.invisible
-import com.pays.pos.utils.extensions.isVisible
-import com.pays.pos.utils.extensions.runOnUiThread
-import com.pays.pos.utils.extensions.setOnSingleClickListener
-import com.pays.pos.utils.extensions.visible
-import com.pays.pos.utils.getCustomerDisplay
+import com.pays.pos.utils.*
+import com.pays.pos.utils.TimeFormatUtils.prefProvider
+import com.pays.pos.utils.callback.*
+import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.paxUtils.SettingINI
-import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -150,10 +119,14 @@ import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
+import java.lang.Runnable
+import java.lang.System
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -2271,20 +2244,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
-
-                                        if (isAdded && parentFragmentManager!=null) {
-                                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
-                                                    R.string.add_customer2
-                                                )
-                                            ) {
-                                                binding.txtAddCustomer.gone()
-                                            } else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(
-                                                    R.string.add_customer2
-                                                )
-                                            ) {
-                                                binding.txtAddCustomer.visible()
-                                                binding.txtAddCustomer.isEnabled = false
-                                            }
+                                        if (isAdded)
+                                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
+                                            binding.txtAddCustomer.gone()
+                                        }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
+                                            binding.txtAddCustomer.visible()
+                                            binding.txtAddCustomer.isEnabled = false
+                                        }
                                     }
 
                                     if (isFromPayment || isFromPaymentDinein) {
@@ -2745,11 +2711,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
-
-                                        if (isAdded && parentFragmentManager!=null) {
-
-                                        
-
+                                        if (isAdded) {
                                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
                                                     R.string.add_customer2
                                                 )
