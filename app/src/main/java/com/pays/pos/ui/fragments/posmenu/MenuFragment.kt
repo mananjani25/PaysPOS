@@ -186,17 +186,19 @@ class MenuFragment : DialogFragment() {
 
                         e.printStackTrace()
                     }*/
+
                     dashBoardCategoryViewModel.cartModel = null
                     dashBoardCategoryViewModel.manualCartOrderNote=""
                     viewModel.destroyedList = arrayListOf()
                     // To refrain from disconnecting PAX after
-                    val paxConnectionStatus = prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)
-
                     viewModel.clearTable()
                     viewModel.deleteCart()
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
+
+                    val paxConnectionStatus = prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)
+
                     prefProvider.setValueboolean(Constants.CHECK_QUEUE_CANCEL,true)
                     prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, paxConnectionStatus)
 
