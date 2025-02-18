@@ -17569,26 +17569,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     try {
                                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                PrintSunmiUtils.normalTextLarge(
+                                                    it
+                                                )
+                                            }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
 
-                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                ?.forEach {
-
-                                                    if (it.typeOfAddress.equals(
-                                                            BILLING_ADDRESS,
-                                                            ignoreCase = true
-                                                        )
-                                                    ) {
-                                                        PrintSunmiUtils.normalTextLarge(
-                                                            it.fullAddress
-                                                        )
-                                                    }
-                                                }
+//                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                                ?.forEach {
+//
+//                                                    if (it.typeOfAddress.equals(
+//                                                            BILLING_ADDRESS,
+//                                                            ignoreCase = true
+//                                                        )
+//                                                    ) {
+//                                                        PrintSunmiUtils.normalTextLarge(
+//                                                            it.fullAddress
+//                                                        )
+//                                                    }
+//                                                }
                                         }
                                     } catch (e: Exception) {
                                     }
