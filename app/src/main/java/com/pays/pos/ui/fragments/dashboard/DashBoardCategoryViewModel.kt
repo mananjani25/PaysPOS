@@ -7845,6 +7845,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    /**
+     * "Deletes the customer database table. Added to handle scenarios where a customer is deleted from the backend and the application is closed."
+     */
+    fun deleteCustomersTable() {
+        viewModelScope.launch(Dispatchers.IO) {
+            posRepository.deleteCustomersTable()
+        }
+    }
 
     fun syncSettingModule() {
         viewModelScope.launch {

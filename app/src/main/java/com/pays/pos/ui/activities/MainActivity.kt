@@ -3613,6 +3613,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             }
         }
+
+        dashBoardCategoryViewModel.deleteCustomersTable()
     }
 
     //Dynamic SYNC
