@@ -657,6 +657,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _clockOut = MutableLiveData<Event<String>>()
     val clockOut: LiveData<Event<String>> = _clockOut
 
+    val _thankyouAmount = MutableLiveData<String>()
 
     val refreshLiveData = MutableLiveData<Boolean>()
 

@@ -8,7 +8,7 @@
     android:background="@color/backgroundColor"
     >
 
-    <!--  Dont replace this file with 720dp file as this layout will be used by LANDI CUSTOMER DISPLAY -->
+    <!--  Don't replace this file with 720dp file as this layout will be used by LANDI CUSTOMER DISPLAY -->
 
 
     <LinearLayout

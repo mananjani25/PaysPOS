@@ -9,6 +9,8 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.*
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -764,6 +766,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         observeShowProgress()
         observeTipClicked()
         scrollNestedView()
+
+        view?.let {
+            binding.txtFinalAmount?.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    p0?.let {
+                       if (it.isNotEmpty()){
+                           dashboardViewModel._thankyouAmount.value = p0.toString()
+                       }
+                    }
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+
+                }
+
+            })
+        }
 
         lifecycleScope.launch {
             try {
