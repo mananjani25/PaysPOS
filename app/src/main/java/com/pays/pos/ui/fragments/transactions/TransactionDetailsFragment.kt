@@ -2642,7 +2642,7 @@ class TransactionDetailsFragment : Fragment() {
                         if (isPrintCustomer) {
                             isPrintCustomer = false
                             customerList.forEach {
-                                if (it.status) {
+                                if (it.customerStatus) {
                                     initPrinter(it, Constants.CUSTOMER)
                                 }
                             }
@@ -2699,7 +2699,7 @@ class TransactionDetailsFragment : Fragment() {
                                         }
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
-                                                if (kitchenPrinterList[i].status) {
+                                                if (kitchenPrinterList[i].kitchenStatus) {
                                                     kitchenPrinterList[i].orderTypes.forEach {
 
                                                         if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
@@ -2742,7 +2742,7 @@ class TransactionDetailsFragment : Fragment() {
                                     ) {
                                         if (kitchenPrinterList.isNotEmpty()) {
                                             for (i in 0 until kitchenPrinterList.size) {
-                                                if (kitchenPrinterList[i].status) {
+                                                if (kitchenPrinterList[i].kitchenStatus) {
                                                     kitchenPrinterList[i].orderTypes.forEach {
                                                         if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
 

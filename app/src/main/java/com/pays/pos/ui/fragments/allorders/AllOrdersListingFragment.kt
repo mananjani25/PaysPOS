@@ -2381,7 +2381,7 @@ class AllOrdersListingFragment(
                         if (isPrintCustomer == true) {
                             isPrintCustomer = false
                             customerList.forEach {
-                                if (it.status) {
+                                if (it.customerStatus) {
                                     initPrinter(it, Constants.CUSTOMER, order, type)
                                 }
 
@@ -5568,7 +5568,7 @@ class AllOrdersListingFragment(
 
                 isPrint = false
                 it?.forEach {
-                    if (it.status && checkItemsforPrinterOnlineOrder(
+                    if (it.kitchenStatus && checkItemsforPrinterOnlineOrder(
                             data.orderItems, it.printerCategories.toCollection(
                                 arrayListOf()
                             )

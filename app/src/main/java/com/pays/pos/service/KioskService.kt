@@ -359,7 +359,7 @@ class KioskService : Service(), StatusChangeEventListener {
                     ) || it.receiptPrintType.equals(
                         "KitchenAndCustomer",
                         ignoreCase = true
-                    ) && it.status
+                    ) && it.kitchenStatus
                 ) {
                     Log.d("Hey", Gson().toJson(it))
                     initKitchenPrinter(it, createOrderResponse)
