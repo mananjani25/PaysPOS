@@ -17137,8 +17137,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         SunmiPrintHelper.getInstance().initPrinter()
                         /*Added By Rahul */
                         try {
-                            if (isOrderUpdated == true || cartList!!.isEdited == true) {
-                                PrintSunmiUtils.headerText("***** UPDATED *****")
+                            if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS_OLD, "").isNotEmpty()) {
+                                if (isOrderUpdated == true || cartList!!.isEdited == true) {
+                                    PrintSunmiUtils.headerText("***** UPDATED *****")
+                                }
                             }
                         } catch (e: java.lang.NullPointerException) {
 

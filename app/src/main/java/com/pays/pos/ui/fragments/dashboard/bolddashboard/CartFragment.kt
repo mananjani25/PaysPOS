@@ -3655,6 +3655,35 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
                                 /*Remove the added tip - END*/
 
+
+                                /*Clear the Update Order fields - START*/
+                                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+                                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+                            /*    prefProvider.deleteValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM)
+                                prefProvider.deleteValue(Constants.OPEN_ORDER_ITEMS)
+
+                                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, false)
+
+                                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
+
+                                prefProvider.setValueboolean(
+                                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                    false
+                                )
+
+                                prefProvider.setValueboolean(
+                                    Constants.LOYALTY_ADDED,
+                                    false
+                                )
+
+                                prefProvider.setValueboolean(
+                                    Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                    false
+                                )
+
+                                prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)*/
+                                /*Clear the Update Order fields - END*/
+
                                 updateActiveOrderFlagClear()
                                 itemListner?.onCancelItemSelected()
                                 if (prefProvider.getValue(ORDER_TYPE, "")
