@@ -10219,15 +10219,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                        Log.d("KioskOpenOrderKitchenPrint", "1 -> Index$i, ${kitchenPrinterList[i].name}")
                                         if (kitchenPrinterList[i].kitchenStatus) {
 //                                            Log.d("KioskOpenOrderKitchenPrint", "2 -> Index$i, ${kitchenPrinterList[i].name}")
-                                            kitchenPrinterList[i].orderTypes.forEach { orderTypes ->
+                                                kitchenPrinterList[i].orderTypes.forEach { orderTypes ->
 
-                                                if (orderTypes.orderTypeId == receiptModel?.order?.orderTypeId || orderTypes.orderType == receiptModel?.order?.orderType
+                                                    if (orderTypes.orderTypeId == receiptModel?.order?.orderTypeId || orderTypes.orderType == receiptModel?.order?.orderType
 
-                                                ) {
+                                                    ) {
 //                                                    Log.d("KioskOpenOrderKitchenPrint", "3 -> Index$i, ${kitchenPrinterList[i].name}")
-                                                    orderTypes.printerSettings.forEach { printerSettings ->
-                                                        if ((printerSettings.printType.lowercase() == KITCHEN.lowercase() || printerSettings.printType.lowercase() == KITCHENANDCUSTOMER.lowercase()) && printerSettings.autoPrinting
-                                                        ) {
+                                                        orderTypes.printerSettings.forEach { printerSettings ->
+                                                            if ((printerSettings.printType.lowercase() == KITCHEN.lowercase() || printerSettings.printType.lowercase() == KITCHENANDCUSTOMER.lowercase()) && printerSettings.autoPrinting
+                                                            ) {
 //                                                            Log.d("KioskOpenOrderKitchenPrint", "4 -> Index$i, ${kitchenPrinterList[i].name}")
                                                             if (checkItemsforPrinter(
                                                                     receiptModel?.order?.orderItems
