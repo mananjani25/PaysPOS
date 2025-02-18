@@ -4088,7 +4088,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun startTransactionWithGiftCardPayment() {
         binding.txtChargeGC.isEnabled = false
-        val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
+        val giftCardNumber = binding.edtGiftCardNumber.text.toString().trim()
         Log.e(TAG,"checkGiftCardNumber:  ${giftCardNumber}")
 
         if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
@@ -4099,15 +4099,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.txtChargeGC.isEnabled = true
             return
         } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length >= 8) {
-            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
+            Log.e(TAG,"checkGNumber:  ${giftCardNumber}")
+            dashboardViewModel.checkCardExistOrNotOnSell(binding.edtGiftCardNumber.text.toString().trim())
             dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     Log.e("ObserverdGiftCardProgress", it.toString())
                     if (it) {
                         closePaxRequest()
                         Log.e("checkGiftCardNumber", "giftCardNumber:  ${giftCardNumber}")
+                        Log.e("checkGiftCardNumber", "editTextvalue:  ${binding.edtGiftCardNumber.text.toString().trim()}")
                         giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(
-                            GiftCardCheckBalanceRequest(name = giftCardNumber)
+                            GiftCardCheckBalanceRequest(name = binding.edtGiftCardNumber.text.toString().trim())
                         )
                     } else {
                         binding.txtChargeGC.isEnabled = true
@@ -4992,45 +4994,79 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         } else {
 
-                            prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                            Log.e("checkTotalDashAmount","totalPrice  :${dashboardViewModel.totalPrice}")
+                            if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE,false)){
+
+
+
+                            }
+
+
 
                             Log.e("checkTotalAmount","totalPrice:  ${totalPrice}")
                             Log.e("checkDataAmount","amount:  ${it.data.amount}")
-                            if (totalPrice.toDouble() > it.data.amount) {
+                            Log.e("checkDataAmount","amountDashboard:  ${dashboardViewModel.totalPrice}")
+                            if (dashboardViewModel.totalPrice > it.data.amount) {
+                                prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
 
                                 splitAllAmounts(
                                     Constants.SUB_TOTAL,
                                     it.data.amount?.toPrecision(2).toDouble()
                                 )
-                            }
-                            else{
+                                splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
+                                splitAllAmounts(Constants.TAX_CHARGE, 0.00)
+                                splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
                                 splitAllAmounts(
-                                    Constants.SUB_TOTAL,
-                                    totalPrice.toDouble()
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    0.00
                                 )
-                            }
-                            splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
-                            splitAllAmounts(Constants.TAX_CHARGE, 0.00)
-                            splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                0.00
-                            )
-                            splitAllAmounts(Constants.TIP, 0.0)
+                                splitAllAmounts(Constants.TIP, 0.0)
 
-                            val giftCardNumber =
-                                binding.edtGiftCardNumber.rawText.toString().trim()
-                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
-                            prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
-                            prefProvider.setValue(GIFT_CARD_PIN, "")
-                            prefProvider.setValueboolean(
-                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
-                                true
-                            )
-                            val actualTotalAmount = (WholetotalPrice / isSelectedCount)
-                            paymentAmount = it.data.amount
-                            paymentviewModel.totalPayAmount(it.data.amount)
-                            redeemGiftCard()
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.text.toString().trim()
+                                prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                paymentAmount = it.data.amount
+                                paymentviewModel.totalPayAmount(it.data.amount)
+                                redeemGiftCard()
+
+
+
+
+
+                            }
+                            else {
+                                Log.e("checkDatqAmt","amount:   ${it.data.amount}")
+                                Log.e("checkDatqAmt","dashBoardAmt:   ${it.data.amount}")
+
+                                    /*splitAllAmounts(
+                                        Constants.SUB_TOTAL,
+                                        dashboardViewModel.totalPrice.toDouble()
+                                    )*/
+                                    paymentAmount = dashboardViewModel.totalPrice
+                                    paymentviewModel.totalPayAmount(dashboardViewModel.totalPrice)
+
+
+
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.text.toString().trim()
+                                prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+
+                                redeemGiftCard()
+                            }
 
                           /*  custom_paymentAmount = 0.0
 

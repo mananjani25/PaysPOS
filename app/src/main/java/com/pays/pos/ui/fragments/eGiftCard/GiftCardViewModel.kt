@@ -933,6 +933,7 @@ class GiftCardViewModel @Inject constructor(
     }
     fun physicalGiftCardCheckBalanceBeforePay(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
         try {
+            Log.e("beforePAymentGift","nameGiftCard  ${giftCardCheckBalanceRequest.name}")
             val soapRequest = checkBalanceRequest("m117115rgw", "T98PZAGEHT", giftCardCheckBalanceRequest.name)
             CoroutineScope(Dispatchers.Main).launch {
                 _showGiftCardProgress.value = Event(true)
