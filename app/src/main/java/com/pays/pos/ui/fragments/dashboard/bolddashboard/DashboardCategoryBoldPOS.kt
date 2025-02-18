@@ -508,6 +508,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         })
 
+        //get Updated printer list
+        printerViewModel.printerList().observe(viewLifecycleOwner) {
+
+        }
+
         return binding.root
     }
 
