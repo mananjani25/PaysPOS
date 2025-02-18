@@ -14588,6 +14588,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                             )
                                                                                     )
 
+                                                                                    var address = ""
+                                                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                                        if (it.isNotEmpty()) {
+                                                                                            address = it
+                                                                                        }
+                                                                                    }
+
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Left
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content = address
+                                                                                            )
+                                                                                    )
+
                                                                                 }
                                                                             }
 
@@ -14903,6 +14920,49 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             )
                                                         )
                                                     }
+
+                                                    try {
+                                                        if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.addresses?.get(
+                                                                0
+                                                            ) != null
+                                                        ) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .actionPrintText(
+                                                                        content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.addresses?.get(
+                                                                                0
+                                                                            ) != null
+                                                                        ) {
+
+                                                                            var address =
+                                                                                receiptModel?.order?.customer?.addresses?.get(
+                                                                                    0
+                                                                                )?.fullAddress
+
+                                                                            "$address"
+
+
+                                                                            /* MethodUtils.formatPhoneNumber(
+                                                                 receiptModel?.order?.customer?.phones?.get(
+                                                                     0
+                                                                 )?.phoneNumber.toString()
+                                                             )*/
+                                                                        } else ""
+                                                                    )
+                                                            )
+                                                        }
+                                                    } catch (e: Exception) {
+                                                        EventBus.getDefault().post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_3 -> ${e}"
+                                                            )
+                                                        )
+                                                    }
+
                                                     printerBuilder.actionFeedLine(1)
                                                         .actionCut(CutType.Partial)
 
@@ -15210,6 +15270,49 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 )
                                                             )
                                                         }
+
+                                                        try {
+                                                            if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.addresses?.get(
+                                                                    0
+                                                                ) != null
+                                                            ) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(2, 2)
+                                                                        )
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .actionPrintText(
+                                                                            content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.addresses?.get(
+                                                                                    0
+                                                                                ) != null
+                                                                            ) {
+
+                                                                                var address =
+                                                                                    receiptModel?.order?.customer?.addresses?.get(
+                                                                                        0
+                                                                                    )?.fullAddress
+
+                                                                                "$address"
+
+
+                                                                                /* MethodUtils.formatPhoneNumber(
+                                                                     receiptModel?.order?.customer?.phones?.get(
+                                                                         0
+                                                                     )?.phoneNumber.toString()
+                                                                 )*/
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            EventBus.getDefault().post(
+                                                                MessageEvent(
+                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_3 -> ${e}"
+                                                                )
+                                                            )
+                                                        }
+
                                                         printerBuilder.actionFeedLine(1)
                                                             .actionCut(CutType.Partial)
 
@@ -15676,26 +15779,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             try {
                                                                 if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                        PrintSunmiUtils.normalTextLarge(
+                                                                            it
+                                                                        )
+                                                                    }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
 
-                                                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                                        ?.forEach {
-
-                                                                            if (it.typeOfAddress.equals(
-                                                                                    BILLING_ADDRESS,
-                                                                                    ignoreCase = true
-                                                                                )
-                                                                            ) {
-                                                                                printLeft(
-                                                                                    it.fullAddress
-                                                                                )
-                                                                            }
-                                                                        }
+//                                                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                                                        ?.forEach {
+//
+//                                                                            if (it.typeOfAddress.equals(
+//                                                                                    BILLING_ADDRESS,
+//                                                                                    ignoreCase = true
+//                                                                                )
+//                                                                            ) {
+//                                                                                printLeft(
+//                                                                                    it.fullAddress
+//                                                                                )
+//                                                                            }
+//                                                                        }
                                                                 }
                                                             } catch (e: Exception) {
                                                             }
@@ -17081,25 +17184,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                            ?.forEach {
+                                        receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                            PrintSunmiUtils.customerAddress(
+                                                it
+                                            )
+                                        }
 
-                                                if (it.typeOfAddress.equals(
-                                                        BILLING_ADDRESS,
-                                                        ignoreCase = true
-                                                    )
-                                                ) {
-                                                    PrintSunmiUtils.customerAddress(
-                                                        it.fullAddress
-                                                    )
-                                                }
-                                            }
+//                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                            ?.forEach {
+//
+//                                                if (it.typeOfAddress.equals(
+//                                                        BILLING_ADDRESS,
+//                                                        ignoreCase = true
+//                                                    )
+//                                                ) {
+//                                                    PrintSunmiUtils.customerAddress(
+//                                                        it.fullAddress
+//                                                    )
+//                                                }
+//                                            }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.customerAddress(
-//                                        it
-//                                    )
-//                                }
+
                                     }
                                 }
                             }
@@ -17273,26 +17378,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         try {
                                             if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                    PrintSunmiUtils.normalTextLarge(
+                                                        it
+                                                    )
+                                                }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
-
-                                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                    ?.forEach {
-
-                                                        if (it.typeOfAddress.equals(
-                                                                BILLING_ADDRESS,
-                                                                ignoreCase = true
-                                                            )
-                                                        ) {
-                                                            PrintSunmiUtils.normalTextLarge(
-                                                                it.fullAddress
-                                                            )
-                                                        }
-                                                    }
+//                                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                                    ?.forEach {
+//
+//                                                        if (it.typeOfAddress.equals(
+//                                                                BILLING_ADDRESS,
+//                                                                ignoreCase = true
+//                                                            )
+//                                                        ) {
+//                                                            PrintSunmiUtils.normalTextLarge(
+//                                                                it.fullAddress
+//                                                            )
+//                                                        }
+//                                                    }
                                             }
                                         } catch (e: Exception) {
                                         }
