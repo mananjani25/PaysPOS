@@ -2164,6 +2164,19 @@
         android:paddingHorizontal="@dimen/_30sdp"
         android:visibility="gone">
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgBackTip"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/_6sdp"
+            android:tint="@color/drawable_ic_color"
+            app:srcCompat="@mipmap/ic_left_arrow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/wouldYouLikeToAddTipOtherLabel"
             style="@style/CustomFontMediumStyle"
