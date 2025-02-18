@@ -96,6 +96,7 @@ import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
+
 import com.sdksuite.omnidriver.OmniConnection
 import com.sdksuite.omnidriver.OmniDriver
 import com.sdksuite.omnidriver.aidl.printer.Align
@@ -611,7 +612,17 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         binding.txtFireAll.setOnClickListener {
 
+            binding.txtEditOrder.isEnabled = false
+            binding.txtAddguest.isEnabled = false
+
+
             checkForAutoFire(false,fireAll = true)
+
+            Handler().postDelayed({
+                binding.txtEditOrder.isEnabled = true
+                binding.txtAddguest.isEnabled = true
+            }, 2000)
+
             /*val list = dineInTableAdapter.getList()
             val idsStr = java.lang.StringBuilder()
             list.forEach {
@@ -3213,37 +3224,42 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         }
                                         serviceChargeWT = 0.0
-                                        if (prefProvider.getValueboolean(
-                                                Constants.SERVICECHARGE_DINEIN_ORDER,
-                                                false
-                                            )
-                                        ) {
-                                            var isApplied = false
-                                            serviceChargeList.forEach {
-                                                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                                    if (isInRange(
-                                                            it.min_guest_count!!,
-                                                            it.max_guest_count!!,
-                                                            baseResponse.guestAttributes.size - 1
-                                                        )
-                                                    ) {
-                                                        isApplied = true
-                                                        serviceChargeWT += (subTotalWT * it.percentage) / 100
-                                                        return@forEach
+
+                                        try {
+                                            if (prefProvider.getValueboolean(
+                                                    Constants.SERVICECHARGE_DINEIN_ORDER,
+                                                    false
+                                                )
+                                            ) {
+                                                var isApplied = false
+                                                serviceChargeList.forEach {
+                                                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                                        if (isInRange(
+                                                                it.min_guest_count!!,
+                                                                it.max_guest_count!!,
+                                                                baseResponse.guestAttributes.size - 1
+                                                            )
+                                                        ) {
+                                                            isApplied = true
+                                                            serviceChargeWT += (subTotalWT * it.percentage) / 100
+                                                            return@forEach
+                                                        }
+                                                    }
+                                                }
+                                                if (!isApplied) {
+                                                    serviceChargeList.forEach { service ->
+                                                        if (service.id == checkMaxGuestCountId(
+                                                                serviceChargeList
+                                                            )
+                                                        ) {
+                                                            serviceChargeWT += (subTotalWT * service.percentage) / 100
+                                                            return@forEach
+                                                        }
                                                     }
                                                 }
                                             }
-                                            if (!isApplied) {
-                                                serviceChargeList.forEach { service ->
-                                                    if (service.id == checkMaxGuestCountId(
-                                                            serviceChargeList
-                                                        )
-                                                    ) {
-                                                        serviceChargeWT += (subTotalWT * service.percentage) / 100
-                                                        return@forEach
-                                                    }
-                                                }
-                                            }
+                                        }catch (e:Exception) {
+                                            e.printStackTrace()
                                         }
 
                                         /**
@@ -3277,13 +3293,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     totalServiceChargeAmount = 0.0
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+
+                        val currentGuestCount = dineInTableAdapter.getList().count { it.isHeader==0 }
                         var isApplied = false
                         serviceChargeList.forEach {
                             if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                                 if (isInRange(
                                         it.min_guest_count!!,
                                         it.max_guest_count!!,
-                                        eligibleGuestsForDivision
+                                        currentGuestCount
                                     )
                                 ) {
 
@@ -6892,7 +6910,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
+                                    if (paymentType != "Unpaid") {
 
                                         printLeft(
                                             padLine(
@@ -6903,7 +6921,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
+                                    if (paymentType != "Unpaid") {
 
 
                                         printLeft(

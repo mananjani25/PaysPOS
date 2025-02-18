@@ -196,6 +196,10 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
     )
 
+    suspend fun deleteCustomersTable() {
+        appDatabase.customerDao().deleteCustomerTb()
+    }
+
     suspend fun saveDatabase(response: VenueDataResponse) {
         appDatabase.customerDao().deleteCustomerTb()
 //        appDatabase.categoryDao().delete()
@@ -682,7 +686,7 @@ class PosRepository @Inject constructor(
         appDatabase.customerDao()
             .updateLoyaltyRewardsSyncEmail(finalrewards, firstName, lastName, email)
 
-    fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
+    fun getCustomerDetailsByID(id: String?): LiveData<TbCustomer> {
 
         return appDatabase.customerDao().getCustomerDetailsByID(id)
     }

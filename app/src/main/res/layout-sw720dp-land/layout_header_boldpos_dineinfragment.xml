@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
-                android:visibility="gone">
+                android:visibility="visible">
 
             <ImageView
                 android:layout_width="@dimen/_14sdp"

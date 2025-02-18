@@ -1095,27 +1095,37 @@ class AllOrdersListingFragment(
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
             var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
-            if (fromDate<=endDate) {
-                val timecalender = Calendar.getInstance()
-                timecalender.set(Calendar.HOUR_OF_DAY, hour)
-                timecalender.set(Calendar.MINUTE, minute)
-                viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-                /*checkFilter = true
-            currentPage = 1*/
-                if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
-                    getAllOrders()
-                else {
+
+
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault())
+
+            val startDate1 = dateFormat.parse(viewModel.startDate.value)
+            val endDate1 = dateFormat.parse(viewModel.endDate.value)
+
+
+            if (startDate1 != null) {
+                if (startDate1<=endDate1) {
+                    val timecalender = Calendar.getInstance()
+                    timecalender.set(Calendar.HOUR_OF_DAY, hour)
+                    timecalender.set(Calendar.MINUTE, minute)
+                    viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+                    /*checkFilter = true
+                    currentPage = 1*/
+                    if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
+                        getAllOrders()
+                    else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireActivity(),
+                            "Please Select date in 30 Days."
+                        ) { _, _ ->
+                        }
+                    }
+                }else{
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireActivity(),
-                        "Please Select date in 30 Days."
+                        "The end date cannot be earlier than the start date. Please select a valid date range."
                     ) { _, _ ->
                     }
-                }
-            }else{
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireActivity(),
-                    "The end date cannot be earlier than the start date. Please select a valid date range."
-                ) { _, _ ->
                 }
             }
 
@@ -1427,8 +1437,15 @@ class AllOrdersListingFragment(
         })
     }
 
+    val buttonClickHandler=Handler(Looper.getMainLooper())
+    val buttonClickRunnable=Runnable {
+        adapter.enableReprintKitchenReceiptButton()
+    }
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
         val order = adapter.getItem(pos)
+
+        buttonClickHandler.postDelayed(buttonClickRunnable,4000)
+
         when (status) {
             "accepted" -> {
                 isPrint = true
@@ -5686,6 +5703,7 @@ class AllOrdersListingFragment(
             lineFeed(2)
             setAlignment(0)
 
+
             for (i in 0 until orderData?.orderItems.size){
                 val obj = orderData?.orderItems.get(i)
                 if (obj.itemName.isNotEmpty()){
@@ -5700,7 +5718,7 @@ class AllOrdersListingFragment(
                                 "   "
                             } else {
                                 "" + objMod.modifier_quantity + "x "
-                            } )
+                            } + objMod.name.uppercase())
 
                             lineFeed(1)
                         }
@@ -6449,6 +6467,7 @@ class AllOrdersListingFragment(
             }
 
         }
+
 
     }
 
@@ -9464,5 +9483,9 @@ class AllOrdersListingFragment(
     }
 
 
+    override fun onPause() {
+        super.onPause()
+        buttonClickHandler.removeCallbacks(buttonClickRunnable)
+    }
 
 }

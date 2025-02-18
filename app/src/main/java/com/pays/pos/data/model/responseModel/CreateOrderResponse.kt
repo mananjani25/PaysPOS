@@ -344,7 +344,7 @@ data class CreateOrderResponse(
                 @SerializedName("terminal_id")
                 val terminalId: Int,
                 @SerializedName("tips")
-                val tips: Double,
+                var tips: Double,
                 @SerializedName("tips_adjusted")
                 val tipsAdjusted: Boolean,
                 @SerializedName("total_discount")

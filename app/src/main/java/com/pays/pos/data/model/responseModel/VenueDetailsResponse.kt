@@ -95,6 +95,8 @@ data class VenueDetailsResponse(
         val userId: Int,
         @SerializedName("is_printer_queue_enable")
         val isPrinterQueueEnable: Boolean,
+        @SerializedName("is_preauth_enable")
+        val isPreAuthEnable: Boolean,
         @SerializedName("customer_receipt")
         val customerReceipt: GetCustomerReceiptSettingsResponse.Data? = null,
         @SerializedName("kitchen_receipt")

@@ -64,6 +64,7 @@ import com.pays.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.pays.pos.data.remote.Constants.MANUAL_SALE
+import com.pays.pos.data.remote.Constants.OPTION_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -89,9 +90,14 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.gone
@@ -203,7 +209,7 @@ class CustomDisplay(
         initDiscountLiveData()
 
 
-        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false) && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
             Log.e("TIP BEFORE WORKING","TIP BEFORE ENABLED")
             binding.askForTipBeforeLayout.visible()
         }
@@ -220,8 +226,11 @@ class CustomDisplay(
                 binding.askForTipBeforeLayout.gone()
                 binding.mainCartLayout.visible()
             } else {
-                if(dashBoardCategoryViewModel.tipBeforeEnabled)
+                if(dashBoardCategoryViewModel.tipBeforeEnabled && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                     binding.askForTipBeforeLayout.visible()
+                } else {
+                    binding.askForTipBeforeLayout.gone()
+                }
             }
         }
         dashBoardCategoryViewModel.removeMainCart.observe(lifecycleOwner,object :Observer<Boolean>{
@@ -1161,8 +1170,18 @@ class CustomDisplay(
                             binding.txtTotalCash?.text =
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
-                            binding.txtTotalCash?.text =
-                                MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCash?.text =
+                                        MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCash?.text =
+                                        MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                                }
+                            }else{
+                                binding.txtTotalCash?.text =
+                                    MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                            }
                         }
 
                         if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()
@@ -1171,8 +1190,14 @@ class CustomDisplay(
                             binding.txtTotalCard?.text =
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
-                            binding.txtTotalCard?.text =
-                                getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            if ((dashBoardCategoryViewModel.cashDiscountType.contains("Surcharge",ignoreCase = true)) && (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty)){
+                                binding.txtTotalCard?.text =
+                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                            }else{
+                                binding.txtTotalCard?.text =
+                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            }
+
                         }
 
                         Log.v("CustomerScreen:", "1")
@@ -1186,7 +1211,15 @@ class CustomDisplay(
                             binding.txtTotalCash?.text =
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
-                            binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                                }
+                            }else{
+                                binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                            }
                         }
 
 
@@ -1196,7 +1229,15 @@ class CustomDisplay(
                             binding.txtTotalCard?.text =
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
-                            binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)) {
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                                }
+                            }else {
+                                binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                            }
                         }
 
 
@@ -1260,12 +1301,8 @@ class CustomDisplay(
                 } else {
                     binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                 }
-
-
             }
-
         }
-
     }
 
     private fun getSurchargedPrice(amount: Double): String {
@@ -1319,9 +1356,8 @@ class CustomDisplay(
                     dashBoardCategoryViewModel.reloadCustomerDisplay(false)
 //                }
             } else {
-                /*binding.tvLoyaltyBalance.invisible()
-                binding.tvLoyaltyPoints.invisible()
-                */
+                binding.tvLoyaltyBalance.gone()
+                binding.tvLoyaltyPoints.gone()
 //                Handler(Looper.getMainLooper()).post(Runnable {
 
 //              CoroutineScope(Dispatchers.Main).launch {
@@ -2625,7 +2661,7 @@ class CustomDisplay(
                         }*/
                     }
                 } else {
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
             }
 
@@ -2706,7 +2742,7 @@ class CustomDisplay(
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            callUpdateTip()
+                            callUpdateTip(mTransactionViewModel)
                         }
                     }
                 } else {
@@ -2908,20 +2944,26 @@ class CustomDisplay(
         mWholeTotalPrice = wholeTotalPrice
 
         binding.apply {
-            askForTipLayout.visible()
+            if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
+                askForTipLayout.visible()
+            } else {
+                showThankyouLayout()
+            }
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
             if (dashBoardCategoryViewModel.getSplitCount() == 1) {
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             } else {
-            //    observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
+                //    observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             }
 
             mainCartLayout.gone()
             splashLayout.gone()
-            thankYouLayout.gone()
+            if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
+                thankYouLayout.gone()
+            }
             addTipKeypadLayout.gone()
 
             if (fromKeypad && tippedAmount > 0.0) {
@@ -3058,6 +3100,11 @@ class CustomDisplay(
 
     }
 
+    fun shouldHighlightNoTip() {
+        activeTipsListAdapter?.clearSelectedItem()
+        binding.txtNoTipLabelTipBefore.setTextColor(Color.parseColor("#FFFFFF"))
+    }
+
     private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
@@ -3065,9 +3112,10 @@ class CustomDisplay(
         return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n", "")
     }
 
-    private fun callUpdateTip() {
+    private fun callUpdateTip(transactionViewModel: TransactionViewModel) {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
+            mTransactionViewModel = transactionViewModel
             mTransactionViewModel.updateTipWithSignature(
                 mOrderID,
                 signatureInBase64,
@@ -3183,7 +3231,11 @@ class CustomDisplay(
 
             tvTryAgain.setOnClickListener {
                 errorLayout.gone()
-                askForTipLayout.visible()
+                if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
+                    askForTipLayout.visible()
+                } else {
+                    showThankyouLayout()
+                }
             }
         }
     }
@@ -3302,7 +3354,7 @@ class CustomDisplay(
                 }*/
                     } else if (!mIsCardPayment) {
                         openCashDrawer()
-                        callUpdateTip()
+                        callUpdateTip(mTransactionViewModel)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -3312,7 +3364,7 @@ class CustomDisplay(
                 }
             }else {
                 openCashDrawer()
-                callUpdateTip()
+                callUpdateTip(mTransactionViewModel)
             }
         }
     }
@@ -3364,7 +3416,7 @@ class CustomDisplay(
                             String::class.java
                         )
                         mPaymentViewModel.dejavooRefTxnId=null
-                        callUpdateTip()
+                        callUpdateTip(mTransactionViewModel)
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(
@@ -3470,7 +3522,7 @@ class CustomDisplay(
                                     ) {
                                         mPaymentViewModel.valorRefTxnId = null
                                         mPaymentViewModel.valorTransactionNumber = null
-                                        callUpdateTip()
+                                        callUpdateTip(mTransactionViewModel)
 //                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
                                     } else {
                                         dismissProgressDialog()
@@ -3545,7 +3597,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3678,7 +3730,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3806,7 +3858,7 @@ class CustomDisplay(
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
-                            callUpdateTip()
+                            callUpdateTip(mTransactionViewModel)
                         } else {
                             showErrorLayout(response.body()!![0].transactionOutput?.transactionMessage.toString())
                         }
@@ -3859,7 +3911,14 @@ class CustomDisplay(
 
     private fun setCashCardAmountObservers() {
         dashBoardCategoryViewModel.customerCashPrice.observe(lifecycleOwner,{
-            binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+            if (prefProvider.getValue(
+                    OPTION_TYPE, "CashDiscount"
+                ) == "CashDiscount"
+            ) {
+                setupTotalsNew(isDineIn = false)
+            } else
+                binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+
         })
 
         dashBoardCategoryViewModel.customerCardPrice.observe(lifecycleOwner,{

@@ -239,6 +239,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var pd: Dialog? = null
     private var sunmiFrameworkVersion: Array<String>? = null
 
+    //This will be used to show
+    private var tipAfterAmount = 0.0
+
     var omniDriver: OmniDriver? = null
 
     private val TAG2 = "Printer_Queue"
@@ -650,6 +653,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var paidAmountToShow = 0.0
                 var changeAmount = 0.0
 
+
                 viewModelDashBoard.apply {
                     finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
                         .toDouble() + MethodUtils.roundOffAmountString(
@@ -661,6 +665,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     finalAmountToShow = totalAmount + totalTipAmount
                     paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
 
+                    tipAfterAmount = tipToShow
 
                     changeAmount = paidAmountToShow - finalAmountToShow
 
@@ -2314,7 +2319,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         paymentType,
                                         true,
                                         listGuestItem = listItem,
-                                        dineInList.get(guestPos).title.toString(),
+                                        dineInList.get(guestPos).customer?.first_name ?: dineInList.get(guestPos).title.toString(),
                                         listItemWT
                                     )
                                 }
@@ -2328,7 +2333,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         paymentType,
                         true,
                         listGuestItem = listItem,
-                        dineInList.get(guestPos).title.toString(),
+                        dineInList.get(guestPos).customer?.first_name ?: dineInList.get(guestPos).title.toString(),
                         listItemWT
                     )
                 }
@@ -8035,10 +8040,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
 
+                                        val payment = getOrderDetailsResponse.payments.last()
+
                                         LPrint.printLeft(
                                             padLine(
                                                 "Transaction ID",
-                                                getOrderDetailsResponse?.payments.last().id.toString(),
+                                               payment.id.toString(),
                                                 48
                                             ).toString()
                                         )
@@ -8046,75 +8053,76 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         LPrint.printLeft(
                                             padLine(
                                                 "Transaction Type",
-                                                getOrderDetailsResponse.payments.get(0).paymentType,
+                                                payment.paymentType,
                                                 48
                                             ).toString()
                                         )
+
+                                        /**
+                                         * CARD DETAILS
+                                         */
+
+                                        try {
+
+                                                if (payment.paymentType.lowercase() == "Card".lowercase()) {
+                                                    /*val str12 = padLine(
+                                                    "",
+                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
+                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                ).toString()
+
+                                                if (!str12.isNullOrBlank()) {
+                                                    PrintSunmiUtils.normalTextTest(str12)
+                                                    SunmiPrintHelper.getInstance().lineWrap(1)
+                                                }*/
+
+                                                    var strCardType =
+                                                        payment.cardType.toString()
+                                                            ?: ""
+
+                                                    if (!paymentViewModel.extData.isNullOrEmpty()) {
+
+                                                        var applabStartIndex =
+                                                            paymentViewModel.extData.indexOf("<APPLAB>")
+                                                        var applabEndIndex =
+                                                            paymentViewModel.extData.indexOf("</APPLAB>")
+                                                        strCardType =
+                                                            paymentViewModel.extData.substring(
+                                                                applabStartIndex + "<APPLAB>".length,
+                                                                applabEndIndex
+                                                            )
+                                                    }
+
+                                                    val str13 = padLine(
+                                                        "",
+                                                        strCardType, 48
+                                                    ).toString()
+
+                                                    if (!str13.isBlank()) {
+                                                        write(str13.toByteArray())
+                                                        write(LPrint.LINE_FEED)
+                                                    }
+                                                    val str14 = padLine(
+                                                        "",
+                                                        payment.cardNumber.toString(),
+                                                        48
+                                                    ).toString()
+
+                                                    if (!str14.isBlank()) {
+                                                        write(str14.toByteArray())
+                                                        write(LPrint.LINE_FEED)
+                                                    }
+                                                }
+                                        }catch (e:Exception) {
+                                            Log.e(
+                                                "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
+                                                "PAYMENTS printing issue" + e.message.toString()
+                                            )
+                                        }
                                     }
 
 
-                                    /**
-                                     * CARD DETAILS
-                                     */
 
-                                    try {
-
-                                        if (_order?.payments?.isNotEmpty() == true)
-                                            if (_order.payments.first().paymentType.lowercase() == "Card".lowercase()) {
-                                                /*val str12 = padLine(
-                                                "",
-                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
-                                                if (customerSettingModel.fonts == LARGE) 23 else 48
-                                            ).toString()
-
-                                            if (!str12.isNullOrBlank()) {
-                                                PrintSunmiUtils.normalTextTest(str12)
-                                                SunmiPrintHelper.getInstance().lineWrap(1)
-                                            }*/
-
-                                                var strCardType =
-                                                    _order.payments[_order.payments.size - 1].cardType.toString()
-                                                        ?: ""
-
-                                                if (!paymentViewModel.extData.isNullOrEmpty()) {
-
-                                                    var applabStartIndex =
-                                                        paymentViewModel.extData.indexOf("<APPLAB>")
-                                                    var applabEndIndex =
-                                                        paymentViewModel.extData.indexOf("</APPLAB>")
-                                                    strCardType =
-                                                        paymentViewModel.extData.substring(
-                                                            applabStartIndex + "<APPLAB>".length,
-                                                            applabEndIndex
-                                                        )
-                                                }
-
-                                                val str13 = padLine(
-                                                    "",
-                                                    strCardType, 48
-                                                ).toString()
-
-                                                if (!str13.isBlank()) {
-                                                    write(str13.toByteArray())
-                                                    write(LPrint.LINE_FEED)
-                                                }
-                                                val str14 = padLine(
-                                                    "",
-                                                    _order.payments[_order.payments.size - 1].cardNumber.toString(),
-                                                    48
-                                                ).toString()
-
-                                                if (!str14.isBlank()) {
-                                                    write(str14.toByteArray())
-                                                    write(LPrint.LINE_FEED)
-                                                }
-                                            }
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                            "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
-                                            "PAYMENTS printing issue" + e.message.toString()
-                                        )
-                                    }
 
 
                                     write(LPrint.LINE_FEED)
@@ -9922,197 +9930,75 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun getKitchenPrinters() {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner,
-            object : Observer<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
-                override fun onChanged(it: Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>?) {
-                    when (it?.status) {
-                        Status.SUCCESS -> {
-                            ProgressUtils.dismissProgressDialog()
-                            if (it.data != null && isPrint == true) {
-                                isPrint = false
+        try {
+            viewModel.getKitchenPrinterList().observe(requireActivity(),
+                object : Observer<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+                    override fun onChanged(it: Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>?) {
+                        when (it?.status) {
+                            Status.SUCCESS -> {
+                                ProgressUtils.dismissProgressDialog()
+                                if (it.data != null && isPrint == true) {
+                                    isPrint = false
 
-                               // kitchenPrinterList.toCollection(arrayListOf()).addAll(it.data)
+                                    // kitchenPrinterList.toCollection(arrayListOf()).addAll(it.data)
 
-                                kitchenPrinterList = it.data
-
-
-                                val remain = requireArguments().getDouble("remainingAmount")
-                                if (requireArguments().getBoolean("isDineIn")) {
-                                    customerPrintWholeOrder(true)
-                                } else {
-                                    getCustomerPrinters(true)
-                                }
+                                    kitchenPrinterList = it.data
 
 
+                                    val remain = requireArguments().getDouble("remainingAmount")
+                                    if (requireArguments().getBoolean("isDineIn")) {
+                                        customerPrintWholeOrder(true)
+                                    } else {
+                                        getCustomerPrinters(true)
+                                    }
 
 
-                                if (prefProvider.getValueboolean(
-                                        IS_PRINTER_QUEUE_ENABLE,
-                                        false
-                                    ) == false
-                                ) {
-                                    if (!requireArguments().getBoolean("isSpilt")) {
-                                        if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
-                                                "isFromActiveOrder"
-                                            )
-                                        ) {
-                                            if (receiptModel?.order?.orderType == OPEN_ORDER
+
+
+                                    if (prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
+                                        ) == false
+                                    ) {
+                                        if (!requireArguments().getBoolean("isSpilt")) {
+                                            if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                                                    "isFromActiveOrder"
+                                                )
                                             ) {
-
-                                                var noItem: Boolean = false
-
-                                                if (prefProvider.getValueboolean(
-                                                        OPEN_ORDER_UPDATE_FOR_PRINT,
-                                                        false
-                                                    ) == true
+                                                if (receiptModel?.order?.orderType == OPEN_ORDER
                                                 ) {
-                                                    var list = checkOrderItemsForOpenORderUpdate()
-                                                    if (list.isEmpty()) {
-                                                        noItem = true
-                                                    }
-                                                }
 
-                                                if (kitchenPrinterList.isNotEmpty() && noItem == false) {
-                                                    for (i in 0 until kitchenPrinterList.size) {
-                                                        if (kitchenPrinterList[i].status) {
-                                                            kitchenPrinterList[i].orderTypes.forEach {
+                                                    var noItem: Boolean = false
 
-                                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
-
-                                                                ) {
-
-                                                                    it.printerSettings.forEach {
-                                                                        if ((it.printType.lowercase()
-                                                                                .equals(KITCHEN.lowercase()) || it.printType.lowercase()
-                                                                                .equals(
-                                                                                    KITCHENANDCUSTOMER.lowercase()
-                                                                                )) && it.autoPrinting
-                                                                        ) {
-
-
-                                                                            if (checkItemsforPrinter(
-                                                                                    receiptModel?.order?.orderItems
-                                                                                        ?: arrayListOf(),
-                                                                                    kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                        arrayListOf()
-                                                                                    )
-                                                                                )
-                                                                            ) {
-                                                                                if (!prefProvider.getValueboolean(
-                                                                                        Constants.NO_NEED_TO_PRINT,
-                                                                                        false
-                                                                                    )
-                                                                                ) {
-                                                                                    if (prefProvider.getValueboolean(
-                                                                                            Constants.DO_PRINT,
-                                                                                            false
-                                                                                        ) || /*This is added to solve the custom item printing issue when "open order" is selected.*/ prefProvider.getValueboolean(
-                                                                                            Constants.DO_PRINT_CUSTOM,
-                                                                                            false
-                                                                                        )
-                                                                                    ) {
-                                                                                        Log.e(
-                                                                                            TAG2,
-                                                                                            "initKit "
-                                                                                        )
-                                                                                        initKitchenPrinter(
-                                                                                            kitchenPrinterList.get(
-                                                                                                i
-                                                                                            ),
-                                                                                            KITCHEN
-                                                                                        )
-                                                                                    } else {
-                                                                                        var oldCartModelString =
-                                                                                            prefProvider.getValue(
-                                                                                                "BEFORE_ORDER_NOTE",
-                                                                                                ""
-                                                                                            )
-                                                                                        if (oldCartModelString.isNotEmpty()) {
-                                                                                            var oldCartModel =
-                                                                                                Gson().fromJson<CartModel>(
-                                                                                                    oldCartModelString,
-                                                                                                    CartModel::class.java
-                                                                                                )
-                                                                                            if (!oldCartModel.note.equals(
-                                                                                                    cartList?.note
-                                                                                                )
-                                                                                            ) {
-                                                                                                initKitchenPrinter(
-                                                                                                    kitchenPrinterList.get(
-                                                                                                        i
-                                                                                                    ),
-                                                                                                    KITCHEN
-                                                                                                )
-                                                                                            }
-                                                                                        }
-                                                                                    }
-
-                                                                                }
-                                                                            }
-
-                                                                        }
-                                                                    }
-
-                                                                }
-                                                            }
-                                                        }
-
-                                                        /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
-                                                        if (kitchenPrinterList.size - 1 == i) {
-                                                            Handler(Looper.getMainLooper()).postDelayed(
-                                                                Runnable {
-                                                                    isOrderUpdated = false
-                                                                }, 4000
-                                                            )
-                                                        }
-
-                                                    }
-                                                } else {
-                                                    for (i in 0 until kitchenPrinterList.size) {
-                                                        if (prefProvider.getValueboolean(
-                                                                Constants.DO_PRINT,
-                                                                false
-                                                            )
-                                                        ) {
-                                                            initKitchenPrinter(
-                                                                kitchenPrinterList.get(
-                                                                    i
-                                                                ),
-                                                                KITCHEN
-                                                            )
-                                                        }
-
-                                                        /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
-                                                        if (kitchenPrinterList.size - 1 == i) {
-                                                            Handler(Looper.getMainLooper()).postDelayed(
-                                                                Runnable {
-                                                                    isOrderUpdated = false
-                                                                }, 4000
-                                                            )
+                                                    if (prefProvider.getValueboolean(
+                                                            OPEN_ORDER_UPDATE_FOR_PRINT,
+                                                            false
+                                                        ) == true
+                                                    ) {
+                                                        var list =
+                                                            checkOrderItemsForOpenORderUpdate()
+                                                        if (list.isEmpty()) {
+                                                            noItem = true
                                                         }
                                                     }
 
-                                                }
-                                            } else if (prefProvider.getValue(
-                                                    ORDER_TYPE,
-                                                    ""
-                                                ) != OPEN_ORDER
-                                            ) {
-                                                if (isFirstKitPrint == false) {
-                                                    isFirstKitPrint = true
-                                                    if (kitchenPrinterList.isNotEmpty()) {
+                                                    if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                                         for (i in 0 until kitchenPrinterList.size) {
                                                             if (kitchenPrinterList[i].status) {
                                                                 kitchenPrinterList[i].orderTypes.forEach {
 
-                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderTypeName == receiptModel?.order?.orderTypeName
+                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
 
                                                                     ) {
 
                                                                         it.printerSettings.forEach {
-                                                                            if (it.printType.lowercase()
-                                                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                                            if ((it.printType.lowercase()
+                                                                                    .equals(KITCHEN.lowercase()) || it.printType.lowercase()
+                                                                                    .equals(
+                                                                                        KITCHENANDCUSTOMER.lowercase()
+                                                                                    )) && it.autoPrinting
                                                                             ) {
+
 
                                                                                 if (checkItemsforPrinter(
                                                                                         receiptModel?.order?.orderItems
@@ -10130,19 +10016,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                         if (prefProvider.getValueboolean(
                                                                                                 Constants.DO_PRINT,
                                                                                                 false
-                                                                                            )
-                                                                                        ) {
-                                                                                            initKitchenPrinter(
-                                                                                                kitchenPrinterList.get(
-                                                                                                    i
-                                                                                                ),
-                                                                                                KITCHEN
-                                                                                            )
-                                                                                        } else if (prefProvider.getValueboolean(
+                                                                                            ) || /*This is added to solve the custom item printing issue when "open order" is selected.*/ prefProvider.getValueboolean(
                                                                                                 Constants.DO_PRINT_CUSTOM,
-                                                                                                true
+                                                                                                false
                                                                                             )
                                                                                         ) {
+                                                                                            Log.e(
+                                                                                                TAG2,
+                                                                                                "initKit "
+                                                                                            )
                                                                                             initKitchenPrinter(
                                                                                                 kitchenPrinterList.get(
                                                                                                     i
@@ -10150,10 +10032,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 KITCHEN
                                                                                             )
                                                                                         } else {
-                                                                                            try {
-                                                                                                if (receiptModel!!.order.orderType.equals(
-                                                                                                        "KioskOpenorder",
-                                                                                                        ignoreCase = true
+                                                                                            var oldCartModelString =
+                                                                                                prefProvider.getValue(
+                                                                                                    "BEFORE_ORDER_NOTE",
+                                                                                                    ""
+                                                                                                )
+                                                                                            if (oldCartModelString.isNotEmpty()) {
+                                                                                                var oldCartModel =
+                                                                                                    Gson().fromJson<CartModel>(
+                                                                                                        oldCartModelString,
+                                                                                                        CartModel::class.java
+                                                                                                    )
+                                                                                                if (!oldCartModel.note.equals(
+                                                                                                        cartList?.note
                                                                                                     )
                                                                                                 ) {
                                                                                                     initKitchenPrinter(
@@ -10163,12 +10054,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                         KITCHEN
                                                                                                     )
                                                                                                 }
-                                                                                            } catch (e: java.lang.Exception) {
-
                                                                                             }
                                                                                         }
-                                                                                    }
 
+                                                                                    }
                                                                                 }
 
                                                                             }
@@ -10186,121 +10075,250 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     }, 4000
                                                                 )
                                                             }
+
+                                                        }
+                                                    } else {
+                                                        for (i in 0 until kitchenPrinterList.size) {
+                                                            if (prefProvider.getValueboolean(
+                                                                    Constants.DO_PRINT,
+                                                                    false
+                                                                )
+                                                            ) {
+                                                                initKitchenPrinter(
+                                                                    kitchenPrinterList.get(
+                                                                        i
+                                                                    ),
+                                                                    KITCHEN
+                                                                )
+                                                            }
+
+                                                            /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
+                                                            if (kitchenPrinterList.size - 1 == i) {
+                                                                Handler(Looper.getMainLooper()).postDelayed(
+                                                                    Runnable {
+                                                                        isOrderUpdated = false
+                                                                    }, 4000
+                                                                )
+                                                            }
+                                                        }
+
+                                                    }
+                                                } else if (prefProvider.getValue(
+                                                        ORDER_TYPE,
+                                                        ""
+                                                    ) != OPEN_ORDER
+                                                ) {
+                                                    if (isFirstKitPrint == false) {
+                                                        isFirstKitPrint = true
+                                                        if (kitchenPrinterList.isNotEmpty()) {
+                                                            for (i in 0 until kitchenPrinterList.size) {
+                                                                if (kitchenPrinterList[i].status) {
+                                                                    kitchenPrinterList[i].orderTypes.forEach {
+
+                                                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderTypeName == receiptModel?.order?.orderTypeName
+
+                                                                        ) {
+
+                                                                            it.printerSettings.forEach {
+                                                                                if (it.printType.lowercase()
+                                                                                        .equals(
+                                                                                            KITCHEN.lowercase()
+                                                                                        ) && it.autoPrinting
+                                                                                ) {
+
+                                                                                    if (checkItemsforPrinter(
+                                                                                            receiptModel?.order?.orderItems
+                                                                                                ?: arrayListOf(),
+                                                                                            kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                                arrayListOf()
+                                                                                            )
+                                                                                        )
+                                                                                    ) {
+                                                                                        if (!prefProvider.getValueboolean(
+                                                                                                Constants.NO_NEED_TO_PRINT,
+                                                                                                false
+                                                                                            )
+                                                                                        ) {
+                                                                                            if (prefProvider.getValueboolean(
+                                                                                                    Constants.DO_PRINT,
+                                                                                                    false
+                                                                                                )
+                                                                                            ) {
+                                                                                                initKitchenPrinter(
+                                                                                                    kitchenPrinterList.get(
+                                                                                                        i
+                                                                                                    ),
+                                                                                                    KITCHEN
+                                                                                                )
+                                                                                            } else if (prefProvider.getValueboolean(
+                                                                                                    Constants.DO_PRINT_CUSTOM,
+                                                                                                    true
+                                                                                                )
+                                                                                            ) {
+                                                                                                initKitchenPrinter(
+                                                                                                    kitchenPrinterList.get(
+                                                                                                        i
+                                                                                                    ),
+                                                                                                    KITCHEN
+                                                                                                )
+                                                                                            } else {
+                                                                                                try {
+                                                                                                    if (receiptModel!!.order.orderType.equals(
+                                                                                                            "KioskOpenorder",
+                                                                                                            ignoreCase = true
+                                                                                                        )
+                                                                                                    ) {
+                                                                                                        initKitchenPrinter(
+                                                                                                            kitchenPrinterList.get(
+                                                                                                                i
+                                                                                                            ),
+                                                                                                            KITCHEN
+                                                                                                        )
+                                                                                                    }
+                                                                                                } catch (e: java.lang.Exception) {
+
+                                                                                                }
+                                                                                            }
+                                                                                        }
+
+                                                                                    }
+
+                                                                                }
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
+                                                                if (kitchenPrinterList.size - 1 == i) {
+                                                                    Handler(Looper.getMainLooper()).postDelayed(
+                                                                        Runnable {
+                                                                            isOrderUpdated = false
+                                                                        }, 4000
+                                                                    )
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
+
+
                                             }
-
-
-                                        }
-                                    } else {
-                                        Log.d("Kiosk", "Kiosk")
-                                        /* if (prefProvider.getValue(Constants.ORDER_TYPE,"").equals(Constants.KIOSK_OPEN_ORDER)){
+                                        } else {
+                                            Log.d("Kiosk", "Kiosk")
+                                            /* if (prefProvider.getValue(Constants.ORDER_TYPE,"").equals(Constants.KIOSK_OPEN_ORDER)){
  //                                            Print the receipt here
                                              initKitchenPrinter(kitchenPrinterList.get(
                                                  i
                                              ), KITCHEN)
                                          }*/
+                                        }
                                     }
-                                }
 
-                                if (remainingAmount == 0.0)
-                                    prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
-                                //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
-                                if (orderTypeToCheckKiosk.equals(
-                                        "KioskOpenorder",
-                                        ignoreCase = true
-                                    ) && !isSpilt
-                                ) {
-                                    for (i in kitchenPrinterList.indices) {
+                                    if (remainingAmount == 0.0)
+                                        prefProvider.setValueboolean(
+                                            Constants.DO_PRINT_CUSTOM,
+                                            false
+                                        )
+                                    //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
+                                    if (orderTypeToCheckKiosk.equals(
+                                            "KioskOpenorder",
+                                            ignoreCase = true
+                                        ) && !isSpilt
+                                    ) {
+                                        for (i in kitchenPrinterList.indices) {
 //                                        Log.d("KioskOpenOrderKitchenPrint", "1 -> Index$i, ${kitchenPrinterList[i].name}")
-                                        if (kitchenPrinterList[i].status) {
+                                            if (kitchenPrinterList[i].status) {
 //                                            Log.d("KioskOpenOrderKitchenPrint", "2 -> Index$i, ${kitchenPrinterList[i].name}")
-                                            kitchenPrinterList[i].orderTypes.forEach { orderTypes ->
+                                                kitchenPrinterList[i].orderTypes.forEach { orderTypes ->
 
-                                                if (orderTypes.orderTypeId == receiptModel?.order?.orderTypeId || orderTypes.orderType == receiptModel?.order?.orderType
+                                                    if (orderTypes.orderTypeId == receiptModel?.order?.orderTypeId || orderTypes.orderType == receiptModel?.order?.orderType
 
-                                                ) {
+                                                    ) {
 //                                                    Log.d("KioskOpenOrderKitchenPrint", "3 -> Index$i, ${kitchenPrinterList[i].name}")
-                                                    orderTypes.printerSettings.forEach { printerSettings ->
-                                                        if ((printerSettings.printType.lowercase() == KITCHEN.lowercase() || printerSettings.printType.lowercase() == KITCHENANDCUSTOMER.lowercase()) && printerSettings.autoPrinting
-                                                        ) {
-//                                                            Log.d("KioskOpenOrderKitchenPrint", "4 -> Index$i, ${kitchenPrinterList[i].name}")
-                                                            if (checkItemsforPrinter(
-                                                                    receiptModel?.order?.orderItems
-                                                                        ?: arrayListOf(),
-                                                                    kitchenPrinterList[i].printerCategories.toCollection(
-                                                                        arrayListOf()
-                                                                    )
-                                                                )
+                                                        orderTypes.printerSettings.forEach { printerSettings ->
+                                                            if ((printerSettings.printType.lowercase() == KITCHEN.lowercase() || printerSettings.printType.lowercase() == KITCHENANDCUSTOMER.lowercase()) && printerSettings.autoPrinting
                                                             ) {
+//                                                            Log.d("KioskOpenOrderKitchenPrint", "4 -> Index$i, ${kitchenPrinterList[i].name}")
+                                                                if (checkItemsforPrinter(
+                                                                        receiptModel?.order?.orderItems
+                                                                            ?: arrayListOf(),
+                                                                        kitchenPrinterList[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
 //                                                                Log.d("KioskOpenOrderKitchenPrint", "5 -> Index$i, ${kitchenPrinterList[i].name}")
 //                                                                val kitchenPrinterList = kitchenPrinterList[i]
-                                                                EventBus.getDefault().post(
-                                                                    MessageEvent(
-                                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                    EventBus.getDefault().post(
+                                                                        MessageEvent(
+                                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                        )
                                                                     )
-                                                                )
-                                                                initKitchenPrinter(
-                                                                    kitchenPrinterList[i],
-                                                                    KITCHEN,
-                                                                )
+                                                                    initKitchenPrinter(
+                                                                        kitchenPrinterList[i],
+                                                                        KITCHEN,
+                                                                    )
+                                                                }
+
                                                             }
-
                                                         }
-                                                    }
 
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
-                                        if (kitchenPrinterList.size - 1 == i) {
-                                            Handler(Looper.getMainLooper()).postDelayed(
-                                                Runnable {
-                                                    isOrderUpdated = false
-                                                }, 4000
-                                            )
-                                        }
+                                            /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
+                                            if (kitchenPrinterList.size - 1 == i) {
+                                                Handler(Looper.getMainLooper()).postDelayed(
+                                                    Runnable {
+                                                        isOrderUpdated = false
+                                                    }, 4000
+                                                )
+                                            }
 
+                                        }
                                     }
-                                }
 
-                                pd?.dismiss()
+                                    pd?.dismiss()
+
+
+                                }
 
 
                             }
 
-
-                        }
-
-                        Status.LOADING -> {
+                            Status.LOADING -> {
 //                    ProgressUtils.showProgressDialog(requireActivity())
-                        }
+                            }
 
-                        Status.ERROR -> {
+                            Status.ERROR -> {
 
-                            EventBus.getDefault().post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_ERROR -> ${
-                                        Gson().toJson(
-                                            it
-                                        )
-                                    }"
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_ERROR -> ${
+                                            Gson().toJson(
+                                                it
+                                            )
+                                        }"
+                                    )
                                 )
-                            )
-                            ProgressUtils.dismissProgressDialog()
+                                ProgressUtils.dismissProgressDialog()
 
+                            }
                         }
+
+
                     }
 
-
-                }
-
-            })
-        /*viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
+                })
+            /*viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
 
         }*/
+        }catch (e:Exception){
+
+        }
 
     }
 
@@ -11212,6 +11230,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              * Print Tips
                                              */
 
+//                                            var tipBefore = order?.payments?.last()?.tips ?: 0.0
+//
+//                                            if(tipBefore == 0.0)
+//                                                order?.payments?.last()?.tips = tipAfterAmount
+
                                             if (order?.payments?.last()?.tips != 0.0) {
 
 
@@ -11223,6 +11246,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 it + if (order.cash_discount_type.lowercase() == "cashdiscount" && order.payments.last().paymentType.toLowerCase() == "card") order.payments.last().cash_discount_or_surcharge else 0.0
                                                             )
                                                         },
+                                                        48
+                                                    ).toString()
+
+                                                printLeft(tipsToPrint)
+                                                lineBreak()
+                                            } else {
+                                                val tipsToPrint =
+                                                    padLine(
+                                                        "Tips",
+                                                        "$" + MethodUtils.roundOffAmountString(tipAfterAmount),
                                                         48
                                                     ).toString()
 
@@ -14238,206 +14271,186 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         ) {
 
 
-            prefProvider.deleteValue(Constants.DO_PRINT)
-            Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
-            if (data.name.startsWith(SUNMI_PRINTER, true) && data.printer_type == WIFI) {
-                Log.e(TAG2, "PrinitngQueue ")
-                data.ipAddress?.let { cloudQueuePrinting(it, 2241, data) }
+            Handler().postDelayed( {
+                prefProvider.deleteValue(Constants.DO_PRINT)
+                Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
+                if (data.name.startsWith(SUNMI_PRINTER, true) && data.printer_type == WIFI) {
+                    Log.e(TAG2, "PrinitngQueue ")
+                    data.ipAddress?.let { cloudQueuePrinting(it, 2241, data) }
 
-            } else {
+                } else {
 
-                Log.e(TAG2, "NonQueue ")
+                    Log.e(TAG2, "NonQueue ")
 
-                GlobalScope.launch(Dispatchers.IO) {
-                    if (data.name.startsWith(SUNMI_PRINTER, true)) {
-
-
-                        try {
-                            Log.d(
-                                "initKitchenPrinter",
-                                "SunmiBlueToothPrinter is ${data.ipAddress}"
-                            )
-                            SunmiPrinterApi.getInstance()
-                                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
 
-                        } catch (e: Exception) {
                             try {
+                                Log.d(
+                                    "initKitchenPrinter",
+                                    "SunmiBlueToothPrinter is ${data.ipAddress}"
+                                )
                                 SunmiPrinterApi.getInstance()
-                                    .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
-                                Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                                    .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+
+
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                try {
+                                    SunmiPrinterApi.getInstance()
+                                        .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                                    Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
                             }
 
-                        }
+                            if (!SunmiPrinterApi.getInstance().isConnected) {
+                                SunmiPrinterApi.getInstance()
+                                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-                        if (!SunmiPrinterApi.getInstance().isConnected) {
-                            SunmiPrinterApi.getInstance()
-                                .connectPrinter(requireContext(), object : ConnectCallback {
+                                        override fun onFound() {
+                                            println("onFound")
+                                        }
 
-                                    override fun onFound() {
-                                        println("onFound")
-                                    }
+                                        override fun onUnfound() {
+                                            println("onUnfound")
+                                        }
 
-                                    override fun onUnfound() {
-                                        println("onUnfound")
-                                    }
-
-                                    override fun onConnect() {
-                                        println("onConnect")
+                                        override fun onConnect() {
+                                            println("onConnect")
 //                                Log.d("KioskOpenOrderKitchenPrint", "CloudConnected")
-                                        generateKitchenReceiptSunmi(data, type)
+                                            generateKitchenReceiptSunmi(data, type)
 
-                                        /*       viewLifecycleOwner.lifecycleScope.launch {
-                                       delay(200)
+                                            /*       viewLifecycleOwner.lifecycleScope.launch {
+                                           delay(200)
 
-                                   }*/
+                                       }*/
 
 
-                                    }
+                                        }
 
-                                    override fun onDisconnect() {
-                                        println("onDisconnect")
-                                    }
+                                        override fun onDisconnect() {
+                                            println("onDisconnect")
+                                        }
 
-                                })
-                        } else {
+                                    })
+                            } else {
 //                    Log.d("KioskOpenOrderKitchenPrint", "CloudNotConnected")
-                            generateKitchenReceiptSunmi(data, type)
-                            /* viewLifecycleOwner.lifecycleScope.launch {
-                     delay(200)
+                                generateKitchenReceiptSunmi(data, type)
+                                /* viewLifecycleOwner.lifecycleScope.launch {
+                         delay(200)
 
-                 }*/
-                        }
+                     }*/
+                            }
 
 
-                    } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
-                        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+                        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+                            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 //                Log.d("KioskOpenOrderKitchenPrint", "SunmiInnerSetService2")
-                        runBlocking {
-                            delay(200)
-                            setService2(data, type)
-                        }
+                            runBlocking {
+                                delay(200)
+                                setService2(data, type)
+                            }
 
 
-                    } else if (((data.name.contains(
-                            "TSP",
-                            ignoreCase = true
-                        ))) || ((data.name.contains(
-                            "SP",
-                            ignoreCase = true
-                        )))
-                    ) {
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_start"
+                        } else if (((data.name.contains(
+                                "TSP",
+                                ignoreCase = true
+                            ))) || ((data.name.contains(
+                                "SP",
+                                ignoreCase = true
+                            )))
+                        ) {
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_start"
+                                )
                             )
-                        )
-                        settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
-                        printer = StarPrinter(settings, requireContext())
+                            settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+                            printer = StarPrinter(settings, requireContext())
 
-                        var isPrint = true
-                        /*receiptModel?.order?.let {
-                it.orderItems.forEach {
-                    if (it.isItemEdited){
-                        isPrint=true
-                        return@forEach
+                            var isPrint = true
+                            /*receiptModel?.order?.let {
+                    it.orderItems.forEach {
+                        if (it.isItemEdited){
+                            isPrint=true
+                            return@forEach
+                        }
                     }
-                }
-            }*/
+                }*/
 
-                        if (isPrint) {
-                            GlobalScope.launch {
-                                try {
-                                    val builder = StarXpandCommandBuilder()
+                            if (isPrint) {
+                                GlobalScope.launch {
+                                    try {
+                                        val builder = StarXpandCommandBuilder()
 
-                                    var printerBuilder = PrinterBuilder()
+                                        var printerBuilder = PrinterBuilder()
 
-                                    EventBus.getDefault().post(
-                                        MessageEvent(
-                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing GlobalScope"
-                                        )
-                                    )
-
-                                    with(printerBuilder) {
-                                        styleInternationalCharacter(InternationalCharacterType.Usa)
-                                        styleCharacterSpace(0.0)
-
-                                        styleAlignment(Alignment.Center)
-                                        if (!oneItemPerReceipt) {
-                                            EventBus.getDefault().post(
-                                                MessageEvent(
-                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_oneItemPerReceipt -> ${oneItemPerReceipt}"
-                                                )
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing GlobalScope"
                                             )
-                                            receiptModel?.order?.orderItems?.forEach { item ->
-                                                if (!item.isPrinted || item.isItemEdited || (orderTypeToCheckKiosk.equals(
-                                                        "KioskOpenorder",
-                                                        true
-                                                    ) && !item.isItemEdited)
-                                                ) { // In case of Single item per receipt, isPrinted variable is maintained
-                                                    EventBus.getDefault().post(
-                                                        MessageEvent(
-                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_condition-> ${item}"
-                                                        )
+                                        )
+
+                                        with(printerBuilder) {
+                                            styleInternationalCharacter(InternationalCharacterType.Usa)
+                                            styleCharacterSpace(0.0)
+
+                                            styleAlignment(Alignment.Center)
+                                            if (!oneItemPerReceipt) {
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_oneItemPerReceipt -> ${oneItemPerReceipt}"
                                                     )
-                                                    data.printerCategories.forEach { category ->
-                                                        if (category.id == item.categoryId && category.printerEnable) {
-                                                            for (singularity in 1..item.quantity) {
+                                                )
+                                                receiptModel?.order?.orderItems?.forEach { item ->
+                                                    if (!item.isPrinted || item.isItemEdited || (orderTypeToCheckKiosk.equals(
+                                                            "KioskOpenorder",
+                                                            true
+                                                        ) && !item.isItemEdited)
+                                                    ) { // In case of Single item per receipt, isPrinted variable is maintained
+                                                        EventBus.getDefault().post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_condition-> ${item}"
+                                                            )
+                                                        )
+                                                        data.printerCategories.forEach { category ->
+                                                            if (category.id == item.categoryId && category.printerEnable) {
+                                                                for (singularity in 1..item.quantity) {
 
-                                                                if (printOrderIDInStickyPrinter) {
-                                                                    add(
-                                                                        PrinterBuilder()
-                                                                            .styleBold(true)
-                                                                            .styleMagnification(
-                                                                                MagnificationParameter(
-                                                                                    3,
-                                                                                    3
+                                                                    if (printOrderIDInStickyPrinter) {
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleBold(true)
+                                                                                .styleMagnification(
+                                                                                    MagnificationParameter(
+                                                                                        3,
+                                                                                        3
+                                                                                    )
                                                                                 )
-                                                                            )
-                                                                            .actionPrintText(
-                                                                                "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                                            )
-                                                                    )
-                                                                }
-
-                                                                /*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
-                                                      add(
-                                                          PrinterBuilder()
-                                                              .styleBold(true)
-                                                              .styleMagnification(
-                                                                  MagnificationParameter(3, 3)
-                                                              )
-                                                              .actionPrintText(
-                                                                  "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                              )
-                                                      )
-                                                  }
-*/
-                                                                actionFeedLine(1)
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleBold(true)
-                                                                        .styleMagnification(
-                                                                            MagnificationParameter(
-                                                                                2,
-                                                                                2
-                                                                            )
+                                                                                .actionPrintText(
+                                                                                    "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                                                )
                                                                         )
-                                                                        .actionPrintText(
-                                                                            "${receiptModel?.order?.orderTypeName}"
-                                                                        )
-                                                                )
+                                                                    }
 
-                                                                actionFeedLine(1)
+                                                                    /*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
+                                                          add(
+                                                              PrinterBuilder()
+                                                                  .styleBold(true)
+                                                                  .styleMagnification(
+                                                                      MagnificationParameter(3, 3)
+                                                                  )
+                                                                  .actionPrintText(
+                                                                      "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                                  )
+                                                          )
+                                                      }
+    */
+                                                                    actionFeedLine(1)
 
-                                                                if (receiptModel?.order?.orderType?.contains(
-                                                                        "Phone",
-                                                                        true
-                                                                    ) == true
-                                                                ) {
                                                                     add(
                                                                         PrinterBuilder()
                                                                             .styleBold(true)
@@ -14448,185 +14461,230 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                 )
                                                                             )
                                                                             .actionPrintText(
-                                                                                "${receiptModel?.order?.deliveryType}"
+                                                                                "${receiptModel?.order?.orderTypeName}"
                                                                             )
                                                                     )
 
                                                                     actionFeedLine(1)
-                                                                }
 
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleMagnification(
-                                                                            MagnificationParameter(
-                                                                                2,
-                                                                                2
-                                                                            )
-                                                                        )
-                                                                        .actionPrintText(
-                                                                            content = addOrderSingleItemForStarKitchen(
-                                                                                1,
-                                                                                item,
-                                                                                data.printerCategories.toCollection(
-                                                                                    arrayListOf()
+                                                                    if (receiptModel?.order?.orderType?.contains(
+                                                                            "Phone",
+                                                                            true
+                                                                        ) == true
+                                                                    ) {
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleBold(true)
+                                                                                .styleMagnification(
+                                                                                    MagnificationParameter(
+                                                                                        2,
+                                                                                        2
+                                                                                    )
                                                                                 )
-                                                                            )
+                                                                                .actionPrintText(
+                                                                                    "${receiptModel?.order?.deliveryType}"
+                                                                                )
                                                                         )
-                                                                )
 
-                                                                actionFeedLine(1)
+                                                                        actionFeedLine(1)
+                                                                    }
 
-                                                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                                                     add(
                                                                         PrinterBuilder()
-                                                                            .styleAlignment(
-                                                                                Alignment.Center
-                                                                            )
-                                                                            .styleBold(true)
-                                                                            .actionPrintText(
-                                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                                    "--------------------------------------------\nOrder Note"
-                                                                                } else ""
-                                                                            )
-                                                                    )
-                                                                }
-                                                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    add(
-                                                                        PrinterBuilder()
-                                                                            .styleAlignment(
-                                                                                Alignment.Center
+                                                                            .styleAlignment(Alignment.Left)
+                                                                            .styleMagnification(
+                                                                                MagnificationParameter(
+                                                                                    2,
+                                                                                    2
+                                                                                )
                                                                             )
                                                                             .actionPrintText(
-                                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                                    receiptModel?.order?.note
-                                                                                        ?: ""
-                                                                                } else ""
+                                                                                content = addOrderSingleItemForStarKitchen(
+                                                                                    1,
+                                                                                    item,
+                                                                                    data.printerCategories.toCollection(
+                                                                                        arrayListOf()
+                                                                                    )
+                                                                                )
                                                                             )
                                                                     )
-                                                                }
 
-                                                                actionFeedLine(1)
-                                                                actionFeedLine(1)
+                                                                    actionFeedLine(1)
 
-                                                                var printedName = StringBuilder("")
-                                                                receiptModel?.order?.customer?.firstName?.let { firstName ->
-                                                                    receiptModel?.order?.customer?.lastName?.let { lastName ->
-                                                                        if (kitchenSettingModel.showCustomerName) {
-                                                                            if (!firstName.contains(
-                                                                                    "customer",
-                                                                                    ignoreCase = true
+                                                                    if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleAlignment(
+                                                                                    Alignment.Center
                                                                                 )
-                                                                            ) {
-                                                                                printedName.append(
-                                                                                    firstName
+                                                                                .styleBold(true)
+                                                                                .actionPrintText(
+                                                                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                        "--------------------------------------------\nOrder Note"
+                                                                                    } else ""
                                                                                 )
-                                                                                printedName.append(" ")
-                                                                            }
-
-                                                                            if (!lastName.isBlank()) {
-                                                                                printedName.append(
-                                                                                    lastName
+                                                                        )
+                                                                    }
+                                                                    if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleAlignment(
+                                                                                    Alignment.Center
                                                                                 )
-                                                                            }
-
-                                                                            if (printedName.isNotEmpty()) {
-                                                                                add(
-                                                                                    PrinterBuilder()
-                                                                                        .styleAlignment(
-                                                                                            Alignment.Left
-                                                                                        )
-                                                                                        .styleBold(
-                                                                                            true
-                                                                                        )
-                                                                                        .actionPrintText(
-                                                                                            content = "Customer Details\n"
-                                                                                        )
+                                                                                .actionPrintText(
+                                                                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                        receiptModel?.order?.note
+                                                                                            ?: ""
+                                                                                    } else ""
                                                                                 )
+                                                                        )
+                                                                    }
 
-                                                                                add(
-                                                                                    PrinterBuilder()
-                                                                                        .styleAlignment(
-                                                                                            Alignment.Center
-                                                                                        )
-                                                                                        .actionPrintText(
-                                                                                            content =
-                                                                                            "------------------------------------------------"
-                                                                                        )
-                                                                                )
+                                                                    actionFeedLine(1)
+                                                                    actionFeedLine(1)
 
-                                                                                add(
-                                                                                    PrinterBuilder()
-                                                                                        .styleAlignment(
-                                                                                            Alignment.Left
-                                                                                        )
-                                                                                        .actionPrintText(
-                                                                                            content = printedName.toString()
-                                                                                        )
-                                                                                )
-
-                                                                                var phone = ""
-                                                                                receiptModel?.order?.customer?.phones?.let {
-                                                                                    it.forEach {
-                                                                                        if (it.phoneNumber.isNotEmpty())
-                                                                                            phone =
-                                                                                                it.phoneNumber
-                                                                                        return@let
-                                                                                    }
+                                                                    var printedName = StringBuilder("")
+                                                                    receiptModel?.order?.customer?.firstName?.let { firstName ->
+                                                                        receiptModel?.order?.customer?.lastName?.let { lastName ->
+                                                                            if (kitchenSettingModel.showCustomerName) {
+                                                                                if (!firstName.contains(
+                                                                                        "customer",
+                                                                                        ignoreCase = true
+                                                                                    )
+                                                                                ) {
+                                                                                    printedName.append(
+                                                                                        firstName
+                                                                                    )
+                                                                                    printedName.append(" ")
                                                                                 }
-                                                                                add(
-                                                                                    PrinterBuilder()
-                                                                                        .styleAlignment(
-                                                                                            Alignment.Left
-                                                                                        )
-                                                                                        .actionPrintText(
-                                                                                            content = phone
-                                                                                        )
-                                                                                )
+
+                                                                                if (!lastName.isBlank()) {
+                                                                                    printedName.append(
+                                                                                        lastName
+                                                                                    )
+                                                                                }
+
+                                                                                if (printedName.isNotEmpty()) {
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Left
+                                                                                            )
+                                                                                            .styleBold(
+                                                                                                true
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content = "Customer Details\n"
+                                                                                            )
+                                                                                    )
+
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Center
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content =
+                                                                                                "------------------------------------------------"
+                                                                                            )
+                                                                                    )
+
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Left
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content = printedName.toString()
+                                                                                            )
+                                                                                    )
+
+                                                                                    var phone = ""
+                                                                                    receiptModel?.order?.customer?.phones?.let {
+                                                                                        it.forEach {
+                                                                                            if (it.phoneNumber.isNotEmpty())
+                                                                                                phone =
+                                                                                                    it.phoneNumber
+                                                                                            return@let
+                                                                                        }
+                                                                                    }
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Left
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content = phone
+                                                                                            )
+                                                                                    )
+
+                                                                                if (kitchenSettingModel.showCustomerAddress) {
+                                                                                    var address = ""
+                                                                                    if (receiptModel?.order?.orderType?.trim().toString()
+                                                                                            .lowercase() == "Open Order".trim()
+                                                                                            .toString().lowercase()
+                                                                                        && receiptModel?.order?.deliveryType?.trim().toString()
+                                                                                            .lowercase() == "Pickup".trim().lowercase()
+                                                                                    ) {
+
+                                                                                    } else {
+                                                                                        try {
+                                                                                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                                                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                                                    address = it
+                                                                                                }
+
+                                                                                            }
+                                                                                        } catch (e: Exception) {
+                                                                                        }
+                                                                                    }
+
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Left
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content = address
+                                                                                            )
+                                                                                    )
+                                                                                }
+
 
                                                                             }
+
                                                                         }
 
                                                                     }
 
-                                                                }
 
+                                                                    actionFeedLine(1)
 
-                                                                actionFeedLine(1)
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .actionPrintText(
-                                                                            getReceiptFormatDateFromUTCServer(
-                                                                                requireContext(),
-                                                                                receiptModel?.order?.createdAt.toString()
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .actionPrintText(
+                                                                                getReceiptFormatDateFromUTCServer(
+                                                                                    requireContext(),
+                                                                                    receiptModel?.order?.createdAt.toString()
+                                                                                )
                                                                             )
-                                                                        )
-                                                                )
+                                                                    )
 
-                                                                actionFeedLine(1)
+                                                                    actionFeedLine(1)
 
-                                                                actionCut(CutType.Partial)
+                                                                    actionCut(CutType.Partial)
+                                                                }
                                                             }
                                                         }
                                                     }
                                                 }
-                                            }
-                                        } else {
-                                            var paidList =
-                                                receiptModel?.order?.orderItems?.filterNot { it.isPaid } // In case of Single item per receipt, isPaid variable is maintained
-                                            EventBus.getDefault().post(
-                                                MessageEvent(
-                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_2 -> ${
-                                                        Gson().toJson(
-                                                            paidList
-                                                        )
-                                                    }"
-                                                )
-                                            )
-                                            if (paidList?.isNotEmpty() ?: false) {
+                                            } else {
+                                                var paidList =
+                                                    receiptModel?.order?.orderItems?.filterNot { it.isPaid } // In case of Single item per receipt, isPaid variable is maintained
                                                 EventBus.getDefault().post(
                                                     MessageEvent(
+
                                                         "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_3"
                                                     )
                                                 )
@@ -14899,6 +14957,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     )
                                                 }
+
+                                                if (kitchenSettingModel.showCustomerAddress) {
+                                                    var address = ""
+                                                    if (receiptModel?.order?.orderType?.trim().toString()
+                                                            .lowercase() == "Open Order".trim()
+                                                            .toString().lowercase()
+                                                        && receiptModel?.order?.deliveryType?.trim().toString()
+                                                            .lowercase() == "Pickup".trim().lowercase()
+                                                    ) {
+
+                                                    } else {
+                                                        try {
+                                                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                    address = it
+                                                                }
+
+                                                            }
+                                                        } catch (e: Exception) {
+                                                        }
+                                                    }
+
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                content = address
+                                                            )
+                                                    )
+                                                }
+
                                                 printerBuilder.actionFeedLine(1)
                                                     .actionCut(CutType.Partial)
 
@@ -14910,17 +15002,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 EventBus.getDefault().post(
                                                     MessageEvent(
                                                         "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_else-14569 -> ${
+                                                      
                                                             Gson().toJson(
-                                                                printedList
+                                                                paidList
                                                             )
                                                         }"
                                                     )
                                                 )
-
-                                                if (printedList?.isNotEmpty() ?: false) {
+                                                if (paidList?.isNotEmpty() ?: false) {
                                                     EventBus.getDefault().post(
                                                         MessageEvent(
-                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_if (printedList?.isNotEmpty()?:false)"
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_3"
                                                         )
                                                     )
                                                     if (isOrderUpdated == true) {
@@ -15025,7 +15117,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             )
                                                             .actionPrintText(
                                                                 content = addOrdersForStarKitchen(
-                                                                    printedList!!,
+                                                                    paidList!!,
                                                                     data.printerCategories.toCollection(
                                                                         arrayListOf()
                                                                     )
@@ -15107,11 +15199,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     } catch (e: Exception) {
                                                         EventBus.getDefault().post(
                                                             MessageEvent(
-                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_6 -> ${
-                                                                    Gson().toJson(
-                                                                        e
-                                                                    )
-                                                                }"
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_1 -> ${e}"
                                                             )
                                                         )
                                                     }
@@ -15134,11 +15222,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     } catch (e: Exception) {
                                                         EventBus.getDefault().post(
                                                             MessageEvent(
-                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_7 -> ${
-                                                                    Gson().toJson(
-                                                                        e
-                                                                    )
-                                                                }"
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_2 -> ${e}"
                                                             )
                                                         )
                                                     }
@@ -15179,9 +15263,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                     6
                                                                                 )
                                                                             val secondPart =
-                                                                                phoneNumber.substring(
-                                                                                    6
-                                                                                )
+                                                                                phoneNumber.substring(6)
 
                                                                             "($areaCode)$firstPart-$secondPart"
 
@@ -15198,236 +15280,576 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     } catch (e: Exception) {
                                                         EventBus.getDefault().post(
                                                             MessageEvent(
-                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_8 -> ${
-                                                                    Gson().toJson(
-                                                                        e
-                                                                    )
-                                                                }"
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_3 -> ${e}"
                                                             )
                                                         )
                                                     }
+
+                                                    if (kitchenSettingModel.showCustomerAddress) {
+                                                        var address = ""
+                                                        if (receiptModel?.order?.orderType?.trim().toString()
+                                                                .lowercase() == "Open Order".trim()
+                                                                .toString().lowercase()
+                                                            && receiptModel?.order?.deliveryType?.trim().toString()
+                                                                .lowercase() == "Pickup".trim().lowercase()
+                                                        ) {
+
+                                                        } else {
+                                                            try {
+                                                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                        address = it
+                                                                    }
+
+                                                                }
+                                                            } catch (e: Exception) {
+                                                            }
+                                                        }
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    content = address
+                                                                )
+                                                        )
+                                                    }
+
                                                     printerBuilder.actionFeedLine(1)
                                                         .actionCut(CutType.Partial)
 
 
                                                 } else {
-                                                    Log.d("StarPrinter: ", "Not Printed")
+                                                    var printedList =
+                                                        receiptModel?.order?.orderItems?.filterNot { it.isPrinted }
+
+                                                    EventBus.getDefault().post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_else-14569 -> ${
+                                                                Gson().toJson(
+                                                                    printedList
+                                                                )
+                                                            }"
+                                                        )
+                                                    )
+
+                                                    if (printedList?.isNotEmpty() ?: false) {
+                                                        EventBus.getDefault().post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_if (printedList?.isNotEmpty()?:false)"
+                                                            )
+                                                        )
+                                                        if (isOrderUpdated == true) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .styleBold(true)
+                                                                    .actionPrintText(
+                                                                        "***** UPDATED *****"
+                                                                    )
+                                                            )
+                                                        }
+
+                                                        styleAlignment(Alignment.Center)
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(3, 3)
+                                                                )
+                                                                .actionPrintText(
+                                                                    "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                                )
+                                                        )
+
+                                                        styleAlignment(Alignment.Center)
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .styleBold(true)
+                                                                .actionPrintText(
+                                                                    if (kitchenSettingModel.showOrderType)
+                                                                        receiptModel!!.order.orderTypeName
+                                                                    else ""
+                                                                )
+                                                        )
+
+                                                        actionFeedLine(1)
+
+                                                        if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .styleBold(true)
+                                                                    .actionPrintText(
+                                                                        receiptModel!!.order.deliveryType
+                                                                    )
+                                                            )
+                                                            actionFeedLine(1)
+                                                        }
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    "Employee:${receiptModel?.order?.employee?.name}"
+                                                                )
+                                                        )
+                                                        actionFeedLine(1)
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    getReceiptFormatDateFromUTCServer(
+                                                                        requireContext(),
+                                                                        receiptModel?.order?.createdAt.toString()
+                                                                    )
+                                                                )
+                                                        )
+
+                                                        actionFeedLine(1)
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .actionPrintText(
+//                                                    "------------------------"
+                                                                    "--------------------------------------------"
+                                                                )
+                                                        )
+
+                                                        actionFeedLine(1)
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleAlignment(Alignment.Left)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    content = addOrdersForStarKitchen(
+                                                                        printedList!!,
+                                                                        data.printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                )
+                                                        )
+
+                                                        actionFeedLine(1)
+                                                        if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Center)
+                                                                    .styleBold(true)
+                                                                    .actionPrintText(
+                                                                        content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            "--------------------------------------------"
+                                                                        } else ""
+                                                                    )
+                                                            )
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .styleAlignment(Alignment.Center)
+                                                                    .styleBold(true)
+                                                                    .actionPrintText(
+                                                                        content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            "\nOrder Note"
+                                                                        } else ""
+                                                                    )
+                                                            )
+                                                        }
+
+                                                        if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .styleAlignment(Alignment.Center)
+                                                                    .actionPrintText(
+                                                                        content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            receiptModel?.order?.note.toString()
+                                                                        } else ""
+                                                                    )
+                                                            )
+                                                        }
+                                                        actionFeedLine(1)
+                                                        try {
+                                                            if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(2, 2)
+                                                                        )
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                                "\nCustomer Details\n"
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+
+                                                            if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .actionPrintText(
+                                                                            content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                                "--------------------------------------------"
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            EventBus.getDefault().post(
+                                                                MessageEvent(
+                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_6 -> ${
+                                                                        Gson().toJson(
+                                                                            e
+                                                                        )
+                                                                    }"
+                                                                )
+                                                            )
+                                                        }
+
+                                                        try {
+                                                            if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(2, 2)
+                                                                        )
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .actionPrintText(
+                                                                            content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                                receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            EventBus.getDefault().post(
+                                                                MessageEvent(
+                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_7 -> ${
+                                                                        Gson().toJson(
+                                                                            e
+                                                                        )
+                                                                    }"
+                                                                )
+                                                            )
+                                                        }
+                                                        try {
+                                                            if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                                    0
+                                                                ) != null
+                                                            ) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(2, 2)
+                                                                        )
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .actionPrintText(
+                                                                            content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                                                    0
+                                                                                ) != null
+                                                                            ) {
+
+                                                                                var phoneNumber =
+                                                                                    receiptModel?.order?.customer?.phones?.get(
+                                                                                        0
+                                                                                    )?.phoneNumber.toString()
+                                                                                if (phoneNumber.length != 10) {
+                                                                                    // Handle invalid input (must be 10 digits)
+                                                                                    "Invalid phone number"
+                                                                                }
+
+                                                                                val areaCode =
+                                                                                    phoneNumber.substring(
+                                                                                        0,
+                                                                                        3
+                                                                                    )
+                                                                                val firstPart =
+                                                                                    phoneNumber.substring(
+                                                                                        3,
+                                                                                        6
+                                                                                    )
+                                                                                val secondPart =
+                                                                                    phoneNumber.substring(
+                                                                                        6
+                                                                                    )
+
+                                                                                "($areaCode)$firstPart-$secondPart"
+
+
+                                                                                /* MethodUtils.formatPhoneNumber(
+                                                                     receiptModel?.order?.customer?.phones?.get(
+                                                                         0
+                                                                     )?.phoneNumber.toString()
+                                                                 )*/
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            EventBus.getDefault().post(
+                                                                MessageEvent(
+                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_8 -> ${
+                                                                        Gson().toJson(
+                                                                            e
+                                                                        )
+                                                                    }"
+                                                                )
+                                                            )
+                                                        }
+                                                        printerBuilder.actionFeedLine(1)
+                                                            .actionCut(CutType.Partial)
+
+
+                                                    } else {
+                                                        Log.d("StarPrinter: ", "Not Printed")
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        /* runBlocking {
-                            isOrderUpdated=false
-                            receiptModel?.order?.orderItems?.let {item->
-                                item.forEach {
-                                    if (it.isItemEdited){
-                                        isOrderUpdated=true
-                                        return@runBlocking
+                                            /* runBlocking {
+                                isOrderUpdated=false
+                                receiptModel?.order?.orderItems?.let {item->
+                                    item.forEach {
+                                        if (it.isItemEdited){
+                                            isOrderUpdated=true
+                                            return@runBlocking
+                                        }
                                     }
                                 }
-                            }
-                        }*/
-                                        /*Added By Rahul */
-
-
-                                        /*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
-                                    0
-                                ) != null
-                            ) {
-
                             }*/
-                                    }
+                                            /*Added By Rahul */
+
+
+                                            /*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                        0
+                                    ) != null
+                                ) {
+
+                                }*/
+                                        }
 
 //                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
-                                    EventBus.getDefault().post(
-                                        MessageEvent(
-                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ document prepared"
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ document prepared"
+                                            )
                                         )
-                                    )
 
-                                    var document = DocumentBuilder()
-                                        .addPrinter(printerBuilder)
-                                    builder.addDocument(
-                                        document
-                                    )
+                                        var document = DocumentBuilder()
+                                            .addPrinter(printerBuilder)
+                                        builder.addDocument(
+                                            document
+                                        )
 
-                                    val commands = builder.getCommands()
+                                        val commands = builder.getCommands()
 
-                                    printer.openAsync().await()
+                                        printer.openAsync().await()
 
 //                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
-                                    printer.printAsync(commands).await()
+                                        printer.printAsync(commands).await()
 
 
-                                    EventBus.getDefault().post(
-                                        MessageEvent(
-                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ success"
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ success"
+                                            )
                                         )
-                                    )
-                                    Log.d("Printing", "Success")
-                                } catch (e: Exception) {
-                                    EventBus.getDefault().post(
-                                        MessageEvent(
-                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception -> ${e}"
+                                        Log.d("Printing", "Success")
+                                    } catch (e: Exception) {
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception -> ${e}"
+                                            )
                                         )
-                                    )
-                                    Log.d("Printing", "Error: ${e}")
-                                } finally {
-                                    printer.closeAsync().await()
+                                        Log.d("Printing", "Error: ${e}")
+                                    } finally {
+                                        printer.closeAsync().await()
 
-                                    EventBus.getDefault().post(
-                                        MessageEvent(
-                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ FINALIZED"
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ FINALIZED"
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
-                        }
 
-                    } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
-                        printKitchenFromLandiInner(data)
-                    } else {
+                        } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
+                            printKitchenFromLandiInner(data)
+                        } else {
 
-                        if (isNotPrinted) {
-                            isNotPrinted = false
-                            if (!data.name.substring(0, 6).toString().lowercase()
-                                    .contains("TM-m".lowercase())
-                            ) {
-                                Log.e(TAG, "YesInsideU220")
-
-                                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                            if (isNotPrinted) {
+                                isNotPrinted = false
+                                if (!data.name.substring(0, 6).toString().lowercase()
                                         .contains("TM-m".lowercase())
                                 ) {
-                                    Log.e(TAG, "YesContains")
-                                    Printer(
-                                        Printer.TM_M30,
-                                        Printer.MODEL_ANK, requireContext()
-                                    )
-                                } else {
-                                    Printer(
-                                        Printer.TM_U220,
-                                        Printer.MODEL_ANK, requireContext()
-                                    )
+                                    Log.e(TAG, "YesInsideU220")
 
-
-                                }
-
-                                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
-
-                                    if (printerStatusInfo.getPaperTakenSensor() == Printer.REMOVAL_DETECT_PAPER) {
-                                        Log.e(
-                                            "PrinterEvent",
-                                            "REMOVAL_DETECT_PAPER"
+                                    var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                                            .contains("TM-m".lowercase())
+                                    ) {
+                                        Log.e(TAG, "YesContains")
+                                        Printer(
+                                            Printer.TM_M30,
+                                            Printer.MODEL_ANK, requireContext()
                                         )
+                                    } else {
+                                        Printer(
+                                            Printer.TM_U220,
+                                            Printer.MODEL_ANK, requireContext()
+                                        )
+
+
                                     }
 
-                                    if (printerStatusInfo.getPaperTakenSensor() == Printer.REMOVAL_DETECT_UNKNOWN) {
+                                    mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                                        if (printerStatusInfo.getPaperTakenSensor() == Printer.REMOVAL_DETECT_PAPER) {
+                                            Log.e(
+                                                "PrinterEvent",
+                                                "REMOVAL_DETECT_PAPER"
+                                            )
+                                        }
+
+                                        if (printerStatusInfo.getPaperTakenSensor() == Printer.REMOVAL_DETECT_UNKNOWN) {
+
+                                            Log.e(
+                                                "PrinterEvent",
+                                                "REMOVAL_DETECT_PAPER"
+                                            )
+                                        }
 
                                         Log.e(
                                             "PrinterEvent",
-                                            "REMOVAL_DETECT_PAPER"
+                                            "Printed"
                                         )
-                                    }
-
-                                    Log.e(
-                                        "PrinterEvent",
-                                        "Printed"
-                                    )
 
 
-                                    if (printerStatusInfo.connection == 1) {
-                                        try {
-                                            printer.disconnect()
+                                        if (printerStatusInfo.connection == 1) {
+                                            try {
+                                                printer.disconnect()
 
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
+                                            } catch (e: java.lang.Exception) {
+                                                e.printStackTrace()
+                                            }
                                         }
                                     }
-                                }
-                                try {
-                                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
-
-                                    var printerAdd =
-                                        if (data.printer_type == BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                                    if (mPrinter.status.connection == 0) {
-
-                                        mPrinter.connect(
-                                            printerAdd,
-                                            Printer.PARAM_DEFAULT
-                                        )
-                                        // mPrinter.disconnect()
-                                    }
-
-                                    //  mPrinter.startMonitor()
-
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        delay(200)
-                                        generateReceiptForU220(mPrinter, data, type)
-                                    }
-
-                                } catch (e: java.lang.Exception) {
-                                    e.printStackTrace()
-                                }
-
-
-                            } else {
-
-
-                                PrinterClass.closePrinter()
-                                if (PrinterClass.getPrinter() == null) {
-                                    //  printerDialog.show(requireContext())
-
-                                    var printer: Print? = Print(requireContext())
-                                    /*if (printer != null) {
-                       printer.setStatusChangeEventCallback(this)
-                       printer.setBatteryStatusChangeEventCallback(this)
-                   }*/
-
-
-                                    val enabled = Print.FALSE
-
                                     try {
+                                        Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                                        printer?.openPrinter(
-                                            if (data.printer_type == BLUETOOTH) {
-                                                Print.DEVTYPE_BLUETOOTH
-                                            } else {
-                                                Print.DEVTYPE_TCP
-                                            },
-                                            data.ipAddress,
-                                            enabled,
-                                            1000
-                                        )
-                                        printer?.setStatusChangeEventCallback(this@OrderCompleteFragment)
+                                        var printerAdd =
+                                            if (data.printer_type == BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                                        if (mPrinter.status.connection == 0) {
 
-                                    } catch (e: Exception) {
-                                        //  printerDialog.dismiss()
-                                        LogUtil.logE(TAG, "PrinterException: " + e.message)
-                                        printer = null
-                                        return@launch
+                                            mPrinter.connect(
+                                                printerAdd,
+                                                Printer.PARAM_DEFAULT
+                                            )
+                                            // mPrinter.disconnect()
+                                        }
+
+                                        //  mPrinter.startMonitor()
+
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            delay(200)
+                                            generateReceiptForU220(mPrinter, data, type)
+                                        }
+
+                                    } catch (e: java.lang.Exception) {
+                                        e.printStackTrace()
                                     }
 
-                                    if (printer != null) {
-                                        PrinterClass.setPrinter(printer)
-
-
-                                        generateKitchenReceipt(data, type)
-
-                                    }
 
                                 } else {
-                                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+
+
+                                    PrinterClass.closePrinter()
+                                    if (PrinterClass.getPrinter() == null) {
+                                        //  printerDialog.show(requireContext())
+
+                                        var printer: Print? = Print(requireContext())
+                                        /*if (printer != null) {
+                           printer.setStatusChangeEventCallback(this)
+                           printer.setBatteryStatusChangeEventCallback(this)
+                       }*/
+
+
+                                        val enabled = Print.FALSE
+
+                                        try {
+
+                                            printer?.openPrinter(
+                                                if (data.printer_type == BLUETOOTH) {
+                                                    Print.DEVTYPE_BLUETOOTH
+                                                } else {
+                                                    Print.DEVTYPE_TCP
+                                                },
+                                                data.ipAddress,
+                                                enabled,
+                                                1000
+                                            )
+                                            printer?.setStatusChangeEventCallback(this@OrderCompleteFragment)
+
+                                        } catch (e: Exception) {
+                                            //  printerDialog.dismiss()
+                                            LogUtil.logE(TAG, "PrinterException: " + e.message)
+                                            printer = null
+                                            return@launch
+                                        }
+
+                                        if (printer != null) {
+                                            PrinterClass.setPrinter(printer)
+
+
+                                            generateKitchenReceipt(data, type)
+
+                                        }
+
+                                    } else {
+                                        LogUtil.logE(TAG, "PrinterIsNotNull:")
+                                    }
                                 }
                             }
+                            Log.e("kitchenPrintTMM", "printer name = ${data.name}")
+
+
                         }
-                        Log.e("kitchenPrintTMM", "printer name = ${data.name}")
-
-
                     }
                 }
-            }
+            },1000)
+
+
 
 
         }
@@ -15669,26 +16091,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             try {
                                                                 if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                        printLeft(
+                                                                            it
+                                                                        )
+                                                                    }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
-
-                                                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                                        ?.forEach {
-
-                                                                            if (it.typeOfAddress.equals(
-                                                                                    BILLING_ADDRESS,
-                                                                                    ignoreCase = true
-                                                                                )
-                                                                            ) {
-                                                                                printLeft(
-                                                                                    it.fullAddress
-                                                                                )
-                                                                            }
-                                                                        }
+//                                                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                                                        ?.forEach {
+//
+//                                                                            if (it.typeOfAddress.equals(
+//                                                                                    BILLING_ADDRESS,
+//                                                                                    ignoreCase = true
+//                                                                                )
+//                                                                            ) {
+//                                                                                printLeft(
+//                                                                                    it.fullAddress
+//                                                                                )
+//                                                                            }
+//                                                                        }
                                                                 }
                                                             } catch (e: Exception) {
                                                             }
@@ -17074,19 +17495,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                            ?.forEach {
+                                        receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                            PrintSunmiUtils.customerAddress(
+                                                it
+                                            )
+                                        }
 
-                                                if (it.typeOfAddress.equals(
-                                                        BILLING_ADDRESS,
-                                                        ignoreCase = true
-                                                    )
-                                                ) {
-                                                    PrintSunmiUtils.customerAddress(
-                                                        it.fullAddress
-                                                    )
-                                                }
-                                            }
+//                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                            ?.forEach {
+//
+//                                                if (it.typeOfAddress.equals(
+//                                                        BILLING_ADDRESS,
+//                                                        ignoreCase = true
+//                                                    )
+//                                                ) {
+//                                                    PrintSunmiUtils.customerAddress(
+//                                                        it.fullAddress
+//                                                    )
+//                                                }
+//                                            }
 
 //                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
 //                                    PrintSunmiUtils.customerAddress(
@@ -17266,26 +17693,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         try {
                                             if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                    PrintSunmiUtils.normalTextLarge(
+                                                        it
+                                                    )
+                                                }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
-
-                                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                    ?.forEach {
-
-                                                        if (it.typeOfAddress.equals(
-                                                                BILLING_ADDRESS,
-                                                                ignoreCase = true
-                                                            )
-                                                        ) {
-                                                            PrintSunmiUtils.normalTextLarge(
-                                                                it.fullAddress
-                                                            )
-                                                        }
-                                                    }
+//                                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                                    ?.forEach {
+//
+//                                                        if (it.typeOfAddress.equals(
+//                                                                BILLING_ADDRESS,
+//                                                                ignoreCase = true
+//                                                            )
+//                                                        ) {
+//                                                            PrintSunmiUtils.normalTextLarge(
+//                                                                it.fullAddress
+//                                                            )
+//                                                        }
+//                                                    }
                                             }
                                         } catch (e: Exception) {
                                         }
@@ -17458,26 +17884,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     try {
                                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                PrintSunmiUtils.normalTextLarge(
+                                                    it
+                                                )
+                                            }
 
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
-
-                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                ?.forEach {
-
-                                                    if (it.typeOfAddress.equals(
-                                                            BILLING_ADDRESS,
-                                                            ignoreCase = true
-                                                        )
-                                                    ) {
-                                                        PrintSunmiUtils.normalTextLarge(
-                                                            it.fullAddress
-                                                        )
-                                                    }
-                                                }
+//                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                                ?.forEach {
+//
+//                                                    if (it.typeOfAddress.equals(
+//                                                            BILLING_ADDRESS,
+//                                                            ignoreCase = true
+//                                                        )
+//                                                    ) {
+//                                                        PrintSunmiUtils.normalTextLarge(
+//                                                            it.fullAddress
+//                                                        )
+//                                                    }
+//                                                }
                                         }
                                     } catch (e: Exception) {
                                     }
@@ -19248,6 +19673,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val order = receiptModel?.order
 
+                        if(tipAmount == 0.0)
+                            tipAmount = tipAfterAmount
                         if (tipAmount > 0) {
 
                             val str8 = padLine(

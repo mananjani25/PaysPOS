@@ -32,7 +32,7 @@ class CategorySearchAdapter @Inject constructor(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view: View? = convertView
         try {
-            if (convertView == null) {
+//            if (convertView == null) {
                 val inflater: LayoutInflater = (activity).layoutInflater
                 view = inflater.inflate(resourceId, parent, false)
                 val model: CategorySearchData = getItem(position)
@@ -42,7 +42,7 @@ class CategorySearchAdapter @Inject constructor(
                 txtCategory.text = model.title
                 txtCat.text = "in " + model.categoryName
                 Glide.with(mcon).load(model.imgUrl).centerCrop().into(imgCategory)
-            }
+//            }
 
         } catch (e: Exception) {
             e.printStackTrace()
