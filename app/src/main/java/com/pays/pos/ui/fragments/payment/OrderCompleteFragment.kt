@@ -11718,9 +11718,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (order?.note != null && order?.note != "" && customerSettingModel.showOrderNote) {
                                                 //  lineBreak()
 
-                                                printCenter(
+                                                printBoldCenter(
                                                     "Order Note\n${order.note}",
-                                                    printOnNewLine = true
                                                 )
                                                 lineBreak()
 //                                        printCenter()

@@ -6665,7 +6665,8 @@ fun addOrderItemsInnerNewLandi(
 
         if (obj.note.isNotEmpty()) {
 
-            lprint.printLeft("   Note: " + obj.note)
+            lprint.lineBreak()
+            lprint.printBoldLeft("   Note: " + obj.note)
             lprint.lineBreak()
         }
 
@@ -6937,7 +6938,7 @@ fun addOrderItemsTransactionInner(
 
         }
         if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.normalText("   Note: " + obj.note)
+            PrintSunmiUtils.boldText("   Note: " + obj.note)
         }
     }
 }
@@ -6990,7 +6991,7 @@ fun addOrderItemsTransactionInnerNew(
 
         }
         if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
+            PrintSunmiUtils.boldTextNew("   Note: " + obj.note)
         }
     }
 }
@@ -7044,7 +7045,7 @@ fun addOrderItemsTransactionInnerLandi(
 
         }
         if (obj.note.isNotEmpty()) {
-            printLeft("   Note: " + obj.note)
+            printLeft("   Note: " + obj.note , isBold = true)
             lprint.lineBreak()
         }
     }
