@@ -14588,45 +14588,79 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 content = printedName.toString()
                                                                                             )
                                                                                     )
-
-                                                                                    var phone = ""
-                                                                                    receiptModel?.order?.customer?.phones?.let {
-                                                                                        it.forEach {
-                                                                                            if (it.phoneNumber.isNotEmpty())
-                                                                                                phone =
-                                                                                                    it.phoneNumber
-                                                                                            return@let
-                                                                                        }
-                                                                                    }
-                                                                                    add(
-                                                                                        PrinterBuilder()
-                                                                                            .styleAlignment(
-                                                                                                Alignment.Left
-                                                                                            )
-                                                                                            .actionPrintText(
-                                                                                                content = phone
-                                                                                            )
-                                                                                    )
-
-                                                                                    var address = ""
-                                                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                                                                        if (it.isNotEmpty()) {
-                                                                                            address = it
-                                                                                        }
-                                                                                    }
-
-                                                                                    add(
-                                                                                        PrinterBuilder()
-                                                                                            .styleAlignment(
-                                                                                                Alignment.Left
-                                                                                            )
-                                                                                            .actionPrintText(
-                                                                                                content = address
-                                                                                            )
-                                                                                    )
-
                                                                                 }
                                                                             }
+
+                                                                                    if (kitchenSettingModel.showCustomerPhone) {
+
+                                                                                        add(
+                                                                                            PrinterBuilder()
+                                                                                                .styleAlignment(
+                                                                                                    Alignment.Left
+                                                                                                )
+                                                                                                .actionPrintText(
+                                                                                                    content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                                                                            0
+                                                                                                        ) != null
+                                                                                                    ) {
+
+                                                                                                        var phoneNumber =
+                                                                                                            receiptModel?.order?.customer?.phones?.get(
+                                                                                                                0
+                                                                                                            )?.phoneNumber.toString()
+                                                                                                        if (phoneNumber.length != 10) {
+                                                                                                            // Handle invalid input (must be 10 digits)
+                                                                                                            "Invalid phone number"
+                                                                                                        }
+
+                                                                                                        val areaCode =
+                                                                                                            phoneNumber.substring(
+                                                                                                                0,
+                                                                                                                3
+                                                                                                            )
+                                                                                                        val firstPart =
+                                                                                                            phoneNumber.substring(
+                                                                                                                3,
+                                                                                                                6
+                                                                                                            )
+                                                                                                        val secondPart =
+                                                                                                            phoneNumber.substring(
+                                                                                                                6
+                                                                                                            )
+
+                                                                                                        "($areaCode)$firstPart-$secondPart"
+                                                                                                    } else ""
+
+                                                                                                )
+                                                                                        )
+                                                                                    }
+
+                                                                                    if (kitchenSettingModel.showCustomerAddress) {
+
+                                                                                        var address =
+                                                                                            ""
+                                                                                        receiptModel?.order?.customer?.addresses?.get(
+                                                                                            0
+                                                                                        )?.fullAddress?.let {
+                                                                                            if (it.isNotEmpty()) {
+                                                                                                address =
+                                                                                                    it
+                                                                                            }
+                                                                                        }
+
+                                                                                        add(
+                                                                                            PrinterBuilder()
+                                                                                                .styleAlignment(
+                                                                                                    Alignment.Left
+                                                                                                )
+                                                                                                .actionPrintText(
+                                                                                                    content = address
+                                                                                                )
+                                                                                        )
+                                                                                    }
+
+
+
 
                                                                         }
 
@@ -14942,7 +14976,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     }
 
                                                     try {
-                                                        if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.addresses?.get(
+                                                        if (kitchenSettingModel.showCustomerAddress && receiptModel?.order?.customer?.addresses?.get(
                                                                 0
                                                             ) != null
                                                         ) {
@@ -14953,7 +14987,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     )
                                                                     .styleAlignment(Alignment.Left)
                                                                     .actionPrintText(
-                                                                        content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.addresses?.get(
+                                                                        content = if (kitchenSettingModel.showCustomerAddress && receiptModel?.order?.customer?.addresses?.get(
                                                                                 0
                                                                             ) != null
                                                                         ) {
