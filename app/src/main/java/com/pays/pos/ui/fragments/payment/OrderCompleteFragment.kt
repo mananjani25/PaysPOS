@@ -20107,6 +20107,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             SunmiPrintHelper.getInstance().lineWrap(1)
                         }
 
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+
 
                         LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
                         if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {

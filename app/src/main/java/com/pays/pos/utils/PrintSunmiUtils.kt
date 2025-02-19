@@ -527,8 +527,8 @@ class PrintSunmiUtils {
 
         fun orderNoteInner(value: String) {
 
-            normalTextCenter("Order Note")
-            normalTextCenter(value)
+            boldTextCenter("Order Note")
+            boldTextCenter(value)
         }
 
         fun orderNoteInnerLarge(value: String) {
@@ -744,6 +744,13 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().setAlign(1)
             SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeInner(), false, false, fontName)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun boldTextCenter(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner(), true, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 

@@ -6730,7 +6730,8 @@ fun addOrderItemsInnerNew(
 
         if (obj.note.isNotEmpty()) {
 
-            PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
+            PrintSunmiUtils.boldText("      Note: " + obj.note)
+            PrintSunmiUtils.normalText("")
 
         }
 
