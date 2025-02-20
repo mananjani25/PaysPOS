@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <supports-screens
         android:anyDensity="true"
@@ -32,7 +32,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <protected-broadcast android:name="com.landiconnect.systemupdate.MQTT_TimeTask" />
     <protected-broadcast android:name="com.sunmi.baseservice.TMS_COMPLETED" />
@@ -56,19 +56,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.POSAndroid"
         android:usesCleartextTraffic="true"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup" >
+        <activity
+            android:name=".ui.activities.NoInternetActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:theme="@style/noAnimTheme"
+            android:windowSoftInputMode="stateUnspecified|adjustPan"
+            android:windowTranslucentNavigation="true"
+            android:windowTranslucentStatus="true" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
 
-        <receiver android:name="com.pays.pos.utils.KioskServiceStarterBroadcast"
-            android:exported="true">
+        <receiver
+            android:name="com.pays.pos.utils.KioskServiceStarterBroadcast"
+            android:exported="true" >
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <service
             android:name="com.pays.pos.service.KioskService"
             android:exported="false"
-            android:foregroundServiceType="dataSync"></service>
+            android:foregroundServiceType="dataSync" />
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -76,7 +89,7 @@
 
         <service
             android:name=".ui.firebase.MyFirebaseMessagingService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -107,20 +120,20 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
 
         <activity
-            android:name="com.pays.pos.ui.activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:screenOrientation="landscape"
             android:theme="@style/noAnimTheme"
             android:windowSoftInputMode="stateUnspecified|adjustPan"
             android:windowTranslucentNavigation="true"
-            android:windowTranslucentStatus="true">
+            android:windowTranslucentStatus="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -135,7 +148,7 @@
         <receiver
             android:name=".utils.recievers.NotificationsReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
 
                 <!-- Actions to be handled should be registered here -->

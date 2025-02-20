@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ComponentCallbacks2
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -108,20 +109,9 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.FileUtils
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.addDoubleDotLineForSunmiQueue
-import com.pays.pos.utils.addHorizontalLineNew
-import com.pays.pos.utils.addOrdersForKitchenCustomerNewPrinter
-import com.pays.pos.utils.disconnectSocket
-import com.pays.pos.utils.executeAsyncTask
+import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.toast
-import com.pays.pos.utils.getCustomerDisplay
-import com.pays.pos.utils.padLine
-import com.pays.pos.utils.printGuestByItemForSunmiQueue
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
@@ -159,6 +149,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 
 /*import com.zebra.scannercontrol.DCSScannerInfo
@@ -1439,8 +1430,28 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
 
+    private fun showNoInternetAlertDialog(){
+        AlertUtils.showCustomAlertWithTitleListenerWithRefresh(this, message = getString(R.string.we_didnt_found_internet), listener = object:DialogInterface.OnClickListener{
+            override fun onClick(p0: DialogInterface?, p1: Int) {
+                if (InternetUtils.isInternetAvailable(applicationContext)) {
+                    p0?.dismiss()
+                    val intent = packageManager.getLaunchIntentForPackage(packageName)
+                    intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    exitProcess(0)
+                }else{
+                    showNormalToast(getString(R.string.no_internet))
+                    showNoInternetAlertDialog()
+                }
+            }
+        })
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!InternetUtils.isInternetAvailable(applicationContext)){
+            showNoInternetAlertDialog()
+            return
+        }
         MainApplication.mainActivity = this
         permissionCheck()
 

@@ -958,6 +958,7 @@
     <string name="pre_auth">Pre Auth</string>
     <string name="are_you_sure_proceed">Would you like to proceed with the entered gift card number?</string>
     <string name="please_connect_pax">Please connect the PAX device</string>
+    <string name="we_didnt_found_internet">We did\'nt found any internet connection. Please connect to internet before proceeding further</string>
     <string name="please_connect_payment_device">Please connect a payment device</string>
     <string name="_not_supported">%1$s! not supported</string>
     <!-- Customer Loyalty -->
