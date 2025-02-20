@@ -19927,7 +19927,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "Transaction ID",
                                 "" + receiptModel?.order?.payments?.size?.minus(1)
                                     ?.let { receiptModel?.order?.payments?.get(it)?.id },
-                                if (customerSettingModel.fonts == LARGE) 23 else 46
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
                             ).toString()
                             PrintSunmiUtils.normalTextNew(str10)
 
@@ -19953,16 +19953,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             val str11 = padLine(
                                 "Transaction Type",
                                 receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
-                                if (customerSettingModel.fonts == LARGE) 23 else 73
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
                             ).toString()
-                            PrintSunmiUtils.normalTextTest(str11)
+                            PrintSunmiUtils.normalTextNew(str11)
                         } else {
                             val str11 = padLine(
                                 "Transaction Type",
                                 receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                                 if (customerSettingModel.fonts == LARGE) 23 else 48
                             ).toString()
-                            PrintSunmiUtils.normalTextTest(str11)
+                            PrintSunmiUtils.normalText(str11)
                         }
 
 
