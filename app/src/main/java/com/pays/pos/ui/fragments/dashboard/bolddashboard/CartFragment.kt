@@ -353,68 +353,78 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     private fun getLoyaltyPointListObserver(view: View?) {
-        viewModel.loyaltyPoints.observe(viewLifecycleOwner) {
-            it.let { resource ->
+        viewModel.loyaltyPoints.observe(viewLifecycleOwner) { loyaltyPoints ->
+            loyaltyPoints.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         try {
                             if (view != null) {
                                 ProgressUtils.dismissProgressDialog()
                                 run breaking@{
-                                    resource.data?.forEach {
-                                        if (it.isEnable && !it.isDeleted) {
-                                            var data: TbCustomer? = prefProvider.getCustomerData()
-                                            if (data != null) {
-                                                if (viewModel.loyaltyPointCondition(data)) {
+                                    if (resource.data?.isNotEmpty() == true) {
+                                        resource.data.forEach {
+                                            if (it.isEnable && !it.isDeleted) {
+                                                var data: TbCustomer? =
+                                                    prefProvider.getCustomerData()
+                                                if (data != null) {
+                                                    if (viewModel.loyaltyPointCondition(data)) {
 
-                                                    binding.liinearInfoLayout.layoutParams.height =
-                                                        resources.getDimension(R.dimen._70sdp)
-                                                            .toInt()
+                                                        binding.liinearInfoLayout.layoutParams.height =
+                                                            resources.getDimension(R.dimen._70sdp)
+                                                                .toInt()
 
-                                                    if (prefProvider.getValue(
-                                                            ORDER_TYPE,
-                                                            ""
-                                                        ) != DINE_IN
-                                                    )
-                                                        binding.relativeLoylatyPoints.visibility =
-                                                            View.VISIBLE
-                                                    binding.lblLoyaltyPoints.visibility =
-                                                        View.VISIBLE
-                                                    binding.lblLoyaltyBalance.visibility =
-                                                        View.VISIBLE
-                                                    LogUtil.logE(TAG, "InsideLoyalty")
-                                                    LogUtil.logE(
-                                                        TAG,
-                                                        Gson().toJson(viewModel.redeemLoyaltyInfo)
-                                                    )
-                                                    binding.txtLoyaltyAmount.text = "- $${
-                                                        String.format(
-                                                            "%.2f",
-                                                            viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                        if (prefProvider.getValue(
+                                                                ORDER_TYPE,
+                                                                ""
+                                                            ) != DINE_IN
                                                         )
-                                                    }"
-                                                    binding.txtLoyaltyPoints.text =
-                                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                                    binding.txtLoyaltyBalance.text = "${
-                                                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                                            viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
-                                                        } else {
-                                                            viewModel.redeemLoyaltyInfo.availablePoints
-                                                        }
-                                                    }"
-                                                    binding.checkloylaty.isChecked =
-                                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                                            binding.relativeLoylatyPoints.visibility =
+                                                                View.VISIBLE
+                                                        binding.lblLoyaltyPoints.visibility =
+                                                            View.VISIBLE
+                                                        binding.lblLoyaltyBalance.visibility =
+                                                            View.VISIBLE
+                                                        LogUtil.logE(TAG, "InsideLoyalty")
+                                                        LogUtil.logE(
+                                                            TAG,
+                                                            Gson().toJson(viewModel.redeemLoyaltyInfo)
+                                                        )
+                                                        binding.txtLoyaltyAmount.text = "- $${
+                                                            String.format(
+                                                                "%.2f",
+                                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                            )
+                                                        }"
+                                                        binding.txtLoyaltyPoints.text =
+                                                            "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                                        binding.txtLoyaltyBalance.text = "${
+                                                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                                viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                                            } else {
+                                                                viewModel.redeemLoyaltyInfo.availablePoints
+                                                            }
+                                                        }"
+                                                        binding.checkloylaty.isChecked =
+                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
+                                                    }
+                                                }
+                                                return@breaking
+                                            } else {
+                                                if (!isFromPayment) {
+                                                    binding.relativeLoylatyPoints.gone()
+                                                    binding.lblLoyaltyPoints.gone()
+                                                    binding.lblLoyaltyBalance.gone()
+                                                    binding.checkloylaty.isChecked = false
                                                 }
                                             }
-                                            return@breaking
-                                        } else {
-                                            if (!isFromPayment) {
-                                                binding.relativeLoylatyPoints.gone()
-                                                binding.lblLoyaltyPoints.gone()
-                                                binding.lblLoyaltyBalance.gone()
-                                                binding.checkloylaty.isChecked = false
-                                            }
+                                        }
+                                    } else {
+                                        if (!isFromPayment) {
+                                            binding.relativeLoylatyPoints.gone()
+                                            binding.lblLoyaltyPoints.gone()
+                                            binding.lblLoyaltyBalance.gone()
+                                            binding.checkloylaty.isChecked = false
                                         }
                                     }
                                 }
@@ -427,6 +437,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     }
 
                     Status.ERROR -> {
+                        if (!isFromPayment) {
+                            binding.relativeLoylatyPoints.gone()
+                            binding.lblLoyaltyPoints.gone()
+                            binding.lblLoyaltyBalance.gone()
+                            binding.checkloylaty.isChecked = false
+                        }
                     }
 
                     Status.LOADING -> {
