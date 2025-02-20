@@ -90,7 +90,7 @@ class PrintSunmiUtils {
                 }else {
                     normalTextCenter(
                         value2.addCharAtIndex('(', 0).addCharAtIndex(')', 4).addCharAtIndex(' ', 5)
-                            .addCharAtIndex('-', 10)
+                            .addCharAtIndex('-', 9)
                     )
                 }
             }
