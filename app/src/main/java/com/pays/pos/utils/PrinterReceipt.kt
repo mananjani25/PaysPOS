@@ -4406,7 +4406,7 @@ fun addOrdersForKitchenU220(
                         Builder.COLOR_1
                     )
 
-                    if (obj.isEdited) {
+                    if (obj.isItemEdited) {
                         builder.addText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
                     } else {
                         builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())

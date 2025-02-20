@@ -15895,6 +15895,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
+            /*Added By Rahul */
+            if (isOrderUpdated == true) {
+                mPrinter.addText("** UPDATED **")
+                mPrinter.addFeedLine(1)
+                mPrinter.addFeedUnit(30)
+                mPrinter.addFeedLine(1)
+            }
+
             mPrinter.addText("OrderID:" + receiptModel?.order?.custom_order_id)
             mPrinter.addFeedLine(1)
             mPrinter.addFeedUnit(30)
@@ -16012,15 +16020,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 addHorizontalKitchenLineForU220(mPrinter)
             }
 
-            receiptModel?.order?.orderItems?.let {
+            receiptModel?.order?.orderItems?.let { orderItems ->
+                val printOrderItems = if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+                    checkOrderItemsForOpenORderUpdate().takeIf { it.isNotEmpty() } ?: orderItems
+                } else {
+                    orderItems
+                }
+
                 addOrdersForKitchenU220(
                     mPrinter,
-                    it,
+                    printOrderItems,
                     fontSizeH,
                     fontSizeW,
                     data.printerCategories.toCollection(arrayListOf())
                 )
             }
+
             mPrinter.addFeedLine(1)
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
