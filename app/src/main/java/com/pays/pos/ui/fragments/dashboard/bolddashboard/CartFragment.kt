@@ -111,7 +111,7 @@ import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
-import com.pays.pos.utils.paxUtils.SettingINI
+
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.Event
