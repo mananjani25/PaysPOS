@@ -2434,7 +2434,7 @@ class TransactionDetailsFragment : Fragment() {
                      */
 
                     if (total.toDouble() <= refundedAmount.toDouble() /*refundedAmount.toDouble() > 0.0*/
-                        || (total.toDouble()-0.10) <= refundedAmount.toDouble()   || paymentDetailsResponse.data.order.payment_status == "Cancelled"
+                        || (total.toDouble()-0.30) <= refundedAmount.toDouble()   || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
                         binding.tvtipadd.visibility = View.GONE
