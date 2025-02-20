@@ -115,6 +115,7 @@ import java.io.StringReader
 import java.lang.ref.WeakReference
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -7713,19 +7714,47 @@ class TransactionDetailsFragment : Fragment() {
                                      * Print Subtotal
                                      */
 
-                                    val subTotalToPrint = padLine(
-                                        "Sub Total",
-                                        "$" + order?.order.sub_total?.let {
+                                    var subTotalToPrint = ""
+
+
+
+
+                                    if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in" && order.payable_type == "Guest") {
+
+                                        val totalAmount = order.order.sub_total.let {
                                             MethodUtils.roundOffAmountString(
                                                 it
-                                            )
-                                        },
-                                        if (customerSettingModel.fonts == Constants.LARGE) {
-                                            23
-                                        } else {
-                                            48
-                                        }
-                                    ).toString()
+                                            )}
+
+                                        subTotalToPrint =  padLine(
+                                                "Sub Total",
+                                                "$" + paymentDetailsResponse?.data.sub_total.let { it } + "($$totalAmount)",
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString()
+
+                                    } else {
+
+                                        //other Order types than dine in
+
+                                               subTotalToPrint =  padLine(
+                                                    "Sub Total",
+                                                    "$" + order.order.sub_total.let {
+                                                        MethodUtils.roundOffAmountString(
+                                                            it
+                                                        )
+                                                    },
+                                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                                        23
+                                                    } else {
+                                                        48
+                                                    }
+                                                ).toString()
+                                    }
+
 
                                     printLeft(subTotalToPrint)
                                     lineBreak()
