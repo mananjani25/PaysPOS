@@ -175,6 +175,7 @@ class ItemEditTitleDialog : DialogFragment() {
         val intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
         startActivityForResult(intent, OPERATION_CHOOSE_PHOTO)
+        onActivityResult(2,2, intent)
     }
 
     override fun onRequestPermissionsResult(

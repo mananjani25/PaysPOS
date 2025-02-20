@@ -2642,7 +2642,7 @@ class TransactionDetailsFragment : Fragment() {
                         if (isPrintCustomer) {
                             isPrintCustomer = false
                             customerList.forEach {
-                                if (it.status) {
+                                if (it.customerStatus) {
                                     initPrinter(it, Constants.CUSTOMER)
                                 }
                             }
@@ -2699,7 +2699,7 @@ class TransactionDetailsFragment : Fragment() {
                                         }
                                         if (kitchenPrinterList.isNotEmpty() && noItem == false) {
                                             for (i in 0 until kitchenPrinterList.size) {
-                                                if (kitchenPrinterList[i].status) {
+                                                if (kitchenPrinterList[i].kitchenStatus) {
                                                     kitchenPrinterList[i].orderTypes.forEach {
 
                                                         if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
@@ -2742,7 +2742,7 @@ class TransactionDetailsFragment : Fragment() {
                                     ) {
                                         if (kitchenPrinterList.isNotEmpty()) {
                                             for (i in 0 until kitchenPrinterList.size) {
-                                                if (kitchenPrinterList[i].status) {
+                                                if (kitchenPrinterList[i].kitchenStatus) {
                                                     kitchenPrinterList[i].orderTypes.forEach {
                                                         if (it.orderTypeId == paymentDetailsResponse.data.order.order_type_id
 
@@ -6452,9 +6452,9 @@ class TransactionDetailsFragment : Fragment() {
 
                     if (paymentDetailsResponse?.data.total_discount != 0.0) {
 //                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_discount)
                     } else {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_discount)
                     }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.totalDiscount(str1)
@@ -6978,10 +6978,10 @@ class TransactionDetailsFragment : Fragment() {
                 val str1 = padLine(
                     "Total Discount",
 
-                    if (paymentDetailsResponse?.data.total_discount != 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
+                    if (paymentDetailsResponse.data.total_discount != 0.0) {
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.total_discount)
                     } else {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_discount)
                     }, PrintSunmiUtils.lineChar()
                 ).toString()
 
@@ -7694,11 +7694,11 @@ class TransactionDetailsFragment : Fragment() {
                                             padLine(
                                                 "Total Discount",
 
-                                                if (order?.order.total_discount == 0.0) {
+                                                if (order.order.total_discount == 0.0) {
 //                            "-$" + MethodUtils.roundOffAmountString(0.00)
                                                     "$" + MethodUtils.roundOffAmountString(0.00)
                                                 } else {
-                                                    order?.order.total_discount?.let {
+                                                    order.order.total_discount.let {
                                                         "-$" + MethodUtils.roundOffAmountString(it)
                                                     }
                                                 },

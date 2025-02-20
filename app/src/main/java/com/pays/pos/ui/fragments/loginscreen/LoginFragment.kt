@@ -23,6 +23,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import com.pays.pos.BuildConfig
 import com.pays.pos.R
 import com.pays.pos.data.model.responseModel.PosLinkResult
@@ -45,22 +48,12 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.getCustomerDisplay
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.messaging.FirebaseMessaging
-import com.pays.pos.data.db.AppDatabase
-import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -115,7 +108,9 @@ class LoginFragment : Fragment() {
         Manifest.permission.FOREGROUND_SERVICE,
         Manifest.permission.SYSTEM_ALERT_WINDOW,
         Manifest.permission.USE_FULL_SCREEN_INTENT,
-        Manifest.permission.MANAGE_EXTERNAL_STORAGE
+        Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_VIDEO
     )
 
     private val requestMultiplePermissions =

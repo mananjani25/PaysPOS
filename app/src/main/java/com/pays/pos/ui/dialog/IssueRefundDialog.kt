@@ -516,7 +516,32 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 refundData.paymentRefund?.orderItemRefundsAttributes = ordersItemList
                 transactionViewModel.orderItemAttribututes = ordersItemList
 
+
                 if (String.format("%.2f", (totalCheckedItemPrice + refundedAmount)).toDouble() > screenTotalAmount.toDouble()) {
+
+
+                calculationOfItems()
+                if (paymentOrderDetailsResponse.data.is_loyalty_applied ?: false) {
+                    var count = 0
+                    refundItemListAdapter.selectedItemList().forEach {
+                        if (it.isChecked)
+                            count++
+                    }
+
+                    if (count == refundItemListAdapter.selectedItemList().size) {
+                        totalItemPrice = screenTotalAmount.toDouble()
+                    }
+                }
+                var totalCheckedItemPrice = 0.0
+                refundItemListAdapter.selectedItemList().forEach {
+                    if (it.isChecked)
+                        totalCheckedItemPrice += it.deductedPrice
+                }
+
+                val refundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+
+                if (String.format("%.2f", (totalCheckedItemPrice + refundedAmount)).toDouble() > String.format("%.2f", screenTotalAmount.toDouble()).toDouble()) {
+
                     AlertUtils.showCustomAlert(
                         requireActivity(),
                         getString(R.string.the_refund_amount_cannot_exceed_the_total_order_value)

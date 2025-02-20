@@ -22,6 +22,11 @@ class SalesReportAdapter :
             binding.executePendingBindings()
             if (keyValue.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
                 binding.txtValue.setTextColor(binding.root.resources.getColor(R.color.colorRed))
+                var value = binding.txtValue.text
+                if (!value.contains("$0.00") && !value.contains("-")) {
+                    value = "-$value"
+                }
+                binding.txtValue.text = value
             }
         }
     }

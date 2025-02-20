@@ -6,23 +6,14 @@ import android.app.ActivityManager
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
-import android.content.ClipData
-import android.content.ComponentCallbacks2
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -66,10 +57,8 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
-import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
-import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.model.GuestAttrQueue
 import com.pays.pos.data.model.PrinterJSONElementData
@@ -108,20 +97,10 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
-import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.*
 import com.pays.pos.utils.FileUtils
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.addDoubleDotLineForSunmiQueue
-import com.pays.pos.utils.addHorizontalLineNew
-import com.pays.pos.utils.addOrdersForKitchenCustomerNewPrinter
-import com.pays.pos.utils.disconnectSocket
-import com.pays.pos.utils.executeAsyncTask
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.toast
-import com.pays.pos.utils.getCustomerDisplay
-import com.pays.pos.utils.padLine
-import com.pays.pos.utils.printGuestByItemForSunmiQueue
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
@@ -138,13 +117,7 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -155,9 +128,7 @@ import java.net.URI
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 
 
@@ -167,7 +138,9 @@ import com.zebra.scannercontrol.SDKHandler*/
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
-    StatusChangeListener, UpdatePrinters, ResultCallback, ComponentCallbacks2 {
+    StatusChangeListener, UpdatePrinters, ResultCallback, ComponentCallbacks2,
+    NetworkChangeListener.NetworkListener {
+    private var firstNetworkCheckCompleted=false
     private var isLocalMasterFlag: Boolean = false
     var currentPrinterIndex = 0
     var currentOrderIndex = 0
@@ -1303,7 +1276,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onDestroy() {
         super.onDestroy()
-
+        networkChangeListener?.unregister();
         if (prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
             ) == true && prefProvider?.getValueboolean(
@@ -1443,6 +1416,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
+        networkChangeListener = NetworkChangeListener(this, this)
+        networkChangeListener?.register()
 
 //        sdkHandler = SDKHandler(this, true)
         CoroutineScope(Dispatchers.IO).launch {
@@ -3613,6 +3588,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             }
         }
+
+        dashBoardCategoryViewModel.deleteCustomersTable()
     }
 
     //Dynamic SYNC
@@ -3820,11 +3797,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
 
             if (it.asJsonObject.has("customer_sync")) {
-                if (it.asJsonObject.get("customer_sync").toString().equals("true")) {
+                if (it.asJsonObject.get("customer_sync").toString().equals("true") && !it.asJsonObject.get("is_deleted").toString().equals("true")) {
                     var firstName = it.asJsonObject.get("first_name")
                     var lastName = it.asJsonObject.get("last_name")
-                    var customerId = it.asJsonObject.get("customer_id")
+                    val customerId = it.asJsonObject.get("customer_id")
                     syncCustomer(it, customerId.asInt)
+                } else if (it.asJsonObject.get("is_deleted").toString().equals("true")) {
+                    val customerId = it.asJsonObject.get("customer_id")
+                    val isDeleted = it.asJsonObject.get("is_deleted").toString().equals("true")
+                    deleteCustomer(it, customerId.asInt, isDeleted)
                 }
             }
 
@@ -3863,6 +3844,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         } catch (e: Exception) {
             Log.e(TAG2, "Exception ${e.message}")
         }
+    }
+
+    private fun deleteCustomer(value: JsonElement, customerId: Int, isDeleted:Boolean = false) {
+        addCustomerViewModel.deleteCustomerFromDatabaseSync(
+            value,
+            customerID = customerId,
+            sync = true,
+            isDeleted
+        )
     }
 
     private fun syncCustomer(value: JsonElement, customerId: Int) {
@@ -4426,6 +4416,21 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    private var networkChangeListener: NetworkChangeListener? = null
+    override fun onNetworkLost() {
+        firstNetworkCheckCompleted=true
+        runOnUiThread(Runnable {
+            toast(getString(R.string.network_lost))
+        })
+    }
+
+    override fun onNetworkAvailable() {
+        if (firstNetworkCheckCompleted) {
+            runOnUiThread(Runnable {
+                toast(getString(R.string.network_available))
+            })
+        }
+    }
 }
 
 

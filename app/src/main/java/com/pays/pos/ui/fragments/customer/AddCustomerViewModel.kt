@@ -655,6 +655,17 @@ class AddCustomerViewModel @Inject constructor(
         }
     }
 
+    fun deleteCustomerFromDatabaseSync(
+        value: JsonElement,
+        customerID: Int, sync: Boolean = false, isDeleted: Boolean
+    ) {
+        if (isDeleted && sync) {
+            CoroutineScope(Dispatchers.IO).launch {
+                posRepository.deleteCustomerDataBase(customerID)
+            }
+        }
+    }
+
     public fun fetchCustomerFromPhoneNumberSync(
         value: JsonElement,
         customerID: Int, sync: Boolean = false
