@@ -374,6 +374,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 //  val totalAmountRefund = binding.edtAmount.text.toString().toDouble()
 
+                val refundAmount = binding.edtAmount.text.toString().toDouble()
+                val refundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+
                 refundData = RefundRequestModel().apply {
                     paymentRefund = RefundRequestModel.PaymentRefund().apply {
                         amount = subTotalPrice
@@ -381,11 +384,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         paymentId = payment_id
                         employeeId = paymentOrderDetailsResponse.data.employee_id
                         terminalId = paymentOrderDetailsResponse.data.terminal_id
-                        taxRefunded = paymentOrderDetailsResponse.data.tax_amount
+                        taxRefunded = if (screenTotalAmount.toDouble() > (refundAmount + refundedAmount)) 0.0 else paymentOrderDetailsResponse.data.tax_amount
                         tipsRefunded =
                             if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
                         serviceChargeRefunded =
-                            paymentOrderDetailsResponse.data.service_charge_amount
+                            if (screenTotalAmount.toDouble() > (refundAmount + refundedAmount)) 0.0 else paymentOrderDetailsResponse.data.service_charge_amount
                         cash_discount_or_surcharge_refunded =
                             paymentOrderDetailsResponse.data.cash_discount_or_surcharge
                         subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
@@ -394,8 +397,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
                 transactionViewModel.orderItemAttribututes = null
-
-                val refundAmount = binding.edtAmount.text.toString().toDouble()
 
                 val bundle = Bundle().apply {
                     putParcelable("refundData", refundData)
@@ -447,7 +448,25 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 val ordersItemList =
                     mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
+                val refundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
 
+                calculationOfItems()
+                if (paymentOrderDetailsResponse.data.is_loyalty_applied ?: false) {
+                    var count = 0
+                    refundItemListAdapter.selectedItemList().forEach {
+                        if (it.isChecked)
+                            count++
+                    }
+
+                    if (count == refundItemListAdapter.selectedItemList().size) {
+                        totalItemPrice = screenTotalAmount.toDouble()
+                    }
+                }
+                var totalCheckedItemPrice = 0.0
+                refundItemListAdapter.selectedItemList().forEach {
+                    if (it.isChecked)
+                        totalCheckedItemPrice += it.deductedPrice
+                }
 
                 refundData = RefundRequestModel().apply {
                     paymentRefund = RefundRequestModel.PaymentRefund().apply {
@@ -458,11 +477,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             paymentId = payment_id
                             employeeId = paymentOrderDetailsResponse.data.employee_id
                             terminalId = paymentOrderDetailsResponse.data.terminal_id
-                            taxRefunded = paymentOrderDetailsResponse.data.tax_amount
+                            taxRefunded = if (screenTotalAmount.toDouble() > (totalCheckedItemPrice + refundedAmount)) 0.0 else paymentOrderDetailsResponse.data.tax_amount
                             tipsRefunded =
                                 if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
                             serviceChargeRefunded =
-                                paymentOrderDetailsResponse.data.service_charge_amount
+                                if (screenTotalAmount.toDouble() > (totalCheckedItemPrice + refundedAmount)) 0.0 else paymentOrderDetailsResponse.data.service_charge_amount
                             cash_discount_or_surcharge_refunded =
                                 paymentOrderDetailsResponse.data.cash_discount_or_surcharge
                             subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
@@ -493,8 +512,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         }
                     }
                 }
+
                 refundData.paymentRefund?.orderItemRefundsAttributes = ordersItemList
                 transactionViewModel.orderItemAttribututes = ordersItemList
+
+
+                if (String.format("%.2f", (totalCheckedItemPrice + refundedAmount)).toDouble() > screenTotalAmount.toDouble()) {
 
 
                 calculationOfItems()
@@ -517,7 +540,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 val refundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
 
-                if (String.format("%.2f", (totalCheckedItemPrice + refundedAmount)).toDouble() > screenTotalAmount.toDouble()) {
+                if (String.format("%.2f", (totalCheckedItemPrice + refundedAmount)).toDouble() > String.format("%.2f", screenTotalAmount.toDouble()).toDouble()) {
+
                     AlertUtils.showCustomAlert(
                         requireActivity(),
                         getString(R.string.the_refund_amount_cannot_exceed_the_total_order_value)

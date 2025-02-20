@@ -55,7 +55,7 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
         VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class, ActivePaymentGateway::class],
-    version = 28
+    version = 29
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -539,6 +539,19 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_26_27: Migration = object : Migration(26, 27) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbKitchenPrint ADD COLUMN kitchenStatus INTEGER DEFAULT 0 NOT NULL")
+                    database.execSQL("ALTER TABLE TbKitchenPrint ADD COLUMN customerStatus INTEGER DEFAULT 0 NOT NULL")
+                    database.execSQL("ALTER TABLE TbCustomerPrint ADD COLUMN kitchenStatus INTEGER DEFAULT 0 NOT NULL")
+                    database.execSQL("ALTER TABLE TbCustomerPrint ADD COLUMN customerStatus INTEGER DEFAULT 0 NOT NULL")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
@@ -567,7 +580,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_22_23,
                     MIGRATION_23_24,
                     MIGRATION_24_25,
-                    MIGRATION_25_26
+                    MIGRATION_25_26,
+                    MIGRATION_26_27
                 ).fallbackToDestructiveMigration()
                 .build()
     }

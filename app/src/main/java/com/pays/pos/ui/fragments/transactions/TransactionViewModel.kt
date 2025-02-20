@@ -276,7 +276,9 @@ class TransactionViewModel @Inject constructor(
             when(resource.status){
                 Status.SUCCESS->{
                     resource.data?.let {
-                        if ((it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))) || fromOrderComplete.toInt() == 1){
+      
+                        if ((it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))) || (fromOrderComplete.toInt() == 1 && ((it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false) || (it.data.last().reason?.contains("Gift card", ignoreCase = true)?:false)) && isChange.toInt() == 1)){
+
                             val cashLogRequest = CashLogRequest(
                                 tippedAmount,
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),

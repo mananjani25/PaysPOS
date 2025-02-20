@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -70,12 +71,7 @@ import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
-import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
-import com.pays.pos.data.model.requestModel.OrderRequestModel
-import com.pays.pos.data.model.requestModel.PaymentAttributes
-import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -338,9 +334,76 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setLoyaltyEarnedObserver()
 //        setCommSetting()
 
+        setPaymentErrorHandlerForCustomerIssue()
         initProgressObserver()
         initClickListener()
         return binding.root
+    }
+
+    private fun setPaymentErrorHandlerForCustomerIssue() {
+        paymentviewModel.orderFailedDueToCustomerObservable.observe(requireActivity(),object :Observer<Event<OrderRequestModel>>{
+            override fun onChanged(event: Event<OrderRequestModel>?) {
+                event?.getContentIfNotHandled().let {
+                    syncCustomerWithServer(it)
+                }
+            }
+
+            private fun syncCustomerWithServer(it: OrderRequestModel?) {
+                it?.order?.customer_id?.let {customerId->
+
+                    /*--------------Set observer--------------*/
+                    dashboardViewModel.createCustomerObservable.observe(viewLifecycleOwner,object : Observer<Pair<Boolean,OrderRequestModel?>>{
+                        override fun onChanged(t: Pair<Boolean, OrderRequestModel?>?) {
+                            t?.let {
+                                if (it.first && it.second!=null){
+                                    paymentviewModel.submit(it.second!!)
+                                }else{
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        dismissProgressDialog()
+                                        ProgressUtils.dismissProgressDialog()
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    /*--------------Set observer--------------*/
+
+                    var customer:TbCustomer?=null
+                    runBlocking {
+                        async {
+                            dashboardViewModel.getCustomerDetailsFromId(customerId).value?.let {
+                                customer = it
+                            }
+                        }.await()
+                    }
+
+                    customer?.let {nonNullCustomer->
+                        var customerToCreate = CreateCustomerRequestModel()
+                        customerToCreate.data?.apply {
+                            first_name = nonNullCustomer.first_name?:""
+                            last_name = nonNullCustomer.last_name?:""
+                            company = nonNullCustomer.company?:""
+                            email=nonNullCustomer.email
+                            var phonesList= arrayListOf<CreateCustomerRequestModel.Customer.Phone>()
+                            nonNullCustomer.phones.forEach {
+                                phonesList.add(CreateCustomerRequestModel.Customer.Phone(it.id,it.phone_number))
+                            }
+                            phones_attributes=phonesList
+
+                            var addresses = arrayListOf<CreateCustomerRequestModel.Customer.Addresses>()
+                            nonNullCustomer.addresses.forEach {
+                                addresses.add(CreateCustomerRequestModel.Customer.Addresses(it.id,it.address1,it.address2,it.city,it.state,it.country,it.postcode,it.type_of_address,it.latitude.toDouble(),it.longitude.toDouble()))
+                            }
+                            addresses_attributes=addresses
+                        }
+                        dashboardViewModel.createCustomer(customerToCreate, orderRequestModel = it)
+                    }
+
+                }
+
+            }
+        })
+
     }
 
     private fun initProgressObserver() {
@@ -4025,7 +4088,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun startTransactionWithGiftCardPayment() {
         binding.txtChargeGC.isEnabled = false
-        val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
+        val giftCardNumber = binding.edtGiftCardNumber.text.toString().trim()
         Log.e(TAG,"checkGiftCardNumber:  ${giftCardNumber}")
 
         if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
@@ -4036,58 +4099,35 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.txtChargeGC.isEnabled = true
             return
         } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.are_you_sure_proceed),
-                "Ok"
-            ) { dialogInterface, clickedButton ->
-                if (clickedButton == 0) {
-                    dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
-                    dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
-                        event.getContentIfNotHandled()?.let {
-                            Log.e("ObserverdGiftCardProgress", it.toString())
-                            if (it) {
-                                closePaxRequest()
-                                Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
-                                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
-                            } else {
-                                AlertUtils.showCustomAlertWithListenerWithOK(
-                                    requireContext(),
-                                    "This gift card has not been activated.",
-                                    object : DialogInterface.OnClickListener{
-                                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                                            binding.edtGiftCardNumber.text?.clear()
-                                            binding.frameLayoutId.gone()
-                                            binding.relativeMain.visible()
-                                            binding.llManualCard.visible()
-                                            binding.llGiftCard.gone()
-                                        }
-
-                                    }
-
-                                )
-                            }
-                        }
-
+            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
+            dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.e("ObserverdGiftCardProgress", it.toString())
+                    if (it) {
+                        closePaxRequest()
+                        Log.e("checkGiftCardNumber", "giftCardNumber:  ${giftCardNumber}")
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(
+                            GiftCardCheckBalanceRequest(name = giftCardNumber)
+                        )
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            "This gift card has not been activated.",
+                            object : DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    binding.edtGiftCardNumber.text?.clear()
+                                    /*binding.frameLayoutId.gone()
+                                    binding.relativeMain.visible()
+                                    binding.llManualCard.visible()
+                                    binding.llGiftCard.gone()*/
+                                }
+                            })
                     }
-                } else {
-                    dialogInterface?.dismiss()
+
+
                 }
             }
 
-        } else {
-
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.are_you_sure_proceed),
-                "Ok"
-            ) { dialogInterface, clickedButton ->
-                if (clickedButton == 0) {
-                    giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
-                } else {
-                    dialogInterface?.dismiss()
-                }
-            }
         }
         /**
          * Added to prevent multiple api calls on multiple clicks.
@@ -4253,34 +4293,104 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             for (i in 0 until this.length) {
 
                                 when ((this.item(i) as Element).tagName.toString()) {
-                                    "Message" -> Message =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "RefId" -> RefId =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "RegisterId" -> RegisterId =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "TPN" -> TPN =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "AuthCode" -> AuthCode =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "PNRef" -> PNRef =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "TransNum" -> TransNum =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "ResultCode" -> ResultCode =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "RespMSG" -> RespMSG =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "PaymentType" -> PaymentType =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "Voided" -> Voided =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "TransType" -> TransType =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "SN" -> SN =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
-                                    "ExtData" -> ExtData =
-                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "Message" ->{
+                                        try {
+                                            Message =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RefId" -> {
+                                        try {
+                                            RefId =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RegisterId" -> {
+                                        try {
+                                            RegisterId =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "TPN" -> {
+                                        try {
+                                            TPN =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "AuthCode" -> {
+                                        try {
+                                            AuthCode =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "PNRef" -> {
+                                        try {
+                                            PNRef =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "TransNum" -> {
+                                        try {
+                                            TransNum =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "ResultCode" -> {
+                                        try {
+                                            ResultCode =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RespMSG" -> {
+                                        try {
+                                            RespMSG =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "PaymentType" -> {
+                                        try {
+                                            PaymentType =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "Voided" -> {
+                                        try {
+                                            Voided =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "TransType" -> {
+                                        try {
+                                            TransType =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "SN" -> {
+                                        try {
+                                            SN =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "ExtData" -> {
+                                        try {
+                                            ExtData =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
                                     else -> {
 
                                     }
@@ -4881,45 +4991,79 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         } else {
 
-                            prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                            Log.e("checkTotalDashAmount","totalPrice  :${dashboardViewModel.totalPrice}")
+                            if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE,false)){
+
+
+
+                            }
+
+
 
                             Log.e("checkTotalAmount","totalPrice:  ${totalPrice}")
                             Log.e("checkDataAmount","amount:  ${it.data.amount}")
-                            if (totalPrice.toDouble() > it.data.amount) {
+                            Log.e("checkDataAmount","amountDashboard:  ${dashboardViewModel.totalPrice}")
+                            if (dashboardViewModel.totalPrice > it.data.amount) {
+                                prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
 
                                 splitAllAmounts(
                                     Constants.SUB_TOTAL,
                                     it.data.amount?.toPrecision(2).toDouble()
                                 )
-                            }
-                            else{
+                                splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
+                                splitAllAmounts(Constants.TAX_CHARGE, 0.00)
+                                splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
                                 splitAllAmounts(
-                                    Constants.SUB_TOTAL,
-                                    totalPrice.toDouble()
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    0.00
                                 )
-                            }
-                            splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
-                            splitAllAmounts(Constants.TAX_CHARGE, 0.00)
-                            splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                0.00
-                            )
-                            splitAllAmounts(Constants.TIP, 0.0)
+                                splitAllAmounts(Constants.TIP, 0.0)
 
-                            val giftCardNumber =
-                                binding.edtGiftCardNumber.rawText.toString().trim()
-                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
-                            prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
-                            prefProvider.setValue(GIFT_CARD_PIN, "")
-                            prefProvider.setValueboolean(
-                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
-                                true
-                            )
-                            val actualTotalAmount = (WholetotalPrice / isSelectedCount)
-                            paymentAmount = it.data.amount
-                            paymentviewModel.totalPayAmount(it.data.amount)
-                            redeemGiftCard()
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.text.toString().trim()
+                                prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                paymentAmount = it.data.amount
+                                paymentviewModel.totalPayAmount(it.data.amount)
+                                redeemGiftCard()
+
+
+
+
+
+                            }
+                            else {
+                                Log.e("checkDatqAmt","amount:   ${it.data.amount}")
+                                Log.e("checkDatqAmt","dashBoardAmt:   ${it.data.amount}")
+
+                                    /*splitAllAmounts(
+                                        Constants.SUB_TOTAL,
+                                        dashboardViewModel.totalPrice.toDouble()
+                                    )*/
+                                    paymentAmount = dashboardViewModel.totalPrice
+                                    paymentviewModel.totalPayAmount(dashboardViewModel.totalPrice)
+
+
+
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.text.toString().trim()
+                                prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+
+                                redeemGiftCard()
+                            }
 
                           /*  custom_paymentAmount = 0.0
 
@@ -5870,7 +6014,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
 
             if (this::presentation.isInitialized) {
-                presentation.onDisplayChanged()
+
+                //comment to resolve TIP AMOUNT not reflecting in customer display for final total of cash and card
+
+               // presentation.onDisplayChanged()
             }
 
         }
@@ -8501,6 +8648,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "Cash"
         }
 
+        giftCardViewModel.customCashAmount = custom_paymentAmount
+
         if (cartList == null) {
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO) {
@@ -8571,9 +8720,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
                 myRequest.gift_card.gift_card_type = "Physical"
+                giftCardViewModel.customCashAmount = custom_paymentAmount
                 giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
             } else {
-
+                giftCardViewModel.customCashAmount = custom_paymentAmount
                 giftCardViewModel.addValueInGiftCard(true, myRequest)
             }
         }

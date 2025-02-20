@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val paymentLive: Boolean = true
+    const val paymentLive: Boolean = false
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
@@ -64,6 +64,8 @@ object Constants {
 
     const val IS_MASTER_TERMINAL = "is_master_terminal"
     const val IS_PRINTER_QUEUE_STARTS = "is_printer_queue_starts"
+
+    const val IS_PRE_AUTH_ENABLE = "is_pre_auth_enable"
 
     const val MAX_ITEM_QUANTITY = 1000
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
@@ -625,7 +627,7 @@ object Constants {
         try {
             val inputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
 
-            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm a")
             TimeFormatUtils.prefProvider = PrefProvider(context = context)
             outputFormat.timeZone =
                 TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))
@@ -660,7 +662,7 @@ object Constants {
         try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm a")
             TimeFormatUtils.prefProvider = PrefProvider(context = context)
             outputFormat.timeZone =
                 TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))

@@ -508,6 +508,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         })
 
+        //get Updated printer list
+        printerViewModel.printerList().observe(viewLifecycleOwner) {
+
+        }
+
         return binding.root
     }
 
@@ -680,15 +685,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (p0.toString() == " ") {
                     binding.layoutHeader.edtSearch.setText("")
                 }
-                if (requireActivity().supportFragmentManager.findFragmentById(R.id.frameLayout)?.javaClass?.name.equals(
-                        "com.pays.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment", true
-                    )
-                ) {
+                activity?.let {
+                    it.findViewById<View>(R.id.frameLayout)?.let {
+                        if (requireActivity().supportFragmentManager.findFragmentById(R.id.frameLayout)?.javaClass?.name.equals(
+                                "com.pays.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment",
+                                true
+                            )
+                        ) {
 
-                    requireActivity().supportFragmentManager.popBackStackImmediate(
-                        AddItemFragment.javaClass.getName(),
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
-                    )
+                            requireActivity().supportFragmentManager.popBackStackImmediate(
+                                AddItemFragment.javaClass.getName(),
+                                FragmentManager.POP_BACK_STACK_INCLUSIVE
+                            )
+                        }
+                    }
                 }
 
 
@@ -1840,17 +1850,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 it.price = null
                             }
                         }
-                        val backStateName: String = AddItemFragment.javaClass.getName()
-                        val fragment = AddItemFragment.newInstance(
-                            item,
-                            this@DashboardCategoryBoldPOS,
-                            cartList,
-                            false
-                        )
-                        val fm: FragmentManager = requireActivity().supportFragmentManager
-                        fm.beginTransaction().add(binding.frameLayout.id, fragment)
-                            .setReorderingAllowed(true)
-                            .addToBackStack(backStateName).commit()
+                       activity?.let {
+                           it.findViewById<View>(R.id.frameLayout)?.let {
+                               val backStateName: String = AddItemFragment.javaClass.getName()
+                               val fragment = AddItemFragment.newInstance(
+                                   item,
+                                   this@DashboardCategoryBoldPOS,
+                                   cartList,
+                                   false
+                               )
+                               val fm: FragmentManager = requireActivity().supportFragmentManager
+                               fm.beginTransaction().add(binding.frameLayout.id, fragment)
+                                   .setReorderingAllowed(true)
+                                   .addToBackStack(backStateName).commit()
+                           }
+                       }
                         Log.e("Dashboard Tracking ", "Track Dashboard - 1317")
                     } else {
                         Log.d(TAG, "dineintest onItemSelected: ")
@@ -2282,39 +2296,49 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemUpdate(item: TbCartItem, position: Int) {
+        activity?.let {
+            it.findViewById<View>(R.id.frameLayout)?.let {
+                viewModel.isItemEditInProgress = true
+                viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?: -1
 
-        viewModel.isItemEditInProgress = true
-        viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?: -1
+                viewModel.isCartItemClicked = true
 
-        viewModel.isCartItemClicked = true
+                viewModel.cartItemModifiersBeforeUpdate = item.modifiers
 
-        viewModel.cartItemModifiersBeforeUpdate = item.modifiers
-
-        Log.e("ITEM MODIFIER SIZE", Gson().toJson(item.modifiers))
+                Log.e("ITEM MODIFIER SIZE", Gson().toJson(item.modifiers))
 
 
-        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
-        val backStateName: String = AddItemFragment.javaClass.getName()
-        val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
-            .addToBackStack(backStateName).commit()
-        Log.e("Dashboard Tracking ", "Track Dashboard - 1652")
-        /*val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
-        loadCategoryFragment(frag)*/
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
+                val backStateName: String = AddItemFragment.javaClass.getName()
+                val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
+                val fm: FragmentManager = requireActivity().supportFragmentManager
+                fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
+                    .addToBackStack(backStateName).commit()
+                Log.e("Dashboard Tracking ", "Track Dashboard - 1652")
+                /*val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
+                loadCategoryFragment(frag)*/
+            }
+
+        }
+
     }
 
     override fun onCartItemUpdate(item: TbCartItem, position: Int) {
-        /*Added By Rahul - Update,  for checking the update for the given item, This will be the base object, with which we will compare the updated object*/
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, Gson().toJson(item))
+        activity?.let {
+            it.findViewById<View>(R.id.frameLayout)?.let {
+                /*Added By Rahul - Update,  for checking the update for the given item, This will be the base object, with which we will compare the updated object*/
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, Gson().toJson(item))
 
-        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
-        val backStateName: String = AddItemFragment.javaClass.getName()
-        val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
-            .addToBackStack(backStateName).commit()
-        Log.e("Dashboard Tracking ", "Track Dashboard - 1664")
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
+                val backStateName: String = AddItemFragment.javaClass.getName()
+                val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
+                val fm: FragmentManager = requireActivity().supportFragmentManager
+                fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
+                    .addToBackStack(backStateName).commit()
+                Log.e("Dashboard Tracking ", "Track Dashboard - 1664")
+            }
+        }
+
     }
 
     override fun onDineInOrderCleared() {
@@ -3955,7 +3979,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     )
 //                    mPrinter.startMonitor()
 
-                    generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
+                    generateReceiptForU220(mPrinter, data, type, createOrderResponse.data, cartModel)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
@@ -4364,7 +4388,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         builder: Printer,
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        receiptModel: CreateOrderResponse.Data
+        receiptModel: CreateOrderResponse.Data,
+        cartModel: CartModel?
     ) {
         try {
             /* val pname = if (data.name.substring(0, 6).toString()
@@ -4416,6 +4441,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 Builder.TRUE,
                 Builder.COLOR_1
             )
+
+            /*Added By Rahul */
+            cartModel?.let {
+                if (it.isEdited || isOrderUpdate) {
+                    Log.e("UpdatePrint", "U220 -> ${it.isEdited}, $isOrderUpdate")
+
+                    builder.addText("** UPDATED **")
+                    builder.addFeedLine(1)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                }
+            }
 
             builder.addText(
                 "OrderID:" + receiptModel?.order?.custom_order_id
@@ -5126,7 +5163,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -5150,7 +5187,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -5257,7 +5294,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -5281,7 +5318,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         TAG,
                                                                         "statusPrinter  ${it.data[i].status}"
                                                                     )
-                                                                    if (it.data[i].status) {
+                                                                    if (it.data[i].kitchenStatus) {
                                                                         allstatus = true
                                                                         initKitchenPrinter(
                                                                             it.data.get(i),
@@ -6840,9 +6877,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
             )
 
-            PrintSunmiUtils.addHorizontalInner()
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+
+
+            if (sunmiFrameworkVersion?.get(0)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                    1
+                )
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.normalText("\n")
@@ -6869,12 +6911,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
 
-                        if (sunmiFrameworkVersion?.get(0)
-                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-                        ) {
-                            PrintSunmiUtils.normalText("\n")
-                        }
+                        PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
                         try {
                             if (kitchenSettingModel.showCustomerName) {
                                 PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)

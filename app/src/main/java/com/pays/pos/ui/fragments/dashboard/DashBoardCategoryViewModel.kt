@@ -246,6 +246,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentDestination = ""
 
 
+    /** PRE AUTH **/
+    val isPreAuthCartOpened = MutableLiveData<Boolean>(false)
+
+
     /**
      * Get SUNMI OS VERSION
      */
@@ -497,6 +501,30 @@ class DashBoardCategoryViewModel @Inject constructor(
         taxDynamicList = arrayListOf()
         taxDynamicList.clear()
     }
+
+    /*-----------Customer Create----------------*/
+    private val _createCustomerObservable = MutableLiveData<Pair<Boolean,OrderRequestModel?>>()
+    val createCustomerObservable: LiveData<Pair<Boolean,OrderRequestModel?>> get()  = _createCustomerObservable
+
+    fun createCustomer(createCustomerRequestModel: CreateCustomerRequestModel, orderRequestModel:OrderRequestModel){
+        viewModelScope.launch {
+            val result = posRepository.createCustomer(createCustomerRequestModel)
+            when(result.status){
+                Status.SUCCESS->{
+                    _createCustomerObservable.postValue(Pair(true,orderRequestModel))
+                }
+                Status.ERROR->{
+                    _createCustomerObservable.postValue(Pair(true,null))
+                    _snackbarText.value = Event(result.message?:"Unable to sync customer")
+                    _showProgress.value = Event(false)
+                }
+                Status.LOADING->{}
+            }
+        }
+    }
+
+    fun getCustomerDetailsFromId(customerId:String):LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
+    /*-----------Customer Create----------------*/
 
     fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
@@ -7817,6 +7845,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    /**
+     * "Deletes the customer database table. Added to handle scenarios where a customer is deleted from the backend and the application is closed."
+     */
+    fun deleteCustomersTable() {
+        viewModelScope.launch(Dispatchers.IO) {
+            posRepository.deleteCustomersTable()
+        }
+    }
 
     fun syncSettingModule() {
         viewModelScope.launch {
@@ -7875,6 +7911,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     prefProvider.setValueboolean(
                                         Constants.IS_MASTER_TERMINAL, false
                                     )
+                                }
+
+                                //pre auth option ON / OFF
+
+                                try {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_PRE_AUTH_ENABLE,
+                                        it.settingData.data.isPreAuthEnable
+                                    )
+                                    isPreAuthCartOpened.value = it.settingData.data.isPreAuthEnable
+                                }catch (e:Exception) {
+
                                 }
 
 

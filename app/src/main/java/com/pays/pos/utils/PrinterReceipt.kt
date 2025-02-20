@@ -1267,9 +1267,13 @@ fun addCreditCardBreakDownData(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1287,9 +1291,13 @@ fun addCreditCardBreakDownDataInner(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1307,9 +1315,13 @@ fun addCreditCardBreakDownDataLandiInner(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1328,9 +1340,13 @@ fun addCreditCardBreakDownDataInnerNew(
     var pOne = creditCardBreakdown.key + repeat(
         " ",
         28 - creditCardBreakdown.key.length
-    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -4406,7 +4422,7 @@ fun addOrdersForKitchenU220(
                         Builder.COLOR_1
                     )
 
-                    if (obj.isEdited) {
+                    if (obj.isItemEdited) {
                         builder.addText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
                     } else {
                         builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())

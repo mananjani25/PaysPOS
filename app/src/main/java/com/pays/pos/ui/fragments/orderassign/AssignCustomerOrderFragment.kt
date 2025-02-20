@@ -45,6 +45,9 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -102,6 +105,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         addObserver()
 
         loadCustomerLocalList(currentpage)
+        customerListSizeFromPagination(currentpage)
         if (arguments != null) {
             isFromDineIn = arguments?.getBoolean("DINE_IN", false)
             isPhoneOrder = arguments?.getBoolean("PhoneOrder", false)
@@ -201,6 +205,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
                     isLoading = true
                     currentpage += 1
                     loadCustomerLocalList(currentpage)
+                    customerListSizeFromPagination(currentpage)
                 }
 
             }
@@ -287,6 +292,32 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
     }
 
+    private fun customerListSizeFromPagination(currentPage: Int) {
+        data["page"] = currentPage.toString()
+        data["per_page"] = perpagedata.toString()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = viewModel.fetchCustomersList(data)
+
+            when (result.status) {
+                Status.SUCCESS -> {
+                    result.data?.let { customerList ->
+                        if (customerList.data.size < perpagedata) {
+                            isLastPage = true
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+
+                }
+
+                Status.LOADING -> {
+
+                }
+            }
+        }
+    }
 
     private fun loadCustomerLocalList(currentpage: Int) {
         data["page"] = currentpage.toString()
@@ -308,7 +339,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
                         }
                         binding.rvCustomerList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-
+                        isLoading = false
                     }
                     Status.LOADING -> {
 

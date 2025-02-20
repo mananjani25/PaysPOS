@@ -160,11 +160,13 @@ class PosRepository @Inject constructor(
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         apiHelperNew.updatePrinterStatus(id, terminal_id, status)
 
-    /*  suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
+      suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
           apiHelperNew.updatePrinterStatusKitchen(id, terminal_id, status)
 
       suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
-          apiHelperNew.updatePrinterStatusCustomer(id, terminal_id, status)*//*fun syncVenueDetails() =
+          apiHelperNew.updatePrinterStatusCustomer(id, terminal_id, status)
+
+    /*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
@@ -195,6 +197,10 @@ class PosRepository @Inject constructor(
     fun venueDataLocal() = performGetOperationDatabase(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
     )
+
+    suspend fun deleteCustomersTable() {
+        appDatabase.customerDao().deleteCustomerTb()
+    }
 
     suspend fun saveDatabase(response: VenueDataResponse) {
         appDatabase.customerDao().deleteCustomerTb()
@@ -682,7 +688,7 @@ class PosRepository @Inject constructor(
         appDatabase.customerDao()
             .updateLoyaltyRewardsSyncEmail(finalrewards, firstName, lastName, email)
 
-    fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
+    fun getCustomerDetailsByID(id: String?): LiveData<TbCustomer> {
 
         return appDatabase.customerDao().getCustomerDetailsByID(id)
     }

@@ -90,7 +90,7 @@ class PrintSunmiUtils {
                 }else {
                     normalTextCenter(
                         value2.addCharAtIndex('(', 0).addCharAtIndex(')', 4).addCharAtIndex(' ', 5)
-                            .addCharAtIndex('-', 10)
+                            .addCharAtIndex('-', 9)
                     )
                 }
             }
@@ -807,6 +807,7 @@ class PrintSunmiUtils {
 
         }
 
+
         fun cardDetailsInnerNew(cardName: String, cardType: String, cardNumber: String, font: String) {
 
 //            for (i in 1..3) {
@@ -871,7 +872,7 @@ class PrintSunmiUtils {
                         if (!cardNumber.isNullOrBlank()) {
                             val strCardNumber = padLine(
                                 "",
-                                "" + cardNumber + "  ",
+                                "" + cardNumber,
 //                                if (font == Constants.LARGE) 23 else 83
                                 48
                             ).toString()

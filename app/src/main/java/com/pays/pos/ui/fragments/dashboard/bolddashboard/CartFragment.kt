@@ -36,7 +36,15 @@ import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
 import com.pays.payments.design.TransactionType
 import com.pays.pos.R
-import com.pays.pos.data.entities.*
+import com.pays.pos.data.entities.CartModel
+import com.pays.pos.data.entities.CashDiscountModel
+import com.pays.pos.data.entities.OrderTypeBackup
+import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.entities.TbOrderType
+import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
@@ -60,6 +68,7 @@ import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.pays.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
+import com.pays.pos.data.remote.Constants.IS_PRE_AUTH_ENABLE
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -104,8 +113,39 @@ import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.callback.DineInOrderCallBack
+import com.pays.pos.utils.callback.ItemCallback
+import com.pays.pos.utils.callback.ItemClickListner
+import com.pays.pos.utils.callback.ItemListner
+import com.pays.pos.utils.callback.MyCallback
+import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.extensions.disableItemAnimator
+import com.pays.pos.utils.extensions.getColor
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
+import com.pays.pos.utils.extensions.isVisible
+import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.getCustomerDisplay
+import com.pays.pos.utils.paxUtils.SettingINI
+import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -116,12 +156,11 @@ import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
-import java.lang.Runnable
-import java.lang.System
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+
 import kotlin.collections.ArrayList
 
 
@@ -410,7 +449,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             })
     }
 
-    fun setUpPreAuthData() {
+    fun enablePreAuth() {
         if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
 
             binding.preAuthOption?.visible()
@@ -475,8 +514,93 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
             }
-        } else
-            binding.preAuthOption?.gone()
+        } else binding.preAuthOption?.gone()
+    }
+
+    private fun setUpPreAuthData() {
+
+        viewModel.isPreAuthCartOpened.observe(viewLifecycleOwner) {
+            if(it) {
+                enablePreAuth()
+            } else {
+                binding.preAuthOption?.gone()
+            }
+        }
+
+        prefProvider.getValueboolean(IS_PRE_AUTH_ENABLE,false).let {
+            if(it) {
+                enablePreAuth()
+            } else {
+                binding.preAuthOption?.gone()
+            }
+        }
+
+//        if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
+//
+//            binding.preAuthOption?.visible()
+//
+//            binding.preAuthOption?.apply {
+//
+//                isChecked = false
+//                isEnabled = true
+//                setTextColor(Color.RED)
+//
+//                if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty() ) {
+//                    visible()
+//                    isChecked = true
+//                    isEnabled = false
+//                    setTextColor(Color.GREEN)
+//                }else {
+//                    isChecked = false
+//                    isEnabled = true
+//                    setTextColor(Color.RED)
+//                    setOnClickListener {
+//
+//                        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+//                            if (prefProvider.isManager() || prefProvider.isAdmin()) {
+//                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+//                                    makePaxPreAuthRequest()
+//                                }else if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+//                                    makeDejavooPreAuthPaymentRequest()
+//                                }
+//                                else {
+//                                    isChecked = false
+//                                    activity?.let {
+//                                        AlertUtils.showCustomAlertWithListenerWithOK(
+//                                            it,
+//                                            getString(R.string.pax_connect_error),
+//                                            null
+//                                        )
+//                                    }
+//                                }
+//                            } else {
+//                                isChecked = false
+//                                AlertUtils.showCustomAlert(
+//                                    requireContext(),
+//                                    "You do not have permission to access this feature.\nPlease contact your manager."
+//                                )
+//                            }
+//                        } else {
+//                            isChecked = false
+//                            AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+//                        }
+//                    }
+//                }
+//
+//                try {
+//                    if (viewModelPayment.preAuthData !=null && viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
+//                        isChecked = true
+//                        isEnabled = false
+//                        setTextColor(Color.GREEN)
+//                    }
+//                }catch (e:Exception) {
+//
+//                }
+//
+//
+//            }
+//        } else
+//            binding.preAuthOption?.gone()
     }
 
 
@@ -664,7 +788,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     // To check selected order type
     private fun checkOrderType() {
 
-      //  setUpPreAuthData()
+        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
@@ -2238,11 +2362,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
-                                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.gone()
-                                        }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.visible()
-                                            binding.txtAddCustomer.isEnabled = false
+                                        if (isAdded && parentFragmentManager!=null) {
+                                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.gone()
+                                            } else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.visible()
+                                                binding.txtAddCustomer.isEnabled = false
+                                            }
                                         }
                                     }
 
@@ -2670,8 +2802,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             /* binding.rvCartList.removeAllViews()
                                          binding.rvCartList.removeAllViewsInLayout()*/
                                         })
-
-
                                     }
 
                                     runOnUiThread(kotlinx.coroutines.Runnable {
@@ -2706,11 +2836,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
-                                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.gone()
-                                        }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.visible()
-                                            binding.txtAddCustomer.isEnabled = false
+                                        if (isAdded) {
+                                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.gone()
+                                            } else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.visible()
+                                                binding.txtAddCustomer.isEnabled = false
+                                            }
                                         }
                                     }
 
@@ -3042,6 +3180,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
                         }
+                        if (isAdded)
                         if (findNavController().currentDestination!!.label!!.contains("Dashboard", ignoreCase = true)){
                             isFromPayment=false
                             arguments?.apply {
@@ -4339,6 +4478,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     )
                                 )
 
+                                if (isAdded)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
@@ -4348,6 +4488,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     )
                                 }
                             } else {
+                                if (isAdded)
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
