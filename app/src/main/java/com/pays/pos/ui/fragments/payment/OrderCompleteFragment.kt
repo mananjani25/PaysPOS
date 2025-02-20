@@ -7901,10 +7901,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     /***
                                      * Print Paid Amount
                                      */
+
+                                    val newPaidAmount = if (isCustomCash) {
+                                        paidAmount
+                                    } else {
+                                        paidAmount + tipAmount
+                                    }
+
                                     val str6 = padLine(
                                         "Paid Amount",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            paidAmount
+                                            newPaidAmount
                                         ),
                                         48
                                     ).toString().toByteArray()
@@ -7996,12 +8003,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      */
 
                                     if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
-                                        printPayment(
-                                            false,
-                                            outputStream,
-                                            Constants.LANDI_INNER_PRINTER,
-                                            list = getDineInOrderDetails!!.payments
-                                        )
+
+                                        val payments = getDineInOrderDetails?.payments
+
+                                        if(payments?.first()?.paymentType == "Guest" || payments?.size?:0 > 1) {
+
+                                            printPayment(
+                                                false,
+                                                outputStream,
+                                                Constants.LANDI_INNER_PRINTER,
+                                                list = getDineInOrderDetails!!.payments
+                                            )
+                                        }
                                     }
 
 
