@@ -1115,6 +1115,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
                 if (remainingAmount < paidAmount) {
+                    binding.txtTitle.text =
+                        "$" + MethodUtils.roundOffAmountString(
+                            paidAmount
+                        )
+
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
                         if (paymentType.equals("cash", true)) {
@@ -1125,7 +1130,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountString(
-                                paidAmount + tipAmount
+                                paidAmount
                             ) + " payment successful"
 
                         LogUtil.logE("Change 8", binding.txtChangeAmount.text.toString())
@@ -7899,7 +7904,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val str6 = padLine(
                                         "Paid Amount",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            paidAmount + tipAmount
+                                            paidAmount
                                         ),
                                         48
                                     ).toString().toByteArray()
