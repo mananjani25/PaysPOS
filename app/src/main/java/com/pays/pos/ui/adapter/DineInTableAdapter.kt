@@ -291,7 +291,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             )
                         ) {
                             isApplied = true
-                            totalServiceCharge += ((guestSubTotal - totalGuestDiscount) * it.percentage) / 100
+                            totalServiceCharge += ((guestSubTotal) * it.percentage) / 100
                             return@forEach
 
                         }
