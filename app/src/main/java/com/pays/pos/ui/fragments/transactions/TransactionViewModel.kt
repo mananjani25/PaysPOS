@@ -292,7 +292,20 @@ class TransactionViewModel @Inject constructor(
                             )
                             makeCashLogCreateRequest(cashLogRequest)
 
-                        }else{
+                        }else if (isChange.toInt()==0 && (it.data.last().reason?.contains("Change returned", ignoreCase = true)?:false)){
+                            val cashLogRequest = CashLogRequest(
+                                tippedAmount,
+                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                event,
+                                orderId,
+                                id,
+                                "Tip added to the order",
+                                prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                null,
+                                null
+                            )
+                            makeCashLogCreateRequest(cashLogRequest)
+                        } else{
                             /*{
                                 "payment_id": 0,
                                 "order_id": 0,

@@ -309,7 +309,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun getTipDetails(tippedAmount: Double, orderId: Int?){
         CoroutineScope(Dispatchers.Main).launch {
-        transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1,"in",0)
+          transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1,"in",0)
         }
     }
 
