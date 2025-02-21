@@ -915,7 +915,7 @@ class EmployeeTipSummary : Fragment() {
             )
 
 
-            builder.addText("Employee Tips Summary")
+            builder.addText("Employees Tip Summary")
 
             builder.addFeedLine(1)
             builder.addTextStyle(
@@ -1101,7 +1101,7 @@ class EmployeeTipSummary : Fragment() {
         )
         SunmiPrintHelper.getInstance().lineWrap(1)
 
-        PrintSunmiUtils.headerText("Employee Tips Summary")
+        PrintSunmiUtils.headerText("Employees Tip Summary")
         if (prefProvider?.employeeName().toString().isNotEmpty()) {
             PrintSunmiUtils.normalTextCenter("Employee : " + prefProvider?.employeeName())
         }
@@ -1166,7 +1166,7 @@ class EmployeeTipSummary : Fragment() {
 
         SunmiPrinterApi.getInstance().lineWrap(1)
 
-        PrintSunmiUtils.addLable("Employee Tips Summary")
+        PrintSunmiUtils.addLable("Employees Tip Summary")
 
         SunmiPrinterApi.getInstance().setAlignMode(1)
         SunmiPrinterApi.getInstance().enableBold(false)
