@@ -3977,7 +3977,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         printerAdd,
                         Printer.PARAM_DEFAULT
                     )
-//                    mPrinter.startMonitor()
+                    mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type, createOrderResponse.data, cartModel)
 
