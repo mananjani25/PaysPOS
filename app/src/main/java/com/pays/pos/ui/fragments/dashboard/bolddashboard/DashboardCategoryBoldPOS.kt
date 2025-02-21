@@ -767,10 +767,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
-            }/* else {
-                prefProvider.saveActiveLoyaltyData(it.data)
-                viewModel.activeLoyaltyProgram = it.data
-            }*/
+            } else {
+                if (it.status == Status.SUCCESS && it.data == null) {
+                    prefProvider.saveActiveLoyaltyData(null)
+                    viewModel.activeLoyaltyProgram = null
+                }
+            }
         }
     }
 
