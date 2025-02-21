@@ -108,9 +108,17 @@ import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
-class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
+class CheckoutDineInFragmentNew : Fragment,
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+
+    constructor(dineInDataModel: CheckOutDineInDataModel){
+        this.dineInDataModel=dineInDataModel
+    }
+
+    constructor() : super()
+
+    lateinit var dineInDataModel: CheckOutDineInDataModel
     private var textToPay: Boolean = false
     private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
