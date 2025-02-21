@@ -5550,7 +5550,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 builder.addText(
                     padLine(
-                        "Tips",
+                        "Tip",
                         "$" + paymentDetailsResponse.data.tips?.let {
                             MethodUtils.roundOffAmountString(
                                 it
@@ -5775,7 +5775,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 builder.addText(
                     padLine(
-                        "Tips",
+                        "Tip",
                         if (customerSettingModel.showTipLineForCash) {
                             "_____________"
                         } else {
@@ -6498,7 +6498,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 PrintSunmiUtils.tip(
                     padLine(
-                        "Tips",
+                        "Tip",
                         "$" + paymentDetailsResponse.data.tips?.let {
                             MethodUtils.roundOffAmountString(
                                 it
@@ -6606,10 +6606,10 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showTipLineForCash) {
 
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Tip       _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
-                        PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Tip                               _____________")
                     }
 
                 }
@@ -7069,7 +7069,7 @@ class TransactionDetailsFragment : Fragment() {
                 ) {
                     PrintSunmiUtils.normalTextNew(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + paymentDetailsResponse.data.tips?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
@@ -7080,7 +7080,7 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     PrintSunmiUtils.normalText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + paymentDetailsResponse.data.tips?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
@@ -7248,17 +7248,17 @@ class TransactionDetailsFragment : Fragment() {
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            PrintSunmiUtils.boldTextNew("Tips      _____________")
+                            PrintSunmiUtils.boldTextNew("Tip       _____________")
                             SunmiPrintHelper.getInstance().lineWrap(1)
                         } else {
-                            PrintSunmiUtils.boldTextNew("Tips                              _____________")
+                            PrintSunmiUtils.boldTextNew("Tip                               _____________")
                         }
                     } else {
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            PrintSunmiUtils.boldText("Tips      _____________")
+                            PrintSunmiUtils.boldText("Tip       _____________")
                             SunmiPrintHelper.getInstance().lineWrap(1)
                         } else {
-                            PrintSunmiUtils.boldText("Tips                              _____________")
+                            PrintSunmiUtils.boldText("Tip                               _____________")
                         }
                     }
                 }
@@ -7768,7 +7768,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                         printLeft(
                                             padLine(
-                                                "Tips",
+                                                "Tip",
                                                 "$" + paymentDetailsResponse.data.tips?.let {
                                                     MethodUtils.roundOffAmountString(
                                                         it
@@ -7885,10 +7885,10 @@ class TransactionDetailsFragment : Fragment() {
                                         if (customerSettingModel.showTipLineForCash) {
 
                                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                                printBoldLeft("Tips      _____________")
+                                                printBoldLeft("Tip       _____________")
                                                 lineBreak()
                                             } else {
-                                                printBoldLeft("Tips                              _____________")
+                                                printBoldLeft("Tip                               _____________")
                                             }
 
                                         }
