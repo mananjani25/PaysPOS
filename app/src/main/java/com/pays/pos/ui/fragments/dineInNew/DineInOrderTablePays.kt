@@ -1196,7 +1196,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     val whole_ = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
                 Log.e("Dine in","DATA WHOLE $whole_")
 
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({ //Pass mainLooper inside the Handler()
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                         findNavController().navigate(
                             R.id.action_dineInOrderTable_to_checkoutDineIN,
