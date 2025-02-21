@@ -3274,7 +3274,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + MethodUtils.roundOffAmountString(tipAmount),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
@@ -4138,7 +4138,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (tipAmount != 0.0) {
 
                 val str8 = padLine(
-                    "Tips",
+                    "Tip",
                     "$" + MethodUtils.roundOffAmountString(tipAmount),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
@@ -4697,7 +4697,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     if (tipAmount != 0.0) {
 
                                         val str8 = padLine(
-                                            "Tips",
+                                            "Tip",
                                             "$" + MethodUtils.roundOffAmountString(tipAmount),
                                             48
                                         ).toString()
@@ -5249,7 +5249,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (tipAmount != 0.0) {
 
                 val str8 = padLine(
-                    "Tips",
+                    "Tip",
                     "$" + MethodUtils.roundOffAmountString(tipAmount),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
@@ -6168,7 +6168,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + MethodUtils.roundOffAmountString(tipAmount),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
@@ -6452,7 +6452,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                     builder.addText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             if (customerSettingModel.showTipLineForCash) {
                                 "_____________"
                             } else {
@@ -7113,7 +7113,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str8 = padLine(
-                    "Tips",
+                    "Tip",
                     "$" + MethodUtils.roundOffAmountString(tipAmount),
                     if (customerSettingModel.fonts == LARGE) {
                         23
@@ -7255,11 +7255,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.showTipLineForCash) {
 
                     if (customerSettingModel.fonts == LARGE) {
-                        PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Tip       _____________")
                         PrintSunmiUtils.tips("Total     _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
-                        PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Tip                               _____________")
                         PrintSunmiUtils.tips("Total                             _____________")
                     }
 
@@ -7785,7 +7785,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val tipsToPrint =
                                             padLine(
-                                                "Tips",
+                                                "Tip",
                                                 "$" +
                                                         MethodUtils.roundOffAmountString(
                                                             tipAmount
@@ -7978,7 +7978,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         if (customerSettingModel.showTipLineForCash) {
 
                                             write(LPrint.BOLD_ON)
-                                            write("Tips                              _____________".toByteArray())
+                                            write("Tip                               _____________".toByteArray())
                                             write(LPrint.LINE_FEED)
                                             write("Total                             _____________".toByteArray())
                                             write(LPrint.BOLD_ON)
@@ -8510,7 +8510,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str8 = padLine(
-                    "Tips",
+                    "Tip",
                     "$" + MethodUtils.roundOffAmountString(tipAmount),
                     if (customerSettingModel.fonts == LARGE) {
                         23
@@ -8672,7 +8672,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.fonts == LARGE) {
 
-                        printerTasks.add(Pair(PRINT_TIPS_CUSTOM, "Tips      _____________"))
+                        printerTasks.add(Pair(PRINT_TIPS_CUSTOM, "Tip       _____________"))
                         printerTasks.add(Pair(PRINT_TOTAL_CUSTOM, "Total     _____________"))
 
                         printerTasks.add(Pair(BREAK_LINE, "1"))
@@ -8682,7 +8682,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         printerTasks.add(
                             Pair(
                                 PRINT_TIPS_CUSTOM,
-                                "Tips                              _____________"
+                                "Tip                               _____________"
                             )
                         )
                         printerTasks.add(
@@ -9345,7 +9345,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             val str8 = padLine(
-                "Tips",
+                "Tip",
                 "$" + MethodUtils.roundOffAmountString(tipAmount),
                 if (customerSettingModel.fonts == LARGE) {
                     23
@@ -9501,7 +9501,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) {
                     PrintSunmiUtils.printBoldText(
                         prefProvider.isOldSunmiFrameworkVersion(),
-                        "Tips      _____________"
+                        "Tip       _____________"
                     )
                     PrintSunmiUtils.printBoldText(
                         prefProvider.isOldSunmiFrameworkVersion(),
@@ -9511,7 +9511,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } else {
                     PrintSunmiUtils.printBoldText(
                         prefProvider.isOldSunmiFrameworkVersion(),
-                        "Tips                              _____________"
+                        "Tip                               _____________"
                     )
                     PrintSunmiUtils.printBoldText(
                         prefProvider.isOldSunmiFrameworkVersion(),
@@ -11245,7 +11245,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             } else {
                                                 val tipsToPrint =
                                                     padLine(
-                                                        "Tips",
+                                                        "Tip",
                                                         "$" + MethodUtils.roundOffAmountString(tipAfterAmount),
                                                         48
                                                     ).toString()
@@ -12430,7 +12430,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble() + if (order?.cash_discount_type?.lowercase() == "cashdiscount" && order?.payments.last().paymentType.toLowerCase() == "card") order.payments.last().cash_discount_or_surcharge else 0.0),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
@@ -12859,7 +12859,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                     builder.addText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             if (customerSettingModel.showTipLineForCash) {
                                 "_____________"
                             } else {
@@ -18566,7 +18566,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         val order = receiptModel?.order
 
                         val str8 = padLine(
-                            "Tips",
+                            "Tip",
                             "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble() + if (order?.cash_discount_type?.lowercase() == "cashdiscount" && order?.payments.last().paymentType.toLowerCase() == "card") order.payments.last().cash_discount_or_surcharge else 0.0),
                             if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
@@ -18825,11 +18825,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if (customerSettingModel.showTipLineForCash) {
 
                             if (customerSettingModel.fonts == LARGE) {
-                                PrintSunmiUtils.tips("Tips      _____________")
+                                PrintSunmiUtils.tips("Tip       _____________")
                                 PrintSunmiUtils.tips("Total     _____________")
                                 SunmiPrinterApi.getInstance().lineWrap(1)
                             } else {
-                                PrintSunmiUtils.tips("Tips                              _____________")
+                                PrintSunmiUtils.tips("Tip                               _____________")
                                 PrintSunmiUtils.tips("Total                             _____________")
                             }
 
