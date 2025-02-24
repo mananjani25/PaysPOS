@@ -6119,7 +6119,7 @@ fun printPaymentCommon(
     list.forEachIndexed {  index,it->
 
         //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
-        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount + it.tips)}"
 
 
         printerTasks.add(Pair(PRINT_SINGLE_PAYMENT,paymentToPrint))
@@ -6161,7 +6161,7 @@ fun printPayment(
     list.forEachIndexed {  index,it->
 
      //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
-        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount + it.tips)}"
 
         when(printerType){
 
