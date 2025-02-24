@@ -2,52 +2,44 @@ package com.pays.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
-import android.os.Handler
-import android.os.Parcelable
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
-import android.widget.RadioButton
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
 import com.pays.pos.data.model.requestModel.RefundRequestModel
-import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.OPEN_ORDER
-import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
-import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.databinding.DialogIssueRefundBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.RefundItemListAdapter
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import okhttp3.internal.toImmutableList
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.math.abs
 
 
 @AndroidEntryPoint
@@ -1098,7 +1090,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
                 if (String.format("%.2f", (totalCheckedItemPrice + refundedAmount))
-                        .toDouble() > screenTotalAmount.toDouble()
+                        .toDouble() <= MethodUtils.roundOffAmountDouble(screenTotalAmount.toDouble())
                 ) {
 
 
