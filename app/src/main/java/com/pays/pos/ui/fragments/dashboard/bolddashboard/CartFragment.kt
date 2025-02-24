@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.os.SystemClock
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -25,19 +24,27 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.ReportRequest
 import com.pays.payments.design.Dejavoo
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
 import com.pays.payments.design.TransactionType
 import com.pays.pos.R
-import com.pays.pos.data.entities.*
+import com.pays.pos.data.entities.CartModel
+import com.pays.pos.data.entities.CashDiscountModel
+import com.pays.pos.data.entities.OrderTypeBackup
+import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.entities.TbOrderType
+import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
@@ -96,19 +103,49 @@ import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
-import com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
-import com.pays.pos.utils.TimeFormatUtils.prefProvider
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
+
+import com.pays.pos.utils.statusUtils.Status
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.callback.DineInOrderCallBack
+import com.pays.pos.utils.callback.ItemCallback
+import com.pays.pos.utils.callback.ItemClickListner
+import com.pays.pos.utils.callback.ItemListner
+import com.pays.pos.utils.callback.MyCallback
+import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.extensions.disableItemAnimator
+import com.pays.pos.utils.extensions.getColor
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
+import com.pays.pos.utils.extensions.isVisible
+import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.paxUtils.SettingINI
+import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -119,14 +156,12 @@ import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
-import java.lang.Runnable
-import java.lang.System
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -312,12 +347,110 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
 
-
         setUpData()
         setUpdateCartFooterObservable()
         return binding.root
     }
 
+    private fun getLoyaltyPointListObserver(view: View?) {
+        viewModel.loyaltyPoints.observe(viewLifecycleOwner) { loyaltyPoints ->
+            loyaltyPoints.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        try {
+                            if (view != null) {
+                                ProgressUtils.dismissProgressDialog()
+                                run breaking@{
+                                    if (resource.data?.isNotEmpty() == true) {
+                                        resource.data.forEach {
+                                            if (it.isEnable && !it.isDeleted) {
+                                                var data: TbCustomer? =
+                                                    prefProvider.getCustomerData()
+                                                if (data != null) {
+                                                    if (viewModel.loyaltyPointCondition(data)) {
+
+                                                        binding.liinearInfoLayout.layoutParams.height =
+                                                            resources.getDimension(R.dimen._70sdp)
+                                                                .toInt()
+
+                                                        if (prefProvider.getValue(
+                                                                ORDER_TYPE,
+                                                                ""
+                                                            ) != DINE_IN
+                                                        )
+                                                            binding.relativeLoylatyPoints.visibility =
+                                                                View.VISIBLE
+                                                        binding.lblLoyaltyPoints.visibility =
+                                                            View.VISIBLE
+                                                        binding.lblLoyaltyBalance.visibility =
+                                                            View.VISIBLE
+                                                        LogUtil.logE(TAG, "InsideLoyalty")
+                                                        LogUtil.logE(
+                                                            TAG,
+                                                            Gson().toJson(viewModel.redeemLoyaltyInfo)
+                                                        )
+                                                        binding.txtLoyaltyAmount.text = "- $${
+                                                            String.format(
+                                                                "%.2f",
+                                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                            )
+                                                        }"
+                                                        binding.txtLoyaltyPoints.text =
+                                                            "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                                        binding.txtLoyaltyBalance.text = "${
+                                                            if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                                viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                                                            } else {
+                                                                viewModel.redeemLoyaltyInfo.availablePoints
+                                                            }
+                                                        }"
+                                                        binding.checkloylaty.isChecked =
+                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+
+                                                    }
+                                                }
+                                                return@breaking
+                                            } else {
+                                                if (!isFromPayment) {
+                                                    binding.relativeLoylatyPoints.gone()
+                                                    binding.lblLoyaltyPoints.gone()
+                                                    binding.lblLoyaltyBalance.gone()
+                                                    binding.checkloylaty.isChecked = false
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        if (!isFromPayment) {
+                                            binding.relativeLoylatyPoints.gone()
+                                            binding.lblLoyaltyPoints.gone()
+                                            binding.lblLoyaltyBalance.gone()
+                                            binding.checkloylaty.isChecked = false
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            //                            binding.btnSignUpOrCheckIn.gone()
+                            //                            binding.tvRewards.gone()
+                            //                            binding.tvMessage.text="Please login to start"
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        if (!isFromPayment) {
+                            binding.relativeLoylatyPoints.gone()
+                            binding.lblLoyaltyPoints.gone()
+                            binding.lblLoyaltyBalance.gone()
+                            binding.checkloylaty.isChecked = false
+                        }
+                    }
+
+                    Status.LOADING -> {
+                    }
+                }
+            }
+        }
+    }
 
     private fun setUpdateCartFooterObservable() {
         viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,
@@ -804,6 +937,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         addObserver()
         setupTaxAdapter()
         getOrderTypes()
+        getLoyaltyPointListObserver(view)
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) {
@@ -2244,12 +2378,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     ) {
                                         binding.txtAddCustomer.invisible()
                                     } else {
-                                        if (isAdded)
-                                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.gone()
-                                        }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
-                                            binding.txtAddCustomer.visible()
-                                            binding.txtAddCustomer.isEnabled = false
+                                        if (isAdded && parentFragmentManager!=null) {
+                                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.gone()
+                                            } else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(
+                                                    R.string.add_customer2
+                                                )
+                                            ) {
+                                                binding.txtAddCustomer.visible()
+                                                binding.txtAddCustomer.isEnabled = false
+                                            }
                                         }
                                     }
 
@@ -3620,6 +3761,35 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "")
                                 prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
                                 /*Remove the added tip - END*/
+
+
+                                /*Clear the Update Order fields - START*/
+                                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+                                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+                            /*    prefProvider.deleteValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM)
+                                prefProvider.deleteValue(Constants.OPEN_ORDER_ITEMS)
+
+                                prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, false)
+
+                                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
+
+                                prefProvider.setValueboolean(
+                                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                    false
+                                )
+
+                                prefProvider.setValueboolean(
+                                    Constants.LOYALTY_ADDED,
+                                    false
+                                )
+
+                                prefProvider.setValueboolean(
+                                    Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                    false
+                                )
+
+                                prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)*/
+                                /*Clear the Update Order fields - END*/
 
                                 updateActiveOrderFlagClear()
                                 itemListner?.onCancelItemSelected()

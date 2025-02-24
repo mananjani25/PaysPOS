@@ -2611,7 +2611,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         LogUtil.logE(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
-            if (kitchenPrinterList[i].status) {
+            if (kitchenPrinterList[i].kitchenStatus) {
                 if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                     initKitchenPrinter(
                         kitchenPrinterList.get(i),
@@ -2637,7 +2637,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         var listItem: ArrayList<TbCartItem> = arrayListOf()
         listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
-            if (kitchenPrinterList[i].status) {
+            if (kitchenPrinterList[i].kitchenStatus) {
                 if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                     initKitchenPrinter(
                         kitchenPrinterList.get(i),
@@ -2774,7 +2774,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         LogUtil.logE(TAG, "customerListSize  ${customerList.size}")
         if (customerList.isNotEmpty()) {
             customerList.forEach {
-                if (it.status) {
+                if (it.customerStatus) {
                     initPrinter(
                         it,
                         Constants.CUSTOMER,
@@ -3560,7 +3560,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         kitchenPrinter.orderTypes.any { orderType ->
                                             orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
-                                                printerSetting.autoPrinting && printerSetting.printType == "Kitchen" && kitchenPrinter.status
+                                                printerSetting.autoPrinting && printerSetting.printType == "Kitchen" && kitchenPrinter.kitchenStatus
                                             }
                                         }
 
@@ -4247,7 +4247,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             customerList = it.data
 
                             customerList.forEach {
-                                if (it.status) {
+                                if (it.customerStatus) {
                                     initPrinter(
                                         it,
                                         Constants.CUSTOMER,
@@ -13479,7 +13479,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         var autoPrintEnable = false
                         kitchenPrinterList.forEach { kit ->
-                            if (kit.status) {
+                            if (kit.kitchenStatus) {
 
 
                                 if (isCheckAndFire) {

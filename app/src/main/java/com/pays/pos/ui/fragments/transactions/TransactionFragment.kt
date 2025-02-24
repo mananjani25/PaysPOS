@@ -207,15 +207,23 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value)
-                .getTime() / 1000
-            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(
-                timeCalculateForStartEndTime(
-                    hour,
-                    minute,
-                    "isend"
-                )
-            ).getTime() / 1000
-            if (fromDate <= endDate) {
+//                .getTime() / 1000
+//            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(
+//                timeCalculateForStartEndTime(
+//                    hour,
+//                    minute,
+//                    "isend"
+//                )
+//            ).getTime() / 1000
+
+
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault())
+
+            val startDate1 = dateFormat.parse(viewModel.startDate.value)
+            val endDate1 = dateFormat.parse(viewModel.endDate.value)
+
+
+            if (startDate1 <= endDate1) {
                 val timecalender = Calendar.getInstance()
                 timecalender.set(Calendar.HOUR_OF_DAY, hour)
                 timecalender.set(Calendar.MINUTE, minute)

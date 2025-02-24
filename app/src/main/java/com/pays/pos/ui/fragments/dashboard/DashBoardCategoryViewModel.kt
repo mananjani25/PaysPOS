@@ -7845,6 +7845,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    /**
+     * "Deletes the customer database table. Added to handle scenarios where a customer is deleted from the backend and the application is closed."
+     */
+    fun deleteCustomersTable() {
+        viewModelScope.launch(Dispatchers.IO) {
+            posRepository.deleteCustomersTable()
+        }
+    }
 
     fun syncSettingModule() {
         viewModelScope.launch {
@@ -8229,8 +8237,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it1
                                     )
                                 }
-//                                posRepository.deleteLoyaltyProgramFromDb()
-                                posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
+                                posRepository.deleteLoyaltyProgramFromDb()
+                                if (it.settingData.data.loyaltyPrograms.isNotEmpty()) {
+                                    posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
+                                }
+
 //                                posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
                                 posRepository.deleteEODReportSettings()
@@ -8244,9 +8255,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.settingData.data.loyaltyPrograms.forEach {
                                         if (it.isEnable && !it.isDeleted) {
                                             prefProvider.saveActiveLoyaltyData(it)
+                                            return@forEach
+                                        } else {
+                                            prefProvider.saveActiveLoyaltyData(null)
                                         }
                                     }
                                 }
+
                                 if (it.settingData.data.cash_discounts.isNotEmpty()) {
                                     it.settingData.data.cash_discounts.forEach {
                                         if (it.is_active) {

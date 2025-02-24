@@ -746,7 +746,7 @@ class OnlineDetailFragment(
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.forEach {
-                        if (it.status && checkItemsforPrinterOnlineOrder(
+                        if (it.kitchenStatus && checkItemsforPrinterOnlineOrder(
                                 data.data.orderItems, it.printerCategories.toCollection(
                                     arrayListOf()
                                 )

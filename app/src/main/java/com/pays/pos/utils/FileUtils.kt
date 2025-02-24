@@ -1,5 +1,6 @@
 package com.pays.pos.utils
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.ContentUris
 import android.content.Context
@@ -40,7 +41,6 @@ object FileUtils {
     const val MIME_TYPE_VIDEO = "video/*"
     const val MIME_TYPE_APP = "application/*"
     const val HIDDEN_PREFIX = "."
-
 
 
     /**
@@ -147,7 +147,7 @@ object FileUtils {
     fun getContentType(fileString: String?): String {
         var type: String? = ""
         var contentType: String? = ""
-        fileString?.let{
+        fileString?.let {
             contentType = getFileExtensionFromUrl(fileString)
             if (TextUtils.isEmpty(contentType)) {
                 val i = fileString.lastIndexOf('.')
@@ -160,7 +160,7 @@ object FileUtils {
             }
         }
         LogUtil.logE("!_@_", "content type:  $type")
-        return type?:""
+        return type ?: ""
     }
 
     fun getFileExtensionFromUrl(url: String): String? {
@@ -564,6 +564,7 @@ object FileUtils {
         var imagePath: String? = null
         val uri = data!!.data
         //DocumentsContract defines the contract between a documents provider and the platform.
+
         if (DocumentsContract.isDocumentUri(activity, uri)) {
             val docId = DocumentsContract.getDocumentId(uri)
 
@@ -579,9 +580,7 @@ object FileUtils {
                 )
             } else if ("com.android.providers.downloads.documents" == uri?.authority) {
                 val contentUri = ContentUris.withAppendedId(
-                    Uri.parse(
-                        "content://downloads/public_downloads"
-                    ), java.lang.Long.valueOf(docId)
+                    Uri.parse("content://downloads/public_downloads"), docId.split(":")[1].toLong()
                 )
                 imagePath = getImagePath(contentUri, null, activity)
             }
@@ -590,9 +589,11 @@ object FileUtils {
         } else if ("file".equals(uri?.scheme, ignoreCase = true)) {
             imagePath = uri?.path
         }
+
         return imagePath
     }
 
+    @SuppressLint("Range")
     fun getImagePath(
         uri: Uri?, selection: String?, activity: Context
     ): String {
