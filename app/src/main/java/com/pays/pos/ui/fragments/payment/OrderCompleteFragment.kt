@@ -60,6 +60,7 @@ import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.pays.pos.data.remote.Constants.CUSTOMER
+import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
 import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
@@ -428,6 +429,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
             }
 
+
             if (prefProvider.getValueboolean(
                     Constants.TIP_ADDED,
                     false
@@ -469,6 +471,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                    presentation.showThankyouLayout()
 //                }
             }
+
+            if(isDineIn)
+                presentation.showThankYou(finalPaidAmount)
+
         }
     }
 
