@@ -2990,10 +2990,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
                     serviceChargesList.forEach {
-
-                        serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
+                        if(it.min_guest_count!=null && it.max_guest_count!=null)
+                            if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                                serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
+                        }
                     }
-                }
 
 
                 viewModel.totalServiceCharge = serviceCharge
