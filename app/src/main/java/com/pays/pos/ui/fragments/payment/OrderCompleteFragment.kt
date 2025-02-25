@@ -124,6 +124,8 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.lineBreak
+import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.LandiInnerPrinterPays
 import com.pays.pos.utils.printer.PrinterClass
@@ -8143,19 +8145,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                     write(LPrint.LINE_FEED)
-                                    write(LPrint.LINE_FEED)
+//                                    write(LPrint.LINE_FEED)
+//
+//                                    write("________________________________________________".toByteArray())
+//                                    write(LPrint.LINE_FEED)
+//
+//                                    write(LPrint.LINE_FEED)
+//                                    write(LPrint.LINE_FEED)
 
-                                    write("________________________________________________".toByteArray())
-                                    write(LPrint.LINE_FEED)
 
-                                    write(LPrint.LINE_FEED)
-                                    write(LPrint.LINE_FEED)
+                                    /**
+                                     * Print order note
+                                     */
+                                    if (order?.note != null && order?.note != "" && customerSettingModel.showOrderNote) {
+                                        //  lineBreak()
+
+                                        printCenter(
+                                            "Order Note\n${order.note}",
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+//                                        printCenter()
+                                        lineBreak()
+                                    }
 
 
                                     write("Customer Signature           __________________".toByteArray())
 
 
                                     write(LPrint.LINE_FEED)
+
+
+
+                                    write(LPrint.LINE_FEED)
+
                                     if (customerSettingModel.showQrCode) {
 
                                         LPrint.printQRCode(
