@@ -3356,6 +3356,39 @@ class TransactionDetailsFragment : Fragment() {
                             } catch (e: Exception) {
 
                             }
+
+                            try {
+                                if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                                        0
+                                                    ) != null
+                                                ) {
+
+                                                    var address =
+                                                        paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                                            0
+                                                        )?.fullAddress
+
+                                                    address
+
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            } catch (e: Exception) {
+
+                            }
+
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
@@ -3791,18 +3824,22 @@ class TransactionDetailsFragment : Fragment() {
                                         Builder.TRUE,
                                         Builder.COLOR_1
                                     )
-                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                        .forEach {
-                                            if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                builder!!.addText(
-                                                    it.fullAddress
-                                                )
-                                            }
-                                        }
+
+                                    paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                        builder!!.addText(it)
+                                    }
+//                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                        .forEach {
+//                                            if (it.typeOfAddress.equals(
+//                                                    Constants.BILLING_ADDRESS,
+//                                                    ignoreCase = true
+//                                                )
+//                                            ) {
+//                                                builder!!.addText(
+//                                                    it.fullAddress
+//                                                )
+//                                            }
+//                                        }
                                 }
                             }
                         }
@@ -4128,19 +4165,23 @@ class TransactionDetailsFragment : Fragment() {
                                         Builder.COLOR_1
                                     )
 
-                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                        .forEach {
+                                    paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                        builder.addText(it)
+                                    }
 
-                                            if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                builder.addText(
-                                                    it.fullAddress
-                                                )
-                                            }
-                                        }
+//                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                        .forEach {
+//
+//                                            if (it.typeOfAddress.equals(
+//                                                    Constants.BILLING_ADDRESS,
+//                                                    ignoreCase = true
+//                                                )
+//                                            ) {
+//                                                builder.addText(
+//                                                    it.fullAddress
+//                                                )
+//                                            }
+//                                        }
                                     // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                                 }
                             }
@@ -4332,18 +4373,21 @@ class TransactionDetailsFragment : Fragment() {
                         ) {
                         } else {
                             if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
-                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                    .forEach {
-                                        if (it.typeOfAddress.equals(
-                                                Constants.BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            PrintSunmiUtils.customerAddress(
-                                                it.fullAddress
-                                            )
-                                        }
-                                    }
+                                paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                    PrintSunmiUtils.customerAddress(it)
+                                }
+//                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    .forEach {
+//                                        if (it.typeOfAddress.equals(
+//                                                Constants.BILLING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            PrintSunmiUtils.customerAddress(
+//                                                it.fullAddress
+//                                            )
+//                                        }
+//                                    }
                             }
                         }
                     }
@@ -4650,18 +4694,21 @@ class TransactionDetailsFragment : Fragment() {
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                .forEach {
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        mPrinter.addText(
-                                            it.fullAddress
-                                        )
-                                    }
-                                }
+                            paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                mPrinter.addText(it)
+                            }
+//                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                .forEach {
+//                                    if (it.typeOfAddress.equals(
+//                                            Constants.BILLING_ADDRESS,
+//                                            ignoreCase = true
+//                                        )
+//                                    ) {
+//                                        mPrinter.addText(
+//                                            it.fullAddress
+//                                        )
+//                                    }
+//                                }
                         }
                     }
                 }
@@ -4897,24 +4944,24 @@ class TransactionDetailsFragment : Fragment() {
                         ) {
                         } else {
                             if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
-                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                    .forEach {
-
-                                        if (it.typeOfAddress.equals(
-                                                Constants.BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            PrintSunmiUtils.normalTextLarge(
-                                                it.fullAddress
-                                            )
-                                        }
-                                    }
+                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                    PrintSunmiUtils.normalTextLarge(
+                                        it
+                                    )
+                                }
+//                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    .forEach {
+//
+//                                        if (it.typeOfAddress.equals(
+//                                                Constants.BILLING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            PrintSunmiUtils.normalTextLarge(
+//                                                it.fullAddress
+//                                            )
+//                                        }
+//                                    }
                             }
                         }
                     }
