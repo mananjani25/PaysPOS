@@ -3432,6 +3432,17 @@ class TransactionDetailsFragment : Fragment() {
                 delay(200)
                 setService2(data, type)
             }
+        } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
+            if (isAdded) {
+                generateKitchenReceiptLandiInner(data)
+            } else {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(200)
+                    if (isAdded){
+                        generateKitchenReceiptLandiInner(data)
+                    }
+                }
+            }
         } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
@@ -4979,6 +4990,200 @@ class TransactionDetailsFragment : Fragment() {
             e.printStackTrace()
         }
 
+    }
+
+    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters) {
+
+        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
+
+            override fun onPermissionsGranted() {
+                val order = paymentDetailsResponse.data
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(kitchenReceiptPrinters.macAddress)?.let { outputStream ->
+                        LPrint.apply {
+                            setOutputStream(outputStream)
+
+                            try {
+
+                                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                                    printCenter(
+                                        "OrderID:" + paymentDetailsResponse.data.custom_order_id,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                } else {
+                                    printCenter(
+                                        "OrderID:" + paymentDetailsResponse.data.order.id,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                        )
+                                }
+                                lineBreak()
+
+                                if (kitchenSettingModel.showOrderType) {
+                                    printCenter(
+                                        paymentDetailsResponse.data.order.order_type_name.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+                                }
+
+                                if (paymentDetailsResponse.data.order.order_type.equals("Online Order", true) ||
+                                    paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder", true) ||
+                                    paymentDetailsResponse.data.order.order_type.equals(PHONE_ORDER, true)
+                                ) {
+                                    printCenter(
+                                        paymentDetailsResponse.data.order.delivery_type.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+                                }
+
+                                if (kitchenSettingModel.showTeamMember && paymentDetailsResponse.data.order.employee != null) {
+                                    printLeft(
+                                        "Employee:" + paymentDetailsResponse.data.order.employee,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+
+                                lineBreak()
+
+                                printLeft(
+                                    Constants.getReceiptFormatDateFromUTCServer(
+                                        requireContext(),
+                                        paymentDetailsResponse.data.order.created_at.toString()
+                                    ),
+                                    isBold = true,
+                                    fontSize = FONT_SIZE_5X
+                                )
+
+                                lineBreak()
+
+                                printDashedLineAndBreak()
+                                lineBreak()
+
+
+//            receiptModel?.order?.orderItems?.let {
+//                addOrdersForKitchenInner(
+//                    it,
+//                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+//                )
+//            }
+
+                                paymentDetailsResponse.data.order.order_items.let {
+                                    addOrdersForKitchenLandiTransitionInner(
+                                        it,
+                                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()),
+                                        LPrint
+                                    )
+                                }
+
+                                lineBreak()
+
+
+                                if (paymentDetailsResponse.data.order.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                                    lineBreak()
+
+                                    printCenter(
+                                        paymentDetailsResponse.data.order.note.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+
+                                lineBreak()
+
+                                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                                    if (paymentDetailsResponse.data.order.customer != null) {
+                                        lineBreak()
+                                        printLeft(
+                                            "Customer Details", isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                        lineBreak()
+                                        printDashedLineAndBreak()
+                                        lineBreak()
+
+                                        if (kitchenSettingModel.showCustomerName) {
+                                            printLeft(
+                                                paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName,
+                                                isBold = false,
+                                                fontSize = FONT_SIZE_5X
+                                                )
+                                        }
+
+                                        if (kitchenSettingModel.showCustomerPhone) {
+                                            if (paymentDetailsResponse.data.order.customer.phones.isNotEmpty() == true) {
+                                                paymentDetailsResponse.data.order.customer.phones.get(0).phoneNumber.let {
+                                                    printLeft(
+                                                        MethodUtils.getUSFormatNumber(it),
+                                                        isBold = false,
+                                                        fontSize = FONT_SIZE_5X
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        if (kitchenSettingModel.showCustomerAddress) {
+                                            if (paymentDetailsResponse.data.order.order_type.trim().toString()
+                                                    .lowercase() == "Open Order".trim()
+                                                    .toString().lowercase()
+                                                && paymentDetailsResponse.data.order.delivery_type.trim().toString()
+                                                    .lowercase() == "Pickup".trim().lowercase()
+                                            ) {
+                                            } else {
+                                                if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
+                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                        printLeft(
+                                                            it,
+                                                            isBold = false,
+                                                            fontSize = FONT_SIZE_5X
+                                                        )
+                                                    }
+//                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    .forEach {
+//
+//                                        if (it.typeOfAddress.equals(
+//                                                Constants.BILLING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            PrintSunmiUtils.normalTextLarge(
+//                                                it.fullAddress
+//                                            )
+//                                        }
+//                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                lineBreak()
+                                lineBreak()
+                                paperCut()
+                                disconnectLandiPrinter()
+
+                                //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+                            } catch (e: Exception) {
+                                // printerDialog.dismiss()
+                                e.printStackTrace()
+                            }
+
+                        }
+                    }
+
+
+                }
+            }
+
+        })
     }
 
     private fun setService2(
