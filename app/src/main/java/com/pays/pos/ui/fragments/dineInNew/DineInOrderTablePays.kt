@@ -12329,8 +12329,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         lineBreak()
-                        if(orderNote.isNotEmpty())
-                            printCenter(orderNote)
+                        if(orderNote.isNotEmpty()) {
+                            printCenter("OrderNote", isBold = true, fontSize = FONT_B)
+                            lineBreak()
+                            printCenter(orderNote, isBold = true, fontSize = FONT_B)
+                        }
                         lineBreak()
                         lineBreak()
 
