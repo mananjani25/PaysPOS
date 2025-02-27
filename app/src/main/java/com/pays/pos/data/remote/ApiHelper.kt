@@ -88,10 +88,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
             getResult { apiService.updatePrinterStatus(id, terminal_id, status) }
 
- /*   suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
+    suspend fun updatePrinterStatusKitchen(id: Int, terminal_id: Int, status: Boolean) =
         getResult { apiService.updatePrinterStatusKitchen(id, terminal_id, status) }
     suspend fun updatePrinterStatusCustomer(id: Int, terminal_id: Int, status: Boolean) =
-        getResult { apiService.updatePrinterStatusCustomer(id, terminal_id, status) }*/
+        getResult { apiService.updatePrinterStatusCustomer(id, terminal_id, status) }
 
     suspend fun updateServiceChargeEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeTakeoutEnable(id, enable_service_charge) }

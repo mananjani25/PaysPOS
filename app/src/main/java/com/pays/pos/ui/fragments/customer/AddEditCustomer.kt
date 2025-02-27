@@ -23,7 +23,6 @@ import androidx.navigation.fragment.findNavController
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentAddEditCustomerBinding
@@ -33,7 +32,6 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.AddressTextChangeListner
-import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
@@ -76,6 +74,9 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     var adapter2: AutoCompleteAdapter? = null
     var changeField: Boolean = false
 
+    var isEmailAndPhoneEmpty: Boolean = false
+
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,6 +87,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        isEmailAndPhoneEmpty=arguments?.getBoolean("isEmailAndPhoneEmpty")?:false
 
         //edit.setFilters(new InputFilter[] { filter })
 
@@ -1041,9 +1043,69 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private fun onClick() {
 
 
-        binding.header.txtSave.setOnClickListener {
-            viewModel.sameAsAddressValueChanges(binding.chksameasbilling.isChecked)
-            if (isEdit) {
+        binding.header.txtSave.setOnClickListener(object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                viewModel.sameAsAddressValueChanges(binding.chksameasbilling.isChecked)
+                if (isEdit) {
+                    if (isEmailAndPhoneEmpty){
+                        var doProcess=false
+                        if (binding.edtEmailAdd.text.toString().trim().isNotEmpty()){
+                            doProcess=true
+                        }
+                        if (binding.edtPhoneNo.text.toString().trim().isNotEmpty()){
+                            doProcess=true
+                        }
+                        if (doProcess){
+                            createOrUpdateCustomerObject()
+                        }else{
+                            AlertUtils.showCustomAlert(requireContext(),getString(com.pays.pos.R.string.lbl_please_add_phone_or_email))
+                        }
+                    }else{
+                        createOrUpdateCustomerObject()
+                    }
+
+                }
+                else {
+                    listAddress = arrayListOf()
+                    if (binding.edtStreet.text.toString().isNotEmpty())
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                null,
+                                binding.edtStreet.text.toString(),
+                                binding.edtSuite.text.toString(),
+                                binding.edtCity.text.toString(),
+                                binding.edtState.text.toString(),
+                                binding.edtAddress.selectedItem.toString(),
+                                binding.edtZip.text.toString(),
+                                "Shipping",
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                    if (binding.edtStreetDel.text.toString().isNotEmpty())
+                        listAddress.add(
+                            CreateCustomerRequestModel.Customer.Addresses(
+                                null,
+                                binding.edtStreetDel.text.toString(),
+                                binding.edtSuiteDel.text.toString(),
+                                binding.edtCityDel.text.toString(),
+                                binding.edtStateDel.text.toString(),
+                                binding.edtAddressDel.selectedItem.toString(),
+                                binding.edtZipDel.text.toString(),
+                                "Billing",
+                                0.0,
+                                0.0,
+                                "false"
+                            )
+                        )
+                    createOrUpdateCustomerObject()
+
+                }
+
+            }
+
+            private fun createOrUpdateCustomerObject() {
                 var id1: Int? = null
                 var id2: Int? = null
 
@@ -1117,59 +1179,10 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                     }
 
                 }
-
-            } else {
-                listAddress = arrayListOf()
-                if (binding.edtStreet.text.toString().isNotEmpty())
-                    listAddress.add(
-                        CreateCustomerRequestModel.Customer.Addresses(
-                            null,
-                            binding.edtStreet.text.toString(),
-                            binding.edtSuite.text.toString(),
-                            binding.edtCity.text.toString(),
-                            binding.edtState.text.toString(),
-                            binding.edtAddress.selectedItem.toString(),
-                            binding.edtZip.text.toString(),
-                            "Shipping",
-                            0.0,
-                            0.0,
-                            "false"
-                        )
-                    )
-                if (binding.edtStreetDel.text.toString().isNotEmpty())
-                    listAddress.add(
-                        CreateCustomerRequestModel.Customer.Addresses(
-                            null,
-                            binding.edtStreetDel.text.toString(),
-                            binding.edtSuiteDel.text.toString(),
-                            binding.edtCityDel.text.toString(),
-                            binding.edtStateDel.text.toString(),
-                            binding.edtAddressDel.selectedItem.toString(),
-                            binding.edtZipDel.text.toString(),
-                            "Billing",
-                            0.0,
-                            0.0,
-                            "false"
-                        )
-                    )
+                proceedWithCustomerCreateOrUpdate()
             }
+        })
 
-            if (orderType.equals(DELIVERY)){
-                if (listAddress.isNotEmpty()){
-                    viewModel.submit(listAddress, isFromPhoneOrderEdit)
-                }else{
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        "Please Enter Delivery Address.",
-                    )
-                    { _, _ ->
-
-                    }
-                }
-            }else{
-                viewModel.submit(listAddress, isFromPhoneOrderEdit)
-            }
-        }
         binding.chksameasbilling.setOnClickListener {
             if (binding.edtStreet.text.toString().isNotEmpty()) {
                 binding.edtStreetDel.clearFocus()
@@ -1211,6 +1224,24 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
             }
         }
 
+    }
+
+    private fun proceedWithCustomerCreateOrUpdate() {
+        if (orderType.equals(DELIVERY)){
+            if (listAddress.isNotEmpty()){
+                viewModel.submit(listAddress, isFromPhoneOrderEdit)
+            }else{
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter Delivery Address.",
+                )
+                { _, _ ->
+
+                }
+            }
+        }else{
+            viewModel.submit(listAddress, isFromPhoneOrderEdit)
+        }
     }
 
     private fun showDatePicker() {

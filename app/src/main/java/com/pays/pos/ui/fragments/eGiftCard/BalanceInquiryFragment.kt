@@ -1,12 +1,9 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +23,6 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.TimeFormatUtils.prefProvider
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
@@ -177,6 +173,7 @@ class BalanceInquiryFragment : Fragment() {
                         title = getString(R.string.msg_remaining_balance),
                         message = "$${it.data.amount.toPrecision(2)}"
                     ) { _, _ ->
+                        findNavController().popBackStack()
                     }
                 } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(

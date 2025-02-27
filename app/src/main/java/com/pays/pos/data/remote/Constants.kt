@@ -19,7 +19,11 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val paymentLive: Boolean = true
+    /*
+    * paymentLive = false -> SANDBOX
+    * paymentLive = true -> LIVE
+    * */
+    const val paymentLive: Boolean = false
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
@@ -627,7 +631,7 @@ object Constants {
         try {
             val inputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
 
-            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm a")
             TimeFormatUtils.prefProvider = PrefProvider(context = context)
             outputFormat.timeZone =
                 TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))
@@ -662,7 +666,7 @@ object Constants {
         try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm a")
             TimeFormatUtils.prefProvider = PrefProvider(context = context)
             outputFormat.timeZone =
                 TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))

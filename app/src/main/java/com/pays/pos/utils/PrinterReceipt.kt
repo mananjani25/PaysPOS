@@ -1270,6 +1270,10 @@ fun addCreditCardBreakDownData(
     ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1290,6 +1294,10 @@ fun addCreditCardBreakDownDataInner(
     ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1310,6 +1318,10 @@ fun addCreditCardBreakDownDataLandiInner(
     ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1331,6 +1343,10 @@ fun addCreditCardBreakDownDataInnerNew(
     ) + if (creditCardBreakdown.key.contains("Refund") && creditCardBreakdown.tips != 0.0) "-" + MethodUtils.roundOffAmount(creditCardBreakdown.tips) else MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+        amount = "-$amount"
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -4406,7 +4422,7 @@ fun addOrdersForKitchenU220(
                         Builder.COLOR_1
                     )
 
-                    if (obj.isEdited) {
+                    if (obj.isItemEdited) {
                         builder.addText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
                     } else {
                         builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
@@ -6103,7 +6119,7 @@ fun printPaymentCommon(
     list.forEachIndexed {  index,it->
 
         //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
-        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount + it.tips)}"
 
 
         printerTasks.add(Pair(PRINT_SINGLE_PAYMENT,paymentToPrint))
@@ -6145,7 +6161,7 @@ fun printPayment(
     list.forEachIndexed {  index,it->
 
      //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
-        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount + it.tips)}"
 
         when(printerType){
 

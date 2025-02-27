@@ -501,7 +501,7 @@
     <string name="text_message">Text Message</string>
     <string name="text_customer_receipt">Text Customer Receipt</string>
     <string name="print">Print</string>
-    <string name="email_receipt">Email Receipt</string>
+    <string name="email_receipt">Email Address</string>
     <string name="phone_number">Mobile Number</string>
     <string name="phone_validate">Please enter Mobile Number</string>
     <string name="valid_phone_validate">Please enter valid Mobile Number</string>
@@ -932,6 +932,8 @@
     <string name="printerseries_l100">TM-L100 Series</string>
     <string name="cancelled">Cancelled</string>
     <string name="network_error">Network Error</string>
+    <string name="network_lost">Network Lost</string>
+    <string name="network_available">Network Available</string>
     <string name="add_item_note">Add Item Note</string>
     <string name="single_void_message">"Batch is not closed for this transaction. It can be refunded only once."</string>
     <string name="single_void_message_1">"Please confirm if you want to void this transaction."</string>

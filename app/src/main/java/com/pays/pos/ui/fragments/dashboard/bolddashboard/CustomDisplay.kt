@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -207,7 +209,7 @@ class CustomDisplay(
         getDetails()
         getLoyaltyPointListObserver()
         initDiscountLiveData()
-
+        observeFinalAmount()
 
         if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false) && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
             Log.e("TIP BEFORE WORKING","TIP BEFORE ENABLED")
@@ -265,6 +267,19 @@ class CustomDisplay(
 
     }
 
+    val setAmountToThankyouScreen=CoroutineScope(Dispatchers.Main)
+    private fun observeFinalAmount() {
+        dashBoardCategoryViewModel._thankyouAmount.observe(lifecycleOwner,object :Observer<String>{
+            override fun onChanged(it: String) {
+                setAmountToThankyouScreen.launch{
+                    Log.d("onTextChanged_1:",it)
+                    binding.apply {
+                        txtPaidAmount.text = "Paid ${it}"
+                    }
+                }
+            }
+        })
+    }
 
 
     fun checkForTipBeforeTransaction(_tipListViewModel: TipListViewModel){
@@ -1170,8 +1185,18 @@ class CustomDisplay(
                             binding.txtTotalCash?.text =
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
-                            binding.txtTotalCash?.text =
-                                MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCash?.text =
+                                        MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCash?.text =
+                                        MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                                }
+                            }else{
+                                binding.txtTotalCash?.text =
+                                    MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                            }
                         }
 
                         if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()
@@ -1180,8 +1205,14 @@ class CustomDisplay(
                             binding.txtTotalCard?.text =
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
-                            binding.txtTotalCard?.text =
-                                getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            if ((dashBoardCategoryViewModel.cashDiscountType.contains("Surcharge",ignoreCase = true)) && (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty)){
+                                binding.txtTotalCard?.text =
+                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                            }else{
+                                binding.txtTotalCard?.text =
+                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            }
+
                         }
 
                         Log.v("CustomerScreen:", "1")
@@ -1195,7 +1226,15 @@ class CustomDisplay(
                             binding.txtTotalCash?.text =
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
-                            binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                                }
+                            }else{
+                                binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                            }
                         }
 
 
@@ -1205,7 +1244,15 @@ class CustomDisplay(
                             binding.txtTotalCard?.text =
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
-                            binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)) {
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                                }
+                            }else {
+                                binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                            }
                         }
 
 
@@ -1269,12 +1316,8 @@ class CustomDisplay(
                 } else {
                     binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                 }
-
-
             }
-
         }
-
     }
 
     private fun getSurchargedPrice(amount: Double): String {
@@ -1566,6 +1609,7 @@ class CustomDisplay(
 
             }
 
+            Log.d("onTextChanged_2:",paidAmount.toPrecision(2).toString())
             txtPaidAmount.text = "Paid $${paidAmount.toPrecision(2)}"
 
         }
@@ -2522,6 +2566,15 @@ class CustomDisplay(
             )
             setKeyPad()
 
+            binding.imgBackTip.setOnSingleClickListener {
+                binding.addTipKeypadLayout.gone()
+                if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+                    binding.askForTipBeforeLayout.visible()
+                } else {
+                    binding.askForTipLayout.visible()
+                }
+            }
+
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
 
             txtContinue.setOnSingleClickListener {
@@ -2633,7 +2686,7 @@ class CustomDisplay(
                         }*/
                     }
                 } else {
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
             }
 
@@ -2714,7 +2767,7 @@ class CustomDisplay(
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            callUpdateTip()
+                            callUpdateTip(mTransactionViewModel)
                         }
                     }
                 } else {
@@ -2749,6 +2802,7 @@ class CustomDisplay(
 
         }
     }
+
 
     private fun setKeyPad() {
         binding.incKeypad.tvOne.setOnSingleClickListener {
@@ -3084,9 +3138,10 @@ class CustomDisplay(
         return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n", "")
     }
 
-    private fun callUpdateTip() {
+    private fun callUpdateTip(transactionViewModel: TransactionViewModel) {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
+            mTransactionViewModel = transactionViewModel
             mTransactionViewModel.updateTipWithSignature(
                 mOrderID,
                 signatureInBase64,
@@ -3325,7 +3380,7 @@ class CustomDisplay(
                 }*/
                     } else if (!mIsCardPayment) {
                         openCashDrawer()
-                        callUpdateTip()
+                        callUpdateTip(mTransactionViewModel)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -3335,7 +3390,7 @@ class CustomDisplay(
                 }
             }else {
                 openCashDrawer()
-                callUpdateTip()
+                callUpdateTip(mTransactionViewModel)
             }
         }
     }
@@ -3387,7 +3442,7 @@ class CustomDisplay(
                             String::class.java
                         )
                         mPaymentViewModel.dejavooRefTxnId=null
-                        callUpdateTip()
+                        callUpdateTip(mTransactionViewModel)
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(
@@ -3493,7 +3548,7 @@ class CustomDisplay(
                                     ) {
                                         mPaymentViewModel.valorRefTxnId = null
                                         mPaymentViewModel.valorTransactionNumber = null
-                                        callUpdateTip()
+                                        callUpdateTip(mTransactionViewModel)
 //                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
                                     } else {
                                         dismissProgressDialog()
@@ -3568,7 +3623,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3701,7 +3756,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3829,7 +3884,7 @@ class CustomDisplay(
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
-                            callUpdateTip()
+                            callUpdateTip(mTransactionViewModel)
                         } else {
                             showErrorLayout(response.body()!![0].transactionOutput?.transactionMessage.toString())
                         }
@@ -3876,6 +3931,7 @@ class CustomDisplay(
         if (this@CustomDisplay::paymentCoroutineScope.isInitialized) {
             paymentCoroutineScope.cancel()
         }
+        setAmountToThankyouScreen.cancel()
         super.onStop()
     }
 

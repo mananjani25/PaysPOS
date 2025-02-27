@@ -67,6 +67,9 @@ class PrinterViewModel @Inject constructor(
     private var _update = MutableLiveData<Event<String>>()
     val updatePrinter: LiveData<Event<String>> = _update
 
+    private var _popBackStack=MutableLiveData<Event<Boolean>>()
+    val popBackStack:LiveData<Event<Boolean>> = _popBackStack
+
     private var _localUpdatePrinter = MutableLiveData<Event<PrinterListModel>>()
     val localUpdatePrinter:LiveData<Event<PrinterListModel>> = _localUpdatePrinter
 
@@ -144,18 +147,26 @@ class PrinterViewModel @Inject constructor(
         LogUtil.logE(TAG, "PrinterType: ${type}")
         viewModelScope.launch {
             val resource: com.pays.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
-                posRepository.updatePrinterStatus(id, terminal_id, status)
+                when (type) {
+                    KITCHEN -> posRepository.updatePrinterStatusKitchen(id, terminal_id, status)
+
+                    CUSTOMER -> posRepository.updatePrinterStatusCustomer(id, terminal_id, status)
+
+                    else -> posRepository.updatePrinterStatus(id, terminal_id, status)
+                }
 
             when (resource.status) {
                 Status.LOADING -> {
 
                     _showProgress.value = Event(true)
                 }
+
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
 
                 }
+
                 Status.SUCCESS -> {
                     if (type == Constants.KITCHEN) {
                         posRepository.updateKitchenPrinterStatus(status, id)
@@ -207,8 +218,9 @@ class PrinterViewModel @Inject constructor(
                             unpaidReceiptAutoPrintTerminalIds = "",
                             orderTypes = printerListModel.printerModel?: arrayListOf(),
                             isDeleted = false,
-                            macAddress = printerListModel.deviceModel?.macAddress?:""
-
+                            macAddress = printerListModel.deviceModel?.macAddress?:"",
+                            kitchenStatus = printerListModel.isKitchenActive,
+                            customerStatus = printerListModel.isCustomerActive
 
 
                         )
@@ -239,7 +251,9 @@ class PrinterViewModel @Inject constructor(
                             unpaidReceiptAutoPrintTerminalIds = "",
                             orderTypes = printerListModel.printerModel?: arrayListOf(),
                             isDeleted = false,
-                            macAddress = printerListModel.deviceModel?.macAddress?:""
+                            macAddress = printerListModel.deviceModel?.macAddress?:"",
+                            kitchenStatus = printerListModel.isKitchenActive,
+                            customerStatus = printerListModel.isCustomerActive
 
 
 
@@ -252,6 +266,9 @@ class PrinterViewModel @Inject constructor(
 
                 }
                 Status.ERROR -> {
+                    if (resource.message?.contains("Couldn't find PrinterSetting with")?:false){
+                        _popBackStack.value = Event(true)
+                    }
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
 
