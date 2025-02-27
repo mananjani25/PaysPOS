@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -207,7 +209,7 @@ class CustomDisplay(
         getDetails()
         getLoyaltyPointListObserver()
         initDiscountLiveData()
-
+        observeFinalAmount()
 
         if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false) && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
             Log.e("TIP BEFORE WORKING","TIP BEFORE ENABLED")
@@ -265,6 +267,19 @@ class CustomDisplay(
 
     }
 
+    val setAmountToThankyouScreen=CoroutineScope(Dispatchers.Main)
+    private fun observeFinalAmount() {
+        dashBoardCategoryViewModel._thankyouAmount.observe(lifecycleOwner,object :Observer<String>{
+            override fun onChanged(it: String) {
+                setAmountToThankyouScreen.launch{
+                    Log.d("onTextChanged_1:",it)
+                    binding.apply {
+                        txtPaidAmount.text = "Paid ${it}"
+                    }
+                }
+            }
+        })
+    }
 
 
     fun checkForTipBeforeTransaction(_tipListViewModel: TipListViewModel){
@@ -1594,6 +1609,7 @@ class CustomDisplay(
 
             }
 
+            Log.d("onTextChanged_2:",paidAmount.toPrecision(2).toString())
             txtPaidAmount.text = "Paid $${paidAmount.toPrecision(2)}"
 
         }
@@ -3905,6 +3921,7 @@ class CustomDisplay(
         if (this@CustomDisplay::paymentCoroutineScope.isInitialized) {
             paymentCoroutineScope.cancel()
         }
+        setAmountToThankyouScreen.cancel()
         super.onStop()
     }
 
