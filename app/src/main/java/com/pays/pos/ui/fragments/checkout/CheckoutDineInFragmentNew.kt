@@ -2309,7 +2309,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 refId = "Ref${System.currentTimeMillis()}",
                 printReceipt = false,
                 performedBy = prefProvider.employeeName(),
-                isProd = false,
+                isProd = Constants.paymentLive,
                 txnType = TransactionType.CREDIT_SALE
             )
 
@@ -2439,6 +2439,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             }else{
                               //  makePaymentCreditCardDejavoo(RefId, ExtData)
                                 RefNumber = RefId
+                                paymentviewModel.dejavooRefTxnId=RefId
+
                                 makePaymentCreditCard(ExtData,Constants.DEJAVOO)
                             }
                         }
