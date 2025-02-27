@@ -2566,6 +2566,15 @@ class CustomDisplay(
             )
             setKeyPad()
 
+            binding.imgBackTip.setOnSingleClickListener {
+                binding.addTipKeypadLayout.gone()
+                if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+                    binding.askForTipBeforeLayout.visible()
+                } else {
+                    binding.askForTipLayout.visible()
+                }
+            }
+
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
 
             txtContinue.setOnSingleClickListener {
@@ -2793,6 +2802,7 @@ class CustomDisplay(
 
         }
     }
+
 
     private fun setKeyPad() {
         binding.incKeypad.tvOne.setOnSingleClickListener {
