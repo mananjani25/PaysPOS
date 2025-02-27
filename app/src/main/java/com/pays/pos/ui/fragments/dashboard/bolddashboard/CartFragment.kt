@@ -554,13 +554,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
         }
 
-        prefProvider.getValueboolean(IS_PRE_AUTH_ENABLE, false).let {
-            if (it) {
-                enablePreAuth()
-            } else {
-                binding.preAuthOption?.gone()
-            }
-        }
+       
 
 //        if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
 //
