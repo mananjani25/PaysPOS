@@ -9,10 +9,23 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
-import android.widget.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.widget.*
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -22,9 +35,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
-import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.R
-import com.pays.pos.data.entities.*
+import com.pays.pos.data.entities.CartModel
+import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbDiscount
+import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
 import com.pays.pos.data.remote.Constants.AMOUNT
@@ -48,12 +66,26 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.getSaltString
 import com.pays.pos.utils.callback.ManualSaleOptionsCustomCallback
-import com.pays.pos.utils.extensions.*
+import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.getCustomerDisplay
+import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -194,7 +226,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
             binding.btnPay.gone()
         } else {
-            binding.btnPay.visible()
+            binding.btnPay.gone()
         }
 
         getManualCategoryId()
