@@ -15825,8 +15825,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
                                                                     receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                                                        PrintSunmiUtils.normalTextLarge(
-                                                                            it
+                                                                        printLeft(
+                                                                            it,
+                                                                            isBold = false,
+                                                                            fontSize = FONT_SIZE_5X
                                                                         )
                                                                     }
 
