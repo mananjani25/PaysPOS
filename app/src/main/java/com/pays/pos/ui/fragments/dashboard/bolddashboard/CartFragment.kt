@@ -804,7 +804,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     // To check selected order type
     private fun checkOrderType() {
 
-        setUpPreAuthData()
+//        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
