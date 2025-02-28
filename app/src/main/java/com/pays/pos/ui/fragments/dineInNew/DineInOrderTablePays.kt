@@ -3551,10 +3551,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                        val dineInList = dineInTableAdapter.getList()
+                        val filterDineInList = dineInTableAdapter.getList().filter{ it.title?.lowercase() != "whole table" && it.isHeader == 0 }
 
-                        val totalGuest = dineInList.filter { it.title?.lowercase() != "whole table" && it.isHeader == 0  }.count()
-                        val paidGuest = dineInList.filter { it.title?.lowercase() != "whole table" && it.isHeader == 0 && it.isPaid }.count()
+                        val totalGuest = filterDineInList.size
+                        val paidGuest = filterDineInList.count { it.isPaid }
 
 
                         Log.e("DINE IN TABLE PAID BUTTON","DINE IN TABLE PAID BUTTON $totalGuest $paidGuest")
