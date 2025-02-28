@@ -188,6 +188,7 @@ class AddItemToWastageDialog : DialogFragment() {
                             })
                             binding.rvWastageReasons.adapter = wastageItemReasonsAdapter
 
+                            wastageItemsReasonsList.sortBy { it.sort }
                             wastageItemReasonsAdapter.add(wastageReasonsList = wastageItemsReasonsList)
                         }
                     }

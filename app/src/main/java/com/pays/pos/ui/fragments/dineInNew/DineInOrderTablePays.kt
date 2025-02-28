@@ -3559,10 +3559,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         Log.e("DINE IN TABLE PAID BUTTON","DINE IN TABLE PAID BUTTON $totalGuest $paidGuest")
 
-                        if(paidGuest == totalGuest-1) {
-                            binding.btnPayNew.invisible()
-                        } else
-                            binding.btnPayNew.visible()
+//                        if(paidGuest == totalGuest-1) {
+//                            binding.btnPayNew.invisible()
+//                        } else
+//                            binding.btnPayNew.visible()
 
 
                         if (!isFromWastage) {
