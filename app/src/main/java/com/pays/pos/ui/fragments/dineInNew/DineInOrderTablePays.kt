@@ -333,7 +333,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         }
 
-
         return binding.root
     }
 
@@ -3549,6 +3548,22 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
+
+
+
+                        val dineInList = dineInTableAdapter.getList()
+
+                        val totalGuest = dineInList.filter { it.title?.lowercase() != "whole table" && it.isHeader == 0  }.count()
+                        val paidGuest = dineInList.filter { it.title?.lowercase() != "whole table" && it.isHeader == 0 && it.isPaid }.count()
+
+
+                        Log.e("DINE IN TABLE PAID BUTTON","DINE IN TABLE PAID BUTTON $totalGuest $paidGuest")
+
+                        if(paidGuest == totalGuest-1) {
+                            binding.btnPayNew.invisible()
+                        } else
+                            binding.btnPayNew.visible()
+
 
                         if (!isFromWastage) {
 
