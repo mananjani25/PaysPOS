@@ -18,9 +18,11 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -151,6 +153,10 @@ class CustomDisplay(
     lateinit var mTransactionViewModel: TransactionViewModel
     lateinit var mTipListViewModel: TipListViewModel
     lateinit var mPaymentViewModel: PaymentViewModel
+
+    private val mNewTransactionViewModel: TransactionViewModel by lazy {
+        ViewModelProvider((context as AppCompatActivity))[TransactionViewModel::class.java]
+    }
 
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
     private var isGuestPay: Boolean = false
@@ -2686,7 +2692,7 @@ class CustomDisplay(
                         }*/
                     }
                 } else {
-                    callUpdateTip(mTransactionViewModel)
+                    callUpdateTip(mNewTransactionViewModel)
                 }
             }
 
@@ -2767,7 +2773,7 @@ class CustomDisplay(
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            callUpdateTip(mTransactionViewModel)
+                            callUpdateTip(mNewTransactionViewModel)
                         }
                     }
                 } else {
@@ -3380,7 +3386,7 @@ class CustomDisplay(
                 }*/
                     } else if (!mIsCardPayment) {
                         openCashDrawer()
-                        callUpdateTip(mTransactionViewModel)
+                        callUpdateTip(mNewTransactionViewModel)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -3390,7 +3396,7 @@ class CustomDisplay(
                 }
             }else {
                 openCashDrawer()
-                callUpdateTip(mTransactionViewModel)
+                callUpdateTip(mNewTransactionViewModel)
             }
         }
     }
@@ -3442,7 +3448,7 @@ class CustomDisplay(
                             String::class.java
                         )
                         mPaymentViewModel.dejavooRefTxnId=null
-                        callUpdateTip(mTransactionViewModel)
+                        callUpdateTip(mNewTransactionViewModel)
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(
@@ -3548,7 +3554,7 @@ class CustomDisplay(
                                     ) {
                                         mPaymentViewModel.valorRefTxnId = null
                                         mPaymentViewModel.valorTransactionNumber = null
-                                        callUpdateTip(mTransactionViewModel)
+                                        callUpdateTip(mNewTransactionViewModel)
 //                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
                                     } else {
                                         dismissProgressDialog()
@@ -3623,7 +3629,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip(mTransactionViewModel)
+                    callUpdateTip(mNewTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3756,7 +3762,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip(mTransactionViewModel)
+                    callUpdateTip(mNewTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3884,7 +3890,7 @@ class CustomDisplay(
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
-                            callUpdateTip(mTransactionViewModel)
+                            callUpdateTip(mNewTransactionViewModel)
                         } else {
                             showErrorLayout(response.body()!![0].transactionOutput?.transactionMessage.toString())
                         }
