@@ -71,7 +71,13 @@ import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.model.requestModel.*
+import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.pays.pos.data.model.requestModel.OrderRequestModel
+import com.pays.pos.data.model.requestModel.PaymentAttributes
+import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
+import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -3298,8 +3304,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             showPaymentNotConnectedMessage()
                         }
                     }else if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.VELOR,ignoreCase = true) || prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.VALOR,ignoreCase = true)){
+                        transactionInProgress()
                         makeValorPaymentRequest()
                     }else if(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.DEJAVOO,ignoreCase = true)){
+                        transactionInProgress()
                         makeDejavooPaymentRequest()
                     }else if(mSessionManager.isConnected){
 //                        Magtek
