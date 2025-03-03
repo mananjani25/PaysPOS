@@ -5019,6 +5019,7 @@ class TransactionDetailsFragment : Fragment() {
                                         )
                                 }
                                 lineBreak()
+                                lineBreak()
 
                                 if (kitchenSettingModel.showOrderType) {
                                     printCenter(
@@ -5028,6 +5029,7 @@ class TransactionDetailsFragment : Fragment() {
                                     )
                                     lineBreak()
                                 }
+                                lineBreak()
 
                                 if (paymentDetailsResponse.data.order.order_type.equals("Online Order", true) ||
                                     paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder", true) ||
@@ -5040,6 +5042,7 @@ class TransactionDetailsFragment : Fragment() {
                                     )
                                     lineBreak()
                                 }
+                                lineBreak()
 
                                 if (kitchenSettingModel.showTeamMember && paymentDetailsResponse.data.order.employee != null) {
                                     printLeft(
@@ -5065,23 +5068,14 @@ class TransactionDetailsFragment : Fragment() {
                                 printDashedLineAndBreak()
                                 lineBreak()
 
-
-//            receiptModel?.order?.orderItems?.let {
-//                addOrdersForKitchenInner(
-//                    it,
-//                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
-//                )
-//            }
-
                                 paymentDetailsResponse.data.order.order_items.let {
                                     addOrdersForKitchenLandiTransitionInner(
                                         it,
                                         kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()),
                                         LPrint
                                     )
+                                    lineBreak()
                                 }
-
-                                lineBreak()
 
 
                                 if (paymentDetailsResponse.data.order.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
@@ -5094,8 +5088,6 @@ class TransactionDetailsFragment : Fragment() {
                                         fontSize = FONT_SIZE_5X
                                     )
                                 }
-
-                                lineBreak()
 
                                 if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                                     if (paymentDetailsResponse.data.order.customer != null) {
@@ -5113,7 +5105,8 @@ class TransactionDetailsFragment : Fragment() {
                                                 paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName,
                                                 isBold = false,
                                                 fontSize = FONT_SIZE_5X
-                                                )
+                                            )
+                                            lineBreak()
                                         }
 
                                         if (kitchenSettingModel.showCustomerPhone) {
@@ -5124,6 +5117,7 @@ class TransactionDetailsFragment : Fragment() {
                                                         isBold = false,
                                                         fontSize = FONT_SIZE_5X
                                                     )
+                                                    lineBreak()
                                                 }
                                             }
                                         }
@@ -5143,20 +5137,8 @@ class TransactionDetailsFragment : Fragment() {
                                                             isBold = false,
                                                             fontSize = FONT_SIZE_5X
                                                         )
+                                                        lineBreak()
                                                     }
-//                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-//                                    .forEach {
-//
-//                                        if (it.typeOfAddress.equals(
-//                                                Constants.BILLING_ADDRESS,
-//                                                ignoreCase = true
-//                                            )
-//                                        ) {
-//                                            PrintSunmiUtils.normalTextLarge(
-//                                                it.fullAddress
-//                                            )
-//                                        }
-//                                    }
                                                 }
                                             }
                                         }
@@ -5169,7 +5151,6 @@ class TransactionDetailsFragment : Fragment() {
                                 paperCut()
                                 disconnectLandiPrinter()
 
-                                //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
                             } catch (e: Exception) {
                                 // printerDialog.dismiss()
