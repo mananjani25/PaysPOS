@@ -4038,6 +4038,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
         // END RESET
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!,true)
+
+
+        //Remove moved items from list
+        orderRequestModel.order.orderItemsAttributes
+            .filter { it.itemId in listOfMoveItemIds }
+            .forEach { it.isDestroy = true }
+
+
+
         orderId?.let {
             viewModel.updateOrder(
                 it,
