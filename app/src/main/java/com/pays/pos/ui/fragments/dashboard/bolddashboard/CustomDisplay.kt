@@ -155,7 +155,9 @@ class CustomDisplay(
     lateinit var mPaymentViewModel: PaymentViewModel
 
     private val mNewTransactionViewModel: TransactionViewModel by lazy {
-        ViewModelProvider((context as AppCompatActivity))[TransactionViewModel::class.java]
+        (context as? AppCompatActivity)?.let {
+            ViewModelProvider(it)[TransactionViewModel::class.java]
+        } ?: throw IllegalStateException("Context is not an AppCompatActivity")
     }
 
     private var dineInPaymentDetails: GuestPaymentCalculationModel? = null
