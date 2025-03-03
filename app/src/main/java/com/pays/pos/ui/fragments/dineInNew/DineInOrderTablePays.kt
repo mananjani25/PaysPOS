@@ -143,6 +143,7 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 import androidx.lifecycle.Observer
+import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
 
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -12653,6 +12654,52 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 printer.printAsync(commands).await()
                                 printer.closeAsync().await()
+
+
+                                try {
+
+                                    val firedItems = addOrdersForKitchenDineInLandi(
+                                        item, customerReceiptPrinters.printerCategories.toCollection(
+                                            arrayListOf()
+                                        ), listItemWithGuest
+                                    )
+
+                                    updateFireItemsForPrinterQueue?.apply {
+
+                                        CoroutineScope(Dispatchers.Main).launch {
+
+                                            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                                var fireAllIds =
+                                                    android.text.TextUtils.join(",", firedItems)
+
+                                                viewModel.fireItemToKitchen(
+                                                    orderId ?: 0,
+                                                    true,
+                                                    fireAllIds,
+                                                    true
+                                                )
+
+                                                val list = dineInTableAdapter.getList()
+
+                                                val firedItemIds = firedItems.map { it.toInt() }.toSet()
+
+                                                list.forEach { item ->
+                                                    if (item.item?.orderItemId in firedItemIds) {
+                                                        item.item?.isFired = true
+                                                    }
+                                                }
+
+                                                dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+
+                                            }
+                                        }
+                                    }
+
+
+
+                                }catch (e:Exception) {
+                                    e.printStackTrace()
+                                }
 
 
                             }
