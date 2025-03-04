@@ -931,6 +931,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
 
+            restrictTvCashClicks()
+
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ request_for_customAmount_1"))
 

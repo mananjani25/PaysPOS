@@ -6,14 +6,24 @@ import android.app.ActivityManager
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ComponentCallbacks2
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -97,8 +107,19 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
+
 import com.pays.pos.utils.*
+
+import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.FileUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.NetworkChangeListener
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.addDoubleDotLineForSunmiQueue
+import com.pays.pos.utils.addHorizontalLineNew
+import com.pays.pos.utils.addOrdersForKitchenCustomerNewPrinter
+import com.pays.pos.utils.disconnectSocket
+import com.pays.pos.utils.executeAsyncTask
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
@@ -117,7 +138,13 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -128,8 +155,11 @@ import java.net.URI
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 
 /*import com.zebra.scannercontrol.DCSScannerInfo
@@ -1412,8 +1442,28 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
 
+    private fun showNoInternetAlertDialog(){
+        AlertUtils.showCustomAlertWithTitleListenerWithRefresh(this, message = getString(R.string.we_didnt_found_internet), listener = object:DialogInterface.OnClickListener{
+            override fun onClick(p0: DialogInterface?, p1: Int) {
+                if (InternetUtils.isInternetAvailable(applicationContext)) {
+                    p0?.dismiss()
+                    val intent = packageManager.getLaunchIntentForPackage(packageName)
+                    intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    exitProcess(0)
+                }else{
+                    showNormalToast(getString(R.string.no_internet))
+                    showNoInternetAlertDialog()
+                }
+            }
+        })
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!InternetUtils.isInternetAvailable(applicationContext)){
+            showNoInternetAlertDialog()
+            return
+        }
         MainApplication.mainActivity = this
         permissionCheck()
         networkChangeListener = NetworkChangeListener(this, this)
@@ -1778,6 +1828,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
             ), 1515
         )
 

@@ -310,7 +310,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun getTipDetails(tippedAmount: Double, orderId: Int?){
         CoroutineScope(Dispatchers.Main).launch {
-        transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1,"in",0)
+          transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1,"in",0)
         }
     }
 
@@ -7645,6 +7645,7 @@ class TransactionDetailsFragment : Fragment() {
                                     printLeft("ReceiptID : ${order.order.offline_id.trim()}")
                                     lineBreak()
 
+
                                     printLeft("Employee : ${order.order.employee.trim()}")
                                     lineBreak()
 
@@ -7968,6 +7969,7 @@ class TransactionDetailsFragment : Fragment() {
                                         )
                                         lineBreak()
 
+
                                         var strCardType =
                                             paymentDetailsResponse.data.card_type
 
@@ -7994,13 +7996,12 @@ class TransactionDetailsFragment : Fragment() {
                                         printLeft(
                                             padLine(
                                                 "Transaction Type",
-                                                paymentDetailsResponse.data.payment_type ?: "Cash",
+                                                paymentDetailsResponse.data.payment_type,
                                                 PrintSunmiUtils.lineChar()
                                             ).toString()
                                         )
                                         lineBreak()
                                     }
-
 
                                     lineBreak()
 

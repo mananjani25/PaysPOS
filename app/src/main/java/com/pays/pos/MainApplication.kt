@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.util.Log
@@ -18,7 +19,9 @@ import com.pax.poslink.POSLinkAndroid
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.ui.activities.NoInternetActivity
 import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.extensions.NoInternetException
 import com.pays.pos.utils.paxUtils.Convenience
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
@@ -89,38 +92,46 @@ class MainApplication : Application() {
 
         Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
 
-            //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
-            FirebaseCrashlytics.getInstance().log(paramThrowable.message + "")
-            FirebaseCrashlytics.getInstance().recordException(paramThrowable)
-            Log.e(
-                getString(R.string.app_name),
-                "Uncaught exception in thread " + paramThread.getName(),
-                paramThrowable
-            );
+            if (paramThrowable is NoInternetException || paramThrowable is HttpException){
 
-            paramThrowable.localizedMessage?.let {
+            }else {
+
+                //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
+                FirebaseCrashlytics.getInstance().log(paramThrowable.message + "")
+                FirebaseCrashlytics.getInstance().recordException(paramThrowable)
                 Log.e(
-                    "Error" + Thread.currentThread().stackTrace,
-                    it
-                )
-            }
+                    getString(R.string.app_name),
+                    "Uncaught exception in thread " + paramThread.getName(),
+                    paramThrowable
+                );
 
-            if (defaultHandler != null) {
-                defaultHandler.uncaughtException(paramThread, paramThrowable);
-            }
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} MainApplication.kt = ${paramThrowable.printStackTrace()}"))
+                paramThrowable.localizedMessage?.let {
+                    Log.e(
+                        "Error" + Thread.currentThread().stackTrace,
+                        it
+                    )
+                }
+                if (defaultHandler != null) {
+                    defaultHandler.uncaughtException(paramThread, paramThrowable);
+                }
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} MainApplication.kt = ${paramThrowable.printStackTrace()}"))
 
-            if (paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException && paramThrowable !is HttpException) {
-                paramThrowable.printStackTrace()
-                mainActivity?.finish()
-            } else {
-                if (paramThrowable is HttpException) {
-                    if (!InternetUtils.isServerReachable()){
-                        Toast.makeText(applicationContext, getString(R.string.server_not_reachable), Toast.LENGTH_SHORT).show()
+                if (paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException && paramThrowable !is HttpException) {
+                    paramThrowable.printStackTrace()
+                    mainActivity?.finish()
+                } else {
+                    if (paramThrowable is HttpException) {
+                        if (!InternetUtils.isServerReachable()) {
+                            Toast.makeText(
+                                applicationContext,
+                                getString(R.string.server_not_reachable),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             }
-
         }
         /*try {
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)

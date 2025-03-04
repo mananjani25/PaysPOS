@@ -185,6 +185,14 @@ final object LPrint {
 
         }
     }
+    fun printBoldCenter(string: String){
+        outputStream?.apply {
+            write(BOLD_ON)
+            write(CENTER_ALIGN)
+            write(string.toByteArray())
+
+        }
+    }
 
     fun printDashedLineAndBreak(fontSize: ByteArray = NORMAL_SIZE) {
         outputStream?.write(fontSize)
