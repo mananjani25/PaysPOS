@@ -11623,24 +11623,36 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              */
                                             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
-                                                /*receiptModel?.order?.payments?.last()?.id*/
-                                                val str10 = padLine(
-                                                    "Transaction ID",
-                                                    "" + receiptModel?.order?.payments?.size?.minus(1)
-                                                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
-                                                    48
-                                                ).toString()
-                                                printLeft(str10)
-                                                lineBreak()
+                                                try {
+                                                    /*receiptModel?.order?.payments?.last()?.id*/
+                                                    val str10 = padLine(
+                                                        "Transaction ID",
+                                                        "" + receiptModel?.order?.payments?.size?.minus(
+                                                            1
+                                                        )
+                                                            ?.let {
+                                                                receiptModel?.order?.payments?.get(
+                                                                    it
+                                                                )?.id
+                                                            },
+                                                        48
+                                                    ).toString()
+                                                    printLeft(str10)
+                                                    lineBreak()
 
-                                                /*receiptModel?.order?.payments?.last()?.paymentType*/
-                                                val str11 = padLine(
-                                                    "Transaction Type",
-                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
-                                                    48
-                                                ).toString()
-                                                printLeft(str11)
-                                                lineBreak()
+                                                    /*receiptModel?.order?.payments?.last()?.paymentType*/
+                                                    val str11 = padLine(
+                                                        "Transaction Type",
+                                                        receiptModel?.order?.payments?.get(
+                                                            receiptModel?.order?.payments?.size!! - 1
+                                                        )?.paymentType,
+                                                        48
+                                                    ).toString()
+                                                    printLeft(str11)
+                                                    lineBreak()
+                                                } catch (e: Exception){
+                                                    e.printStackTrace()
+                                                }
                                             }
 
 //                                        get(receiptModel?.order?.payments?.size!! - 1)
