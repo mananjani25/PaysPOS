@@ -15506,14 +15506,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
 
                         } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
-                            if (isAdded) {
+                            lifecycleScope.launch {
+                                while (!isAdded) {
+                                    delay(1000)  // Wait until the fragment is attached
+                                }
+                                printKitchenFromLandiInner(data)
+                            }
+                            /*if (isAdded) {
                                 printKitchenFromLandiInner(data)
                             }else{
                                 delay(2000)
                                 if (isAdded){
                                     printKitchenFromLandiInner(data)
                                 }
-                            }
+                            }*/
                         } else {
 
                             if (isNotPrinted) {
