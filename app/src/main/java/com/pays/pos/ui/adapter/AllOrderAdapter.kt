@@ -57,7 +57,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             binding.executePendingBindings()
             binding.llShowLayout.visibility = View.GONE
 
-            if (orderedTab == ALL_ORDER_TAB) {
+            if (orderedTab == ALL_ORDER_TAB || orderedTab == OPEN_ORDER_TAB) {
                 binding.txtOrderType.visible()
                 binding.txtOrderType.text = item.orderTypeName
             } else {
