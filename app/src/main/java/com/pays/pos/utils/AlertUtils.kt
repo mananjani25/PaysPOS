@@ -568,6 +568,42 @@ object AlertUtils {
 
     }
 
+    fun showCustomAlertWithTitleListenerWithRefresh(
+        context: Context,
+        title: String? = context.getString(R.string.app_name),
+        message: String?,
+        listener: DialogInterface.OnClickListener?
+    ) {
+        if (message == null || message.equals("null", ignoreCase = true)) {
+            return
+        }
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog_with_title_and_ok, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+        val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val tvSubTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
+
+        tvTitle.text = title
+        tvSubTitle.text = message
+
+        tvSubTitle.textSize=15f
+        val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
+        btSave.text = context.getString(R.string.refresh)
+        btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.btnColorDark))
+        btSave.setOnClickListener {
+            customDialog.dismiss()
+            listener?.onClick(customDialog, 0)
+        }
+        /* val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
+         btDismiss.visibility = View.VISIBLE
+         btDismiss.setOnClickListener {
+             customDialog.dismiss()
+         }*/
+
+    }
+
     fun showCustomAlertWithListenerWithOKCancel(
         context: Context,
         message: String?,

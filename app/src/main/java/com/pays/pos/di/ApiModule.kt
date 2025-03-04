@@ -40,8 +40,8 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideHostSelectionInterceptor(preferenceHelper: PrefProvider): HostSelectionInterceptor {
-        return HostSelectionInterceptor(preferenceHelper)
+    fun provideHostSelectionInterceptor(preferenceHelper: PrefProvider, @ApplicationContext context: Context): HostSelectionInterceptor {
+        return HostSelectionInterceptor(preferenceHelper=preferenceHelper, context=context)
     }
 
     @Provides
