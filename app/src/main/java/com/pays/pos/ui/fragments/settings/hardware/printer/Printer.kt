@@ -1301,7 +1301,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         if (deviceList!!.get(i).printerName.lowercase() == "TM-U220".lowercase()
                         ) {
                             Log.e(TAG, "checkInside 1")
-                            if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
+//                            if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false) == true) {
 
                                 Log.e(TAG, "checkInside 2")
 
@@ -1337,7 +1337,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                                     )
                                 )
-                            }
+//                            }
                         } else {
                             /*  tempAvailableList.add(  PrinterListModel(
                                   printerName = deviceList!!.get(i).printerName,
@@ -1444,11 +1444,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             if (deviceList!!.get(i).printerName.lowercase() == "TM-U220".lowercase()
                             ) {
                                 Log.e(TAG, "checkInside 1")
-                                if (prefProvider.getValueboolean(
-                                        IS_MASTER_TERMINAL,
-                                        false
-                                    ) == true
-                                ) {
+//                                if (prefProvider.getValueboolean(
+//                                        IS_MASTER_TERMINAL,
+//                                        false
+//                                    ) == true
+//                                ) {
 
                                     Log.e(TAG, "checkInside 2")
 
@@ -1484,7 +1484,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                                         )
                                     )
-                                }
+//                                }
                             } else {
                                 /*  tempAvailableList.add(  PrinterListModel(
                                       printerName = deviceList!!.get(i).printerName,
@@ -1891,6 +1891,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                             viewModel.createPrinterQueueTestOrder(order)
+                            onInitPrinter(printerListModel)
 
                         } else {
 

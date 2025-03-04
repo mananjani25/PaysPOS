@@ -16327,19 +16327,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                    ?.forEach {
-
-                                        if (it.typeOfAddress.equals(
-                                                BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            mPrinter.addText(
-                                                it.fullAddress
-                                            )
-                                        }
-                                    }
+                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                    mPrinter.addText(it)
+                                }
+//                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+//                                    ?.forEach {
+//
+//                                        if (it.typeOfAddress.equals(
+//                                                BILLING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            mPrinter.addText(
+//                                                it.fullAddress
+//                                            )
+//                                        }
+//                                    }
 
                                 //  builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
