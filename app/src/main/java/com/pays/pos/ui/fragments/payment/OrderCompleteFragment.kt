@@ -11656,21 +11656,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             }
 
 //                                        get(receiptModel?.order?.payments?.size!! - 1)
-                                            if (receiptModel?.order?.payments?.last()?.paymentType?.lowercase() == "Card".lowercase()) {
-
-                                                /*PrintSunmiUtils.normalText(
-                            padLine(
-                                "",
-                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
-                                if (customerSettingModel.fonts == LARGE) 23 else 48
-                            ).toString()
-                        )*/
+//                                            if (receiptModel?.order?.payments?.last()?.paymentType?.lowercase() == "Card".lowercase()) {
+                                            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
                                                 var strCardType =
-                                                    receiptModel?.order?.payments?.last()?.cardType ?: ""
+                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
 
-                                                if(strCardType == "") {
-                                                    if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+//                                                receiptModel?.order?.payments?.last()?.cardType ?: ""
+
+                                                if (strCardType == "") {
+                                                    if (paymentViewModel.extData.isNotEmpty()) {
 
                                                         var applabStartIndex =
                                                             paymentViewModel.extData.indexOf("<APPLAB>")
@@ -11682,6 +11677,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 applabEndIndex
                                                             )
                                                     }
+                                                } else {
+                                                    strCardType = "N/A"
                                                 }
 
                                                 printLeft(
@@ -11693,10 +11690,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 )
                                                 lineBreak()
 
+                                                val strCardNumber =
+                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString()
+
+//                                                receiptModel?.order?.payments?.last()?.cardNumber
+
                                                 printLeft(
                                                     padLine(
                                                         "",
-                                                        receiptModel?.order?.payments?.last()?.cardNumber,
+                                                        strCardNumber,
                                                         48
                                                     ).toString()
                                                 )
