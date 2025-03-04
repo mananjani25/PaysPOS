@@ -108,9 +108,17 @@ import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
-class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
+class CheckoutDineInFragmentNew : Fragment,
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+
+    constructor(dineInDataModel: CheckOutDineInDataModel){
+        this.dineInDataModel=dineInDataModel
+    }
+
+    constructor() : super()
+
+    lateinit var dineInDataModel: CheckOutDineInDataModel
     private var textToPay: Boolean = false
     private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -1343,7 +1351,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     }
                     paymentType == "External" -> {
                         val bundle = Bundle()
-                        bundle.putBoolean("isDineIn", false)
+                        bundle.putBoolean("isDineIn", true)
 
                         if (remainingAmount == 0.0) {
                             bundle.putDouble("PaidAmount", paymentAmount)
@@ -1422,6 +1430,25 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", false)
+
+                        bundle.putParcelableArrayList(
+                            DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
+                                arrayListOf()
+                            )
+                        )
+                        bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+
+                        Log.e("PRINT_DATA_DINE_IN",Gson().toJson(dineInDataModel.dineInOrderDetails))
+                        bundle.putParcelable(
+                            DINE_IN_GUEST_PAYMENT_DATA,
+                            dineInDataModel.guestPaymentModel
+                        )
+                        dineInDataModel.guestPosition?.let { it1 ->
+                            bundle.putInt(
+                                Constants.GUEST_POSITION,
+                                it1
+                            )
+                        }
 
                         prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
 
@@ -2290,7 +2317,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 refId = "Ref${System.currentTimeMillis()}",
                 printReceipt = false,
                 performedBy = prefProvider.employeeName(),
-                isProd = false,
+                isProd = Constants.paymentLive,
                 txnType = TransactionType.CREDIT_SALE
             )
 
@@ -2420,6 +2447,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             }else{
                               //  makePaymentCreditCardDejavoo(RefId, ExtData)
                                 RefNumber = RefId
+                                paymentviewModel.dejavooRefTxnId=RefId
+
                                 makePaymentCreditCard(ExtData,Constants.DEJAVOO)
                             }
                         }

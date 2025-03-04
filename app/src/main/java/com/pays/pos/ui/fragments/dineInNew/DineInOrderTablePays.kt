@@ -76,6 +76,7 @@ import com.pays.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
+import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
@@ -140,6 +141,8 @@ import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
+
+import androidx.lifecycle.Observer
 
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -334,12 +337,36 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         return binding.root
     }
 
+    // calculate service charge base on guest count for dine in order type
+    private fun getServiceChargeFromGuestCount(guestCount: Int): List<TbServiceCharge> {
+        var list: List<TbServiceCharge> = listOf()
+        var isApplied = false
+        serviceChargeList.forEach {
+            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER && it.min_guest_count != null && it.max_guest_count != null && guestCount > 0) {
+                if (isInRange(it.min_guest_count, it.max_guest_count, guestCount)) {
+                    isApplied = true
+                    list = listOf(it)
+                }
+            }
+        }
+        if (!isApplied) {
+            serviceChargeList.forEach { service ->
+                if (service.id == checkMaxGuestCountId()) {
+                    list = listOf(service)
+                    return@forEach
+                }
+            }
+        }
+        return list
+    }
+
     override fun onResume() {
         super.onResume()
 
         dashboardViewModel.currentCartItems.clear()
         dashboardViewModel.deleteCart()
         dashboardViewModel.deleteCartItems()
+
     }
 
     private fun observeRefresh(savedInstanceState: Bundle?) {
@@ -1196,7 +1223,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     val whole_ = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
                 Log.e("Dine in","DATA WHOLE $whole_")
 
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({ //Pass mainLooper inside the Handler()
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                         findNavController().navigate(
                             R.id.action_dineInOrderTable_to_checkoutDineIN,
@@ -1231,15 +1258,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 deleteCart()
                 clearCustomer()
             }
-
-            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            }
+//            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
             prefProvider.setValue(ORDER_TYPE_NAME, "")
             dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
-            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            }
+//            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
 
         binding.txtEditOrder.setOnClickListener {
@@ -2536,10 +2568,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+    fun checkMaxGuestCountId(): Int {
         var maxValue = 0
         var serviceChargeId = 0
-        serviceChargeList.forEach { serviceCharge ->
+        dashboardViewModel.serviceChargesList.forEach { serviceCharge ->
             if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                 if (serviceCharge.max_guest_count!! >= maxValue) {
                     maxValue = serviceCharge.max_guest_count
@@ -2635,6 +2667,21 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         divideDiscount: Double
     ) {
 
+        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
+
+        val serviceChargesList = getServiceChargeFromGuestCount(guestCount)
+
+        var serviceChargesFinal = 0.0
+        serviceChargesList.forEach {
+            serviceChargesFinal += ((subTotalGuest) * it.percentage) / 100
+        }
+
+        val serviceChargeGuestFinal = serviceChargesFinal
+
+        val eligibleGuest = dineInTableAdapter.getList().count { it.isHeader == 0 }
+
+        val divideDiscountFinal = totalDiscount / totalGuestCount
+
         if (listItem.isNotEmpty()) {
             if (listItem[0].isPaid) {
                 guestPrint(
@@ -2643,28 +2690,28 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     guestName,
                     listWTitems,
                     subTotalGuest,
-                    subTotalGuest + taxGuest + serviceChargeGuest,
+                    subTotalGuest + taxGuest + serviceChargeGuestFinal,
                     taxGuest,
-                    serviceChargeGuest,
-                    divideDiscount
+                    serviceChargeGuestFinal,
+                    divideDiscountFinal
                 )
             } else {
                 guestPrint(
                     "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
-                    subTotalGuest + taxGuest + serviceChargeGuest,
+                    subTotalGuest + taxGuest + serviceChargeGuestFinal,
                     taxGuest,
-                    serviceChargeGuest,
-                    divideDiscount
+                    serviceChargeGuestFinal,
+                    divideDiscountFinal
                 )
 
             }
         } else if (listItem.isEmpty() && listWTitems.isNotEmpty()) {
             guestPrint(
                 "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
-                subTotalGuest + taxGuest + serviceChargeGuest,
+                subTotalGuest + taxGuest + serviceChargeGuestFinal,
                 taxGuest,
-                serviceChargeGuest,
-                divideDiscount
+                serviceChargeGuestFinal,
+                divideDiscountFinal
             )
         }
 
@@ -3505,6 +3552,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.onDisplayChanged()
                             presentation.showTableDetails(baseResponse)
                         }
+
                         if (!isFromWastage) {
 
 
@@ -6614,8 +6662,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                                    printCenter("Whole Table")
-                                    lineBreak()
+                                    if(listWTitems.size > 0) {
+                                        printCenter("Whole Table")
+                                        lineBreak()
+                                    }
 
 
 //                                    var guestCount: Int =
@@ -6663,20 +6713,29 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     if (getOrderDetailsResponse?.totalDiscount != null) {
 
-                                        val discountToPrint =
+//                                        val discountToPrint =
+//                                            padLine(
+//                                                "Total Discount",
+//
+//                                                if (getOrderDetailsResponse?.totalDiscount == 0.0) {
+////                            "-$" + MethodUtils.roundOffAmountString(0.00)
+//                                                    "$" + MethodUtils.roundOffAmountString(0.00)
+//                                                } else {
+//                                                    getOrderDetailsResponse?.totalDiscount?.let {
+//                                                        "-$" + MethodUtils.roundOffAmountString(it)
+//                                                    }
+//                                                },
+//                                                48
+//                                            ).toString()
+
+                                            val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-
-                                                if (getOrderDetailsResponse?.totalDiscount == 0.0) {
-//                            "-$" + MethodUtils.roundOffAmountString(0.00)
-                                                    "$" + MethodUtils.roundOffAmountString(0.00)
-                                                } else {
-                                                    getOrderDetailsResponse?.totalDiscount?.let {
-                                                        "-$" + MethodUtils.roundOffAmountString(it)
-                                                    }
-                                                },
+                                                "-$" + MethodUtils.roundOffAmountString(divideDiscount),
                                                 48
                                             ).toString()
+
+
 
                                         printLeft(discountToPrint)
                                         lineBreak()
@@ -11181,7 +11240,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin),
+                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin + totalDiscount),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -11226,10 +11285,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     ) {
 
+                                        val serviceChargesList = getServiceChargeFromGuestCount(dineInTableAdapter.getList().count { it.isHeader == 0 } - 1)
+
+                                        var serviceChargesFinal = 0.0
+                                        serviceChargesList.forEach {
+
+                                            serviceChargesFinal += ((getOrderDetailsResponse?.subTotal?:0.0) * it.percentage) / 100
+                                        }
+
                                         val serviceChargeToPrint =
                                             padLine(
                                                 "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                "$" + MethodUtils.roundOffAmountString(serviceChargesFinal/*serviceCharges*/),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -11271,7 +11338,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      */
 
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt)
+                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt )
 
 
                                     val totalAmountToPrint =

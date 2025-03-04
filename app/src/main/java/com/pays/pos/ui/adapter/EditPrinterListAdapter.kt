@@ -162,11 +162,15 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
 
             }
             else{
-                binding.chBoxCustomerManual2.isChecked =
-                    model.printerSettings.get(0).autoPrinting
-                binding.chBoxKitchenManual2.isChecked =
-                    model.printerSettings.get(0).autoPrinting
-                Log.e(TAG,"checkAdapterSize 3")
+                try {
+                    binding.chBoxCustomerManual2.isChecked =
+                        model.printerSettings.get(0).autoPrinting
+                    binding.chBoxKitchenManual2.isChecked =
+                        model.printerSettings.get(0).autoPrinting
+                    Log.e(TAG, "checkAdapterSize 3")
+                }catch (e:Exception){
+
+                }
             }
 
             /*binding.chBoxCustomerManual.setOnCheckedChangeListener { buttonView, isChecked ->

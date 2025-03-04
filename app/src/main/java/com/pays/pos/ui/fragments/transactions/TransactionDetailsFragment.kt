@@ -115,6 +115,7 @@ import java.io.StringReader
 import java.lang.ref.WeakReference
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -309,7 +310,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun getTipDetails(tippedAmount: Double, orderId: Int?){
         CoroutineScope(Dispatchers.Main).launch {
-        transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1,"in",0)
+          transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1,"in",0)
         }
     }
 
@@ -2434,7 +2435,7 @@ class TransactionDetailsFragment : Fragment() {
                      */
 
                     if (total.toDouble() <= refundedAmount.toDouble() /*refundedAmount.toDouble() > 0.0*/
-                        || (total.toDouble()-0.10) <= refundedAmount.toDouble()   || paymentDetailsResponse.data.order.payment_status == "Cancelled"
+                        || (total.toDouble()-0.30) <= refundedAmount.toDouble()   || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
                         binding.tvtipadd.visibility = View.GONE
@@ -5550,7 +5551,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 builder.addText(
                     padLine(
-                        "Tips",
+                        "Tip",
                         "$" + paymentDetailsResponse.data.tips?.let {
                             MethodUtils.roundOffAmountString(
                                 it
@@ -5775,7 +5776,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 builder.addText(
                     padLine(
-                        "Tips",
+                        "Tip",
                         if (customerSettingModel.showTipLineForCash) {
                             "_____________"
                         } else {
@@ -6452,9 +6453,9 @@ class TransactionDetailsFragment : Fragment() {
 
                     if (paymentDetailsResponse?.data.total_discount != 0.0) {
 //                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_discount)
                     } else {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_discount)
                     }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.totalDiscount(str1)
@@ -6498,7 +6499,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 PrintSunmiUtils.tip(
                     padLine(
-                        "Tips",
+                        "Tip",
                         "$" + paymentDetailsResponse.data.tips?.let {
                             MethodUtils.roundOffAmountString(
                                 it
@@ -6606,10 +6607,10 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showTipLineForCash) {
 
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        PrintSunmiUtils.tips("Tips      _____________")
+                        PrintSunmiUtils.tips("Tip       _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
-                        PrintSunmiUtils.tips("Tips                              _____________")
+                        PrintSunmiUtils.tips("Tip                               _____________")
                     }
 
                 }
@@ -6978,10 +6979,10 @@ class TransactionDetailsFragment : Fragment() {
                 val str1 = padLine(
                     "Total Discount",
 
-                    if (paymentDetailsResponse?.data.total_discount != 0.0) {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
+                    if (paymentDetailsResponse.data.total_discount != 0.0) {
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.total_discount)
                     } else {
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.total_discount)
                     }, PrintSunmiUtils.lineChar()
                 ).toString()
 
@@ -7069,7 +7070,7 @@ class TransactionDetailsFragment : Fragment() {
                 ) {
                     PrintSunmiUtils.normalTextNew(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + paymentDetailsResponse.data.tips?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
@@ -7080,7 +7081,7 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     PrintSunmiUtils.normalText(
                         padLine(
-                            "Tips",
+                            "Tip",
                             "$" + paymentDetailsResponse.data.tips?.let {
                                 MethodUtils.roundOffAmountString(
                                     it
@@ -7248,17 +7249,17 @@ class TransactionDetailsFragment : Fragment() {
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            PrintSunmiUtils.boldTextNew("Tips      _____________")
+                            PrintSunmiUtils.boldTextNew("Tip       _____________")
                             SunmiPrintHelper.getInstance().lineWrap(1)
                         } else {
-                            PrintSunmiUtils.boldTextNew("Tips                              _____________")
+                            PrintSunmiUtils.boldTextNew("Tip                               _____________")
                         }
                     } else {
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            PrintSunmiUtils.boldText("Tips      _____________")
+                            PrintSunmiUtils.boldText("Tip       _____________")
                             SunmiPrintHelper.getInstance().lineWrap(1)
                         } else {
-                            PrintSunmiUtils.boldText("Tips                              _____________")
+                            PrintSunmiUtils.boldText("Tip                               _____________")
                         }
                     }
                 }
@@ -7335,7 +7336,7 @@ class TransactionDetailsFragment : Fragment() {
                         )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
-                        PrintSunmiUtils.cardDetailsInnerTransactionNew(
+                        PrintSunmiUtils.cardDetailsInnerNew(
                             paymentDetailsResponse.data.card_name,
                             /*paymentDetailsResponse.data.card_type ?: ""*/
                             MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
@@ -7641,17 +7642,18 @@ class TransactionDetailsFragment : Fragment() {
                                     }
 
 
-                                    printLeft("ReceiptID : ${order?.offline_id.trim()}")
+                                    printLeft("ReceiptID : ${order.order.offline_id.trim()}")
                                     lineBreak()
 
-                                    printLeft("Employee : ${order?.order.employee.trim()}")
+
+                                    printLeft("Employee : ${order.order.employee.trim()}")
                                     lineBreak()
 
                                     printLeft(
                                         "Order Time : ${
                                             getReceiptFormatDateFromUTCServer(
                                                 requireContext(),
-                                                order?.order.created_at.toString()
+                                                order.order.created_at.toString()
                                             )
                                         }"
                                     )
@@ -7694,11 +7696,11 @@ class TransactionDetailsFragment : Fragment() {
                                             padLine(
                                                 "Total Discount",
 
-                                                if (order?.order.total_discount == 0.0) {
+                                                if (order.order.total_discount == 0.0) {
 //                            "-$" + MethodUtils.roundOffAmountString(0.00)
                                                     "$" + MethodUtils.roundOffAmountString(0.00)
                                                 } else {
-                                                    order?.order.total_discount?.let {
+                                                    order.order.total_discount.let {
                                                         "-$" + MethodUtils.roundOffAmountString(it)
                                                     }
                                                 },
@@ -7713,19 +7715,47 @@ class TransactionDetailsFragment : Fragment() {
                                      * Print Subtotal
                                      */
 
-                                    val subTotalToPrint = padLine(
-                                        "Sub Total",
-                                        "$" + order?.order.sub_total?.let {
+                                    var subTotalToPrint = ""
+
+
+
+
+                                    if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in" && order.payable_type == "Guest") {
+
+                                        val totalAmount = order.order.sub_total.let {
                                             MethodUtils.roundOffAmountString(
                                                 it
-                                            )
-                                        },
-                                        if (customerSettingModel.fonts == Constants.LARGE) {
-                                            23
-                                        } else {
-                                            48
-                                        }
-                                    ).toString()
+                                            )}
+
+                                        subTotalToPrint =  padLine(
+                                                "Sub Total",
+                                                "$" + paymentDetailsResponse?.data.sub_total.let { it } + "($$totalAmount)",
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString()
+
+                                    } else {
+
+                                        //other Order types than dine in
+
+                                               subTotalToPrint =  padLine(
+                                                    "Sub Total",
+                                                    "$" + order.order.sub_total.let {
+                                                        MethodUtils.roundOffAmountString(
+                                                            it
+                                                        )
+                                                    },
+                                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                                        23
+                                                    } else {
+                                                        48
+                                                    }
+                                                ).toString()
+                                    }
+
 
                                     printLeft(subTotalToPrint)
                                     lineBreak()
@@ -7768,7 +7798,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                         printLeft(
                                             padLine(
-                                                "Tips",
+                                                "Tip",
                                                 "$" + paymentDetailsResponse.data.tips?.let {
                                                     MethodUtils.roundOffAmountString(
                                                         it
@@ -7885,10 +7915,10 @@ class TransactionDetailsFragment : Fragment() {
                                         if (customerSettingModel.showTipLineForCash) {
 
                                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                                printBoldLeft("Tips      _____________")
+                                                printBoldLeft("Tip       _____________")
                                                 lineBreak()
                                             } else {
-                                                printBoldLeft("Tips                              _____________")
+                                                printBoldLeft("Tip                               _____________")
                                             }
 
                                         }
@@ -7930,38 +7960,48 @@ class TransactionDetailsFragment : Fragment() {
 
                                     if (paymentDetailsResponse.data.payment_type.lowercase() == "Card".lowercase()) {
 
-                                        val tranType = padLine(
-                                            "Transaction Type",
-                                            "Card", PrintSunmiUtils.lineChar()
-                                        ).toString()
-
-                                        printLeft(tranType)
+                                        printLeft(
+                                            padLine(
+                                                "Transaction Type",
+                                                paymentDetailsResponse.data.payment_type,
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
 
-                                        try {
-                                            PrintSunmiUtils.cardDetailsInnerLandi(
-                                                paymentDetailsResponse.data.card_name,
-                                                /*paymentDetailsResponse.data.card_type ?: ""*/
-                                                MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                                                paymentDetailsResponse.data.card_number,
-                                                customerSettingModel.fonts,
-                                                LPrint
-                                            )
-                                        } catch (e: Exception) {
 
-                                        }
+                                        var strCardType =
+                                            paymentDetailsResponse.data.card_type
+
+
+                                        printLeft(
+                                            padLine(
+                                                "",
+                                                strCardType,
+                                                48
+                                            ).toString()
+                                        )
+                                        lineBreak()
+
+                                        printLeft(
+                                            padLine(
+                                                "",
+                                                paymentDetailsResponse.data.card_number,
+                                                48
+                                            ).toString()
+                                        )
+                                        lineBreak()
 
                                     } else {
                                         printLeft(
                                             padLine(
                                                 "Transaction Type",
-                                                paymentDetailsResponse.data.payment_type ?: "Cash",
+                                                paymentDetailsResponse.data.payment_type,
                                                 PrintSunmiUtils.lineChar()
                                             ).toString()
                                         )
                                         lineBreak()
                                     }
-
 
                                     lineBreak()
 

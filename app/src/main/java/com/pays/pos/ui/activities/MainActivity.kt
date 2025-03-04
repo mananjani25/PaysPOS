@@ -67,10 +67,8 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
-import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
-import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.model.GuestAttrQueue
 import com.pays.pos.data.model.PrinterJSONElementData
@@ -109,7 +107,19 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
+
 import com.pays.pos.utils.*
+
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.FileUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.NetworkChangeListener
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.addDoubleDotLineForSunmiQueue
+import com.pays.pos.utils.addHorizontalLineNew
+import com.pays.pos.utils.addOrdersForKitchenCustomerNewPrinter
+import com.pays.pos.utils.disconnectSocket
+import com.pays.pos.utils.executeAsyncTask
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
@@ -158,7 +168,9 @@ import com.zebra.scannercontrol.SDKHandler*/
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
-    StatusChangeListener, UpdatePrinters, ResultCallback, ComponentCallbacks2 {
+    StatusChangeListener, UpdatePrinters, ResultCallback, ComponentCallbacks2,
+    NetworkChangeListener.NetworkListener {
+    private var firstNetworkCheckCompleted=false
     private var isLocalMasterFlag: Boolean = false
     var currentPrinterIndex = 0
     var currentOrderIndex = 0
@@ -1294,7 +1306,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onDestroy() {
         super.onDestroy()
-
+        networkChangeListener?.unregister();
         if (prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
             ) == true && prefProvider?.getValueboolean(
@@ -1454,6 +1466,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
         MainApplication.mainActivity = this
         permissionCheck()
+        networkChangeListener = NetworkChangeListener(this, this)
+        networkChangeListener?.register()
 
 //        sdkHandler = SDKHandler(this, true)
         CoroutineScope(Dispatchers.IO).launch {
@@ -1814,6 +1828,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
             ), 1515
         )
 
@@ -4452,6 +4471,21 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    private var networkChangeListener: NetworkChangeListener? = null
+    override fun onNetworkLost() {
+        firstNetworkCheckCompleted=true
+        runOnUiThread(Runnable {
+            toast(getString(R.string.network_lost))
+        })
+    }
+
+    override fun onNetworkAvailable() {
+        if (firstNetworkCheckCompleted) {
+            runOnUiThread(Runnable {
+                toast(getString(R.string.network_available))
+            })
+        }
+    }
 }
 
 

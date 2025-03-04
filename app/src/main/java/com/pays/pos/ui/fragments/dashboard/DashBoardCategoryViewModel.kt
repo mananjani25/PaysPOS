@@ -657,6 +657,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _clockOut = MutableLiveData<Event<String>>()
     val clockOut: LiveData<Event<String>> = _clockOut
 
+    val _thankyouAmount = MutableLiveData<String>()
 
     val refreshLiveData = MutableLiveData<Boolean>()
 
@@ -8237,8 +8238,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it1
                                     )
                                 }
-//                                posRepository.deleteLoyaltyProgramFromDb()
-                                posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
+                                posRepository.deleteLoyaltyProgramFromDb()
+                                if (it.settingData.data.loyaltyPrograms.isNotEmpty()) {
+                                    posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
+                                }
+
 //                                posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
                                 posRepository.deleteEODReportSettings()
@@ -8252,9 +8256,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.settingData.data.loyaltyPrograms.forEach {
                                         if (it.isEnable && !it.isDeleted) {
                                             prefProvider.saveActiveLoyaltyData(it)
+                                            return@forEach
+                                        } else {
+                                            prefProvider.saveActiveLoyaltyData(null)
                                         }
                                     }
                                 }
+
                                 if (it.settingData.data.cash_discounts.isNotEmpty()) {
                                     it.settingData.data.cash_discounts.forEach {
                                         if (it.is_active) {

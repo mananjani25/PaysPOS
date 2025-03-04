@@ -767,10 +767,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
-            }/* else {
-                prefProvider.saveActiveLoyaltyData(it.data)
-                viewModel.activeLoyaltyProgram = it.data
-            }*/
+            } else {
+                if (it.status == Status.SUCCESS && it.data == null) {
+                    prefProvider.saveActiveLoyaltyData(null)
+                    viewModel.activeLoyaltyProgram = null
+                }
+            }
         }
     }
 
@@ -3977,9 +3979,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         printerAdd,
                         Printer.PARAM_DEFAULT
                     )
-//                    mPrinter.startMonitor()
+                    mPrinter.startMonitor()
 
-                    generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
+                    generateReceiptForU220(mPrinter, data, type, createOrderResponse.data, cartModel)
 
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
@@ -4388,7 +4390,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         builder: Printer,
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        receiptModel: CreateOrderResponse.Data
+        receiptModel: CreateOrderResponse.Data,
+        cartModel: CartModel?
     ) {
         try {
             /* val pname = if (data.name.substring(0, 6).toString()
@@ -4440,6 +4443,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 Builder.TRUE,
                 Builder.COLOR_1
             )
+
+            /*Added By Rahul */
+            cartModel?.let {
+                if (it.isEdited || isOrderUpdate) {
+                    Log.e("UpdatePrint", "U220 -> ${it.isEdited}, $isOrderUpdate")
+
+                    builder.addText("** UPDATED **")
+                    builder.addFeedLine(1)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                }
+            }
 
             builder.addText(
                 "OrderID:" + receiptModel?.order?.custom_order_id

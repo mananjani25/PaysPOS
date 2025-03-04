@@ -931,6 +931,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
 
+            restrictTvCashClicks()
+
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ request_for_customAmount_1"))
 
@@ -5159,6 +5161,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentCoroutineScope.launch {
 //            CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
+
+            /*Remove the tip before screen and show the mainCartLayout in Customer Display*/
+            withContext(Dispatchers.Main){
+                dashboardViewModel.paymentInProgress.value = true
+            }
 
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
