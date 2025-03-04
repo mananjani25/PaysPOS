@@ -3433,15 +3433,9 @@ class TransactionDetailsFragment : Fragment() {
                 setService2(data, type)
             }
         } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
-            if (isAdded) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(200)
                 generateKitchenReceiptLandiInner(data)
-            } else {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    delay(200)
-                    if (isAdded){
-                        generateKitchenReceiptLandiInner(data)
-                    }
-                }
             }
         } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
@@ -5131,14 +5125,16 @@ class TransactionDetailsFragment : Fragment() {
                                             ) {
                                             } else {
                                                 if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
-                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+
+                                                    paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
                                                         printLeft(
                                                             it,
                                                             isBold = false,
                                                             fontSize = FONT_SIZE_5X
                                                         )
-                                                        lineBreak()
                                                     }
+                                                    lineBreak()
+
                                                 }
                                             }
                                         }
