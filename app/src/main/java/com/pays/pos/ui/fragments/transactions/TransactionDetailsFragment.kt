@@ -7642,17 +7642,17 @@ class TransactionDetailsFragment : Fragment() {
                                     }
 
 
-                                    printLeft("ReceiptID : ${order?.offline_id.trim()}")
+                                    printLeft("ReceiptID : ${order.order.offline_id.trim()}")
                                     lineBreak()
 
-                                    printLeft("Employee : ${order?.order.employee.trim()}")
+                                    printLeft("Employee : ${order.order.employee.trim()}")
                                     lineBreak()
 
                                     printLeft(
                                         "Order Time : ${
                                             getReceiptFormatDateFromUTCServer(
                                                 requireContext(),
-                                                order?.order.created_at.toString()
+                                                order.order.created_at.toString()
                                             )
                                         }"
                                     )
@@ -7959,26 +7959,36 @@ class TransactionDetailsFragment : Fragment() {
 
                                     if (paymentDetailsResponse.data.payment_type.lowercase() == "Card".lowercase()) {
 
-                                        val tranType = padLine(
-                                            "Transaction Type",
-                                            "Card", PrintSunmiUtils.lineChar()
-                                        ).toString()
-
-                                        printLeft(tranType)
+                                        printLeft(
+                                            padLine(
+                                                "Transaction Type",
+                                                paymentDetailsResponse.data.payment_type,
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
 
-                                        try {
-                                            PrintSunmiUtils.cardDetailsInnerLandi(
-                                                paymentDetailsResponse.data.card_name,
-                                                /*paymentDetailsResponse.data.card_type ?: ""*/
-                                                MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                                                paymentDetailsResponse.data.card_number,
-                                                customerSettingModel.fonts,
-                                                LPrint
-                                            )
-                                        } catch (e: Exception) {
+                                        var strCardType =
+                                            paymentDetailsResponse.data.card_type
 
-                                        }
+
+                                        printLeft(
+                                            padLine(
+                                                "",
+                                                strCardType,
+                                                48
+                                            ).toString()
+                                        )
+                                        lineBreak()
+
+                                        printLeft(
+                                            padLine(
+                                                "",
+                                                paymentDetailsResponse.data.card_number,
+                                                48
+                                            ).toString()
+                                        )
+                                        lineBreak()
 
                                     } else {
                                         printLeft(
