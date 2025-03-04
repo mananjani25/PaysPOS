@@ -9804,25 +9804,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             removeCustomer()
         }
 
-        var current: String = prefProvider.getValue("GC_CALLING", "0")
-
-        prefProvider.setValue("GC_CALLING", (current.toInt() + 1).toString())
-        Log.d("Thread TrackingGC_CALLING", current)
-
-        if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 4) == 0) {
-            Log.d("Thread TrackingGC_CALLING_CALLED", current)
-            System.gc()
-            System.runFinalization()
-        }
-
-        if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 8) == 0) {
-            Log.d("Thread TrackingGC_CALLING_RESTART", current)
-            prefProvider.setValue("GC_CALLING", "0")
-        }
 
         if(!isDineIn) {
+            var current: String = prefProvider.getValue("GC_CALLING", "0")
+
+            prefProvider.setValue("GC_CALLING", (current.toInt() + 1).toString())
+            Log.d("Thread TrackingGC_CALLING", current)
+
+            if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 4) == 0) {
+                Log.d("Thread TrackingGC_CALLING_CALLED", current)
+                System.gc()
+                System.runFinalization()
+            }
+
+            if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 8) == 0) {
+                Log.d("Thread TrackingGC_CALLING_RESTART", current)
+                prefProvider.setValue("GC_CALLING", "0")
+                restartTheApplication()
+            }
+
+
             Log.e("Thread TrackingGC_CALLING_RESTART", "RESTART IF NOT DINE IN ")
-            restartTheApplication()
         } else  Log.e("Thread TrackingGC_CALLING_RESTART", "DONT RESTART IF DINE IN ")
     }
 
