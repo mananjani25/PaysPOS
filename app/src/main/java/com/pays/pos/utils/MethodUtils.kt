@@ -119,6 +119,10 @@ class MethodUtils {
         @SuppressLint("SetTextI18n")
         fun setPriceEditText(appCompatEditText: AppCompatEditText, price: Double) {
 
+            /*This may lead to a memory leak, because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
+
             appCompatEditText.setText(
                 MainApplication.getInstance()!!.getText(R.string.symbole)
                     .toString() + String.format(
@@ -130,6 +134,11 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
+
+            /*This may lead to a memory leak, because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
+
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format(
                 "%.2f", price
@@ -139,6 +148,11 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextView(appCompatTextView: TextView, price: Double) {
+
+            /*This may lead to a memory leak, because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
+
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + String.format(
                 "%.2f", price
@@ -148,6 +162,10 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextViewDown(appCompatTextView: TextView, price: Double) {
+            /*This may lead to a memory leak, because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
+
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + getTwoDecimal(price).toPrecision(2)
 
@@ -155,6 +173,10 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setPriceTextViewUP(appCompatTextView: TextView, price: Double) {
+            /*This may lead to a memory leak,because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
+
             appCompatTextView.text = MainApplication.getInstance()!!.getText(R.string.symbole)
                 .toString() + roundOffAmountUp(price)
 
@@ -163,6 +185,10 @@ class MethodUtils {
 
         @SuppressLint("SetTextI18n")
         fun setRefundPriceTextView(appCompatTextView: AppCompatTextView, price: Double) {
+
+            /*This may lead to a memory leak,because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
 
             appCompatTextView.text = "Total Refundable Amount is " + MainApplication.getInstance()!!
                 .getText(R.string.symbole)
@@ -262,6 +288,9 @@ class MethodUtils {
         }
 
         fun getText(edtFirstName: AppCompatEditText): String {
+            /*This may lead to a memory leak,because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
 
             return edtFirstName.text.toString().trim()
         }
@@ -274,6 +303,9 @@ class MethodUtils {
         }
 
         fun getTextTextView(edtFirstName: AppCompatTextView): String {
+            /*This may lead to a memory leak,because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
 
             return edtFirstName.text.toString().trim()
         }
@@ -456,6 +488,10 @@ class MethodUtils {
             prefProvider: PrefProvider,
             context: Context? = null
         ): Double {
+            /*This may lead to a memory leak,because we are passing
+            * context outside the Activity or Fragment,
+            * please change it.*/
+
             var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
             var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
             if (amountType == "Dollar") {
@@ -521,6 +557,11 @@ class MethodUtils {
             tvCash2: AppCompatTextView,
             tvCash3: AppCompatTextView
         ) {
+
+            /*This may lead to a memory leak,because we are passing
+            * view outside the Activity or Fragment,
+            * please change it.*/
+
             LogUtil.logE(TAG, "totalPrice  $totalPrice")
             secondValue = floor(totalPrice + 2).toInt()
             LogUtil.logE(TAG, "secondValue  $secondValue")

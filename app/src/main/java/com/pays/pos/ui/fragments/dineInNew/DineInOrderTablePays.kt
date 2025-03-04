@@ -1223,7 +1223,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     val whole_ = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
                 Log.e("Dine in","DATA WHOLE $whole_")
 
-                Handler().postDelayed({
+                Handler(Looper.getMainLooper()).postDelayed({ //Pass mainLooper inside the Handler()
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                         findNavController().navigate(
                             R.id.action_dineInOrderTable_to_checkoutDineIN,
@@ -1258,15 +1258,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 deleteCart()
                 clearCustomer()
             }
-
-            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            }
+//            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
             prefProvider.setValue(ORDER_TYPE, "")
             prefProvider.setValue(ORDER_TYPE_NAME, "")
             dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
-            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+            }
+//            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
 
         binding.txtEditOrder.setOnClickListener {
