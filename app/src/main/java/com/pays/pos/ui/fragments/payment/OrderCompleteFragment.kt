@@ -9818,9 +9818,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 8) == 0) {
             Log.d("Thread TrackingGC_CALLING_RESTART", current)
             prefProvider.setValue("GC_CALLING", "0")
-            restartTheApplication()
         }
 
+        if(!isDineIn) {
+            Log.e("Thread TrackingGC_CALLING_RESTART", "RESTART IF NOT DINE IN ")
+            restartTheApplication()
+        } else  Log.e("Thread TrackingGC_CALLING_RESTART", "DONT RESTART IF DINE IN ")
     }
 
 
