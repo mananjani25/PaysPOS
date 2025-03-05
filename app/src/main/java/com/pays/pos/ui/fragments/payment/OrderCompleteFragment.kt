@@ -62,6 +62,7 @@ import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.pays.pos.data.remote.Constants.CUSTOMER
+import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
 import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
@@ -126,6 +127,8 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.lineBreak
+import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.LandiInnerPrinterPays
 import com.pays.pos.utils.printer.PrinterClass
@@ -428,6 +431,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
             }
 
+
             if (prefProvider.getValueboolean(
                     Constants.TIP_ADDED,
                     false
@@ -469,6 +473,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                    presentation.showThankyouLayout()
 //                }
             }
+
+            if(isDineIn)
+                presentation.showThankYou(finalPaidAmount)
+
         }
     }
 
@@ -8166,19 +8174,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                     write(LPrint.LINE_FEED)
-                                    write(LPrint.LINE_FEED)
+//                                    write(LPrint.LINE_FEED)
+//
+//                                    write("________________________________________________".toByteArray())
+//                                    write(LPrint.LINE_FEED)
+//
+//                                    write(LPrint.LINE_FEED)
+//                                    write(LPrint.LINE_FEED)
 
-                                    write("________________________________________________".toByteArray())
-                                    write(LPrint.LINE_FEED)
 
-                                    write(LPrint.LINE_FEED)
-                                    write(LPrint.LINE_FEED)
+                                    /**
+                                     * Print order note
+                                     */
+                                    if (order?.note != null && order?.note != "" && customerSettingModel.showOrderNote) {
+                                        //  lineBreak()
+
+                                        printCenter(
+                                            "Order Note\n${order.note}",
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+//                                        printCenter()
+                                        lineBreak()
+                                    }
 
 
                                     write("Customer Signature           __________________".toByteArray())
 
 
                                     write(LPrint.LINE_FEED)
+
+
+
+                                    write(LPrint.LINE_FEED)
+
                                     if (customerSettingModel.showQrCode) {
 
                                         LPrint.printQRCode(
@@ -9775,23 +9804,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             removeCustomer()
         }
 
-        var current: String = prefProvider.getValue("GC_CALLING", "0")
 
-        prefProvider.setValue("GC_CALLING", (current.toInt() + 1).toString())
-        Log.d("Thread TrackingGC_CALLING", current)
+        if(!isDineIn) {
+            var current: String = prefProvider.getValue("GC_CALLING", "0")
 
-        if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 4) == 0) {
-            Log.d("Thread TrackingGC_CALLING_CALLED", current)
-            System.gc()
-            System.runFinalization()
-        }
+            prefProvider.setValue("GC_CALLING", (current.toInt() + 1).toString())
+            Log.d("Thread TrackingGC_CALLING", current)
 
-        if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 8) == 0) {
-            Log.d("Thread TrackingGC_CALLING_RESTART", current)
-            prefProvider.setValue("GC_CALLING", "0")
-            restartTheApplication()
-        }
+            if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 4) == 0) {
+                Log.d("Thread TrackingGC_CALLING_CALLED", current)
+                System.gc()
+                System.runFinalization()
+            }
 
+            if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 8) == 0) {
+                Log.d("Thread TrackingGC_CALLING_RESTART", current)
+                prefProvider.setValue("GC_CALLING", "0")
+                restartTheApplication()
+            }
+
+
+            Log.e("Thread TrackingGC_CALLING_RESTART", "RESTART IF NOT DINE IN ")
+        } else  Log.e("Thread TrackingGC_CALLING_RESTART", "DONT RESTART IF DINE IN ")
     }
 
 

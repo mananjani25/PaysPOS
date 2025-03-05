@@ -143,6 +143,7 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 import androidx.lifecycle.Observer
+import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
 
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -332,7 +333,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }.await()
             }
         }
-
 
         return binding.root
     }
@@ -2673,6 +2673,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var serviceChargesFinal = 0.0
         serviceChargesList.forEach {
+            if(it.min_guest_count!=null && it.max_guest_count!=null)
+                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
             serviceChargesFinal += ((subTotalGuest) * it.percentage) / 100
         }
 
@@ -3553,6 +3555,22 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.showTableDetails(baseResponse)
                         }
 
+
+
+                        val filterDineInList = dineInTableAdapter.getList().filter{ it.title?.lowercase() != "whole table" && it.isHeader == 0 }
+
+                        val totalGuest = filterDineInList.size
+                        val paidGuest = filterDineInList.count { it.isPaid }
+
+
+                        Log.e("DINE IN TABLE PAID BUTTON","DINE IN TABLE PAID BUTTON $totalGuest $paidGuest")
+
+//                        if(paidGuest == totalGuest-1) {
+//                            binding.btnPayNew.invisible()
+//                        } else
+//                            binding.btnPayNew.visible()
+
+
                         if (!isFromWastage) {
 
 
@@ -4025,6 +4043,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
         // END RESET
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!,true)
+
+
+        //Remove moved items from list
+        orderRequestModel.order.orderItemsAttributes
+            .filter { it.itemId in listOfMoveItemIds }
+            .forEach { it.isDestroy = true }
+
+
+
         orderId?.let {
             viewModel.updateOrder(
                 it,
@@ -11285,11 +11312,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     ) {
 
-                                        val serviceChargesList = getServiceChargeFromGuestCount(dineInTableAdapter.getList().count { it.isHeader == 0 } - 1)
+                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
+                                        val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
+
 
                                         var serviceChargesFinal = 0.0
                                         serviceChargesList.forEach {
-
+                                            if(it.min_guest_count!=null && it.max_guest_count!=null)
+                                                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
                                             serviceChargesFinal += ((getOrderDetailsResponse?.subTotal?:0.0) * it.percentage) / 100
                                         }
 
@@ -12329,8 +12359,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         lineBreak()
-                        if(orderNote.isNotEmpty())
-                            printCenter(orderNote)
+                        if(orderNote.isNotEmpty()) {
+                            printCenter("OrderNote", isBold = true, fontSize = FONT_B)
+                            lineBreak()
+                            printCenter(orderNote, isBold = true, fontSize = FONT_B)
+                        }
                         lineBreak()
                         lineBreak()
 
@@ -12635,6 +12668,52 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 printer.printAsync(commands).await()
                                 printer.closeAsync().await()
+
+
+                                try {
+
+                                    val firedItems = addOrdersForKitchenDineInLandi(
+                                        item, customerReceiptPrinters.printerCategories.toCollection(
+                                            arrayListOf()
+                                        ), listItemWithGuest
+                                    )
+
+                                    updateFireItemsForPrinterQueue?.apply {
+
+                                        CoroutineScope(Dispatchers.Main).launch {
+
+                                            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                                var fireAllIds =
+                                                    android.text.TextUtils.join(",", firedItems)
+
+                                                viewModel.fireItemToKitchen(
+                                                    orderId ?: 0,
+                                                    true,
+                                                    fireAllIds,
+                                                    true
+                                                )
+
+                                                val list = dineInTableAdapter.getList()
+
+                                                val firedItemIds = firedItems.map { it.toInt() }.toSet()
+
+                                                list.forEach { item ->
+                                                    if (item.item?.orderItemId in firedItemIds) {
+                                                        item.item?.isFired = true
+                                                    }
+                                                }
+
+                                                dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+
+                                            }
+                                        }
+                                    }
+
+
+
+                                }catch (e:Exception) {
+                                    e.printStackTrace()
+                                }
 
 
                             }

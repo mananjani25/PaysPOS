@@ -863,6 +863,9 @@ class CheckoutDineInFragmentNew : Fragment,
             "request_for_customAmount",
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
+
+            restrictTvCashClicks()
+
             val amount = bundle.getDouble("amount")
             val totalPrice = bundle.getDouble("totalAmount")
             MethodUtils.setPriceTextView(binding.tvCustomAmount, amount)
