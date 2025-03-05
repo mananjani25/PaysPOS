@@ -130,7 +130,7 @@ class GiftCardViewModel @Inject constructor(
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
 
-    fun createSellGiftCardRequestUsingCard(amt: Double=0.0): SellGiftCardRequestModel {
+    fun createSellGiftCardRequestUsingCard(amt: Double=0.0, surcharge: Double=0.0, subtotal: Double=0.0): SellGiftCardRequestModel {
 
         var cardNumber = ""
         var cardName = ""
@@ -138,7 +138,7 @@ class GiftCardViewModel @Inject constructor(
 
 
         val giftCardPurchaseAmount =
-        if (amt==0.0) prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble() else amt
+        if (amt==0.0) prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble() else subtotal
         var paymentAttributes: com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes? =
             null
 
@@ -219,7 +219,8 @@ class GiftCardViewModel @Inject constructor(
                 ),
                 payable_type = "GiftCard",
                 payment_type = "Card",
-                sub_total = giftCardPurchaseAmount,
+                cash_discount_or_surcharge = surcharge,
+                sub_total = subtotal,
                 terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
                 transaction_id = transactionId
             )
@@ -690,14 +691,14 @@ class GiftCardViewModel @Inject constructor(
         )
     }
 
-    fun createAddValueInGiftCardRequestUsingCard(paymentAmount:Double=0.0): GiftCardAddValueRequest {
+    fun createAddValueInGiftCardRequestUsingCard(paymentAmount:Double=0.0, surcharge: Double=0.0, subtotal: Double=0.0): GiftCardAddValueRequest {
 
         var giftCardPurchaseAmount = 0.0
 
-            if (paymentAmount==0.0)
-                giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
-            else
-                giftCardPurchaseAmount = paymentAmount
+        if (paymentAmount==0.0)
+            giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+        else
+            giftCardPurchaseAmount = subtotal
 
         val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
 
@@ -781,7 +782,8 @@ class GiftCardViewModel @Inject constructor(
                 ),
                 payable_type = "GiftCardAmountTab",
                 payment_type = "Card",
-                sub_total = giftCardPurchaseAmount,
+                cash_discount_or_surcharge = surcharge,
+                sub_total = subtotal,
                 terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
                 transaction_id = transactionId
             )

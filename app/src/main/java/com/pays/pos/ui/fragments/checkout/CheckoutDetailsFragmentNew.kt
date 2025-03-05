@@ -71,7 +71,13 @@ import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.model.requestModel.*
+import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.pays.pos.data.model.requestModel.OrderRequestModel
+import com.pays.pos.data.model.requestModel.PaymentAttributes
+import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
+import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -3279,13 +3285,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             giftCardViewModel.cardNumberLast4 = cardLastDigits
                                             giftCardViewModel.cardNamePax = EDCType
                                             giftCardViewModel.transactionID = PAXtoken
-                                            addValueInGiftCardUsingCard(paymentAmount)
+                                            addValueInGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                         } else {
                                             giftCardViewModel.paxResponse = ExtData
                                             giftCardViewModel.cardNumberLast4 = cardLastDigits
                                             giftCardViewModel.cardNamePax = EDCType
                                             giftCardViewModel.transactionID = PAXtoken
-                                            sellGiftCardUsingCard(paymentAmount)
+                                            sellGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                         }
                                     } else {
                                         makePaymentCreditCard()
@@ -4444,13 +4450,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     giftCardViewModel.cardNumberLast4 = cardLastDigits
                                     giftCardViewModel.cardNamePax = EDCType
                                     giftCardViewModel.transactionID = RefId
-                                    addValueInGiftCardUsingCard(paymentAmount)
+                                    addValueInGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                 }else{
                                     giftCardViewModel.paxResponse = Constants.DEJAVOO
                                     giftCardViewModel.cardNumberLast4 = cardLastDigits
                                     giftCardViewModel.cardNamePax = EDCType
                                     giftCardViewModel.transactionID = RefId
-                                    sellGiftCardUsingCard(paymentAmount)
+                                    sellGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                 }
 
                             }else{
@@ -5267,13 +5273,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                                 giftCardViewModel.cardNumberLast4 = cardLastDigits
                                                 giftCardViewModel.cardNamePax = it.ISSUER.toString()
                                                 giftCardViewModel.transactionID = it.TXNID.toString()
-                                                addValueInGiftCardUsingCard(paymentAmount)
+                                                addValueInGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                             } else {
                                                 giftCardViewModel.paxResponse = Constants.VALOR
                                                 giftCardViewModel.cardNumberLast4 = cardLastDigits
                                                 giftCardViewModel.cardNamePax = it.ISSUER.toString()
                                                 giftCardViewModel.transactionID = it.TXNID.toString()
-                                                sellGiftCardUsingCard(paymentAmount)
+                                                sellGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                             }
                                         } else {
                                             dismissProgressDialogWithAlert()
@@ -5448,14 +5454,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             giftCardViewModel.cardNamePax = response.CardType
                                             giftCardViewModel.transactionID =
                                                 response.PaymentTransInfo.Token
-                                            addValueInGiftCardUsingCard(paymentAmount)
+                                            addValueInGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                         } else {
                                             giftCardViewModel.paxResponse = response.ExtData
                                             giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                             giftCardViewModel.cardNamePax = response.CardType
                                             giftCardViewModel.transactionID =
                                                 response.PaymentTransInfo.Token
-                                            sellGiftCardUsingCard(paymentAmount)
+                                            sellGiftCardUsingCard(paymentAmount, cashDiscountSurcharge, subTotalPrice)
                                         }
                                     } else {
                                         makePaymentCreditCard()
@@ -8681,7 +8687,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun sellGiftCardUsingCard(amt: Double=0.0) {
+    private fun sellGiftCardUsingCard(amt: Double=0.0, surcharge: Double=0.0, subtotal: Double=0.0) {
         paymentType = "Card"
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard cartList->${cartList}"))
@@ -8697,7 +8703,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val myRequest = cartList?.let {
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside the myRequest = cartList?.let"))
-            giftCardViewModel.createSellGiftCardRequestUsingCard(amt)
+            giftCardViewModel.createSellGiftCardRequestUsingCard(amt, surcharge, subtotal)
         }
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard before if (myRequest != null)"))
@@ -8736,7 +8742,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun addValueInGiftCardUsingCard(paymentAmount:Double=0.0) {
+    private fun addValueInGiftCardUsingCard(paymentAmount:Double=0.0, surcharge: Double=0.0, subtotal: Double=0.0) {
         paymentType = "Card"
         if (cartList == null) {
             runBlocking {
@@ -8746,7 +8752,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
         val myRequest = cartList?.let {
-            giftCardViewModel.createAddValueInGiftCardRequestUsingCard(paymentAmount)
+            giftCardViewModel.createAddValueInGiftCardRequestUsingCard(paymentAmount, surcharge, subtotal)
         }
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
