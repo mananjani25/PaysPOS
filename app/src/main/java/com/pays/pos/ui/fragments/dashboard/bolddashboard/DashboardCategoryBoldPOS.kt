@@ -2022,23 +2022,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
                             }
-                        } else {
-                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != DINE_IN) {
-                                item.guestIndexForDineIn = null
-                            Log.e("CART ITEM", "CART ITEM UPDATED")
-                            runOnUiThread {
-                                runBlocking {
-
-                                    viewModel.updateCart(
-                                        viewModel.currentCartItems,
-                                        item,
-                                        Constants.ADD,
-                                        false,
-                                    )
-                                }
-                            }
                         }
-                    }
 
                     }
                 }
