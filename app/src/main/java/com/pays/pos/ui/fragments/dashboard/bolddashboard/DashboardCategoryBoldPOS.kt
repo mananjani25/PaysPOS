@@ -1928,14 +1928,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         )
                                         Log.d(TAG, "dineintest item: " + Gson().toJson(item))
 
-                                        var foundItem :TbCartItem? = null
+                                        var foundItem: TbCartItem? = null
 
-                                        viewModel.currentCartItems.filter { it.guestIndexForDineIn == viewModel.currentSelectedHeaderDineIn }.forEach {
-                                            if(it.itemId == item.itemId && !it.isFired)
+                                        viewModel.currentCartItems.filter { it.guestIndexForDineIn == viewModel.currentSelectedHeaderDineIn }
+                                            .forEach {
+                                                if (it.itemId == item.itemId && !it.isFired)
                                                     foundItem = it
-                                        }
+                                            }
 
-                                        if(foundItem == null) {
+                                        if (foundItem == null) {
                                             CoroutineScope(Dispatchers.IO).launch {
                                                 viewModel.addItemToCartItems(item)
 
@@ -1952,7 +1953,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                 } catch (e: Exception) {
                                                 }
                                             }
-                                        }else {
+                                        } else {
                                             //insert dine in
 //                                            viewModel.updateDineInCart(
 //                                                finalList,
@@ -1964,7 +1965,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                             CoroutineScope(Dispatchers.IO).launch {
                                                 viewModel.updateDineInCartItemsByIdGuestIndex(
-                                                    foundItem!!.itemQuantity+1,
+                                                    foundItem!!.itemQuantity + 1,
                                                     foundItem!!.cartItemId,
                                                     Gson().toJson(foundItem!!.modifiers),
                                                     foundItem!!.guestIndexForDineIn ?: -1
@@ -2021,7 +2022,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
                             }
+                        } else {
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != DINE_IN) {
+                                item.guestIndexForDineIn = null
+                            Log.e("CART ITEM", "CART ITEM UPDATED")
+                            runOnUiThread {
+                                runBlocking {
+
+                                    viewModel.updateCart(
+                                        viewModel.currentCartItems,
+                                        item,
+                                        Constants.ADD,
+                                        false,
+                                    )
+                                }
+                            }
                         }
+                    }
 
                     }
                 }
