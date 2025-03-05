@@ -2846,41 +2846,44 @@ class AllOrdersListingFragment(
                                      * Print cashdiscount or surcharges
                                      */
 
-                                    if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(
-                                            receiptModel.payments.size - 1
-                                        ).paymentType.lowercase() == "Card".lowercase()
-                                    ) {
+                                    if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
-                                        val str8 = padLine(
-                                            Constants.SURCHARGE_TEXT,
-                                            "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
-                                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                                23
-                                            } else {
-                                                48
-                                            }
-                                        ).toString()
-                                        printLeft(str8)
 
-                                    } else {
+                                        if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(
+                                                receiptModel.payments.size - 1
+                                            ).paymentType.lowercase() == "Card".lowercase()
+                                        ) {
 
-                                        val str8 = padLine(
-                                            "Cash Discount",
-                                            if (receiptModel.cash_discount_or_surcharge == 0.0) {
-                                                "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
-                                            } else {
-                                                "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
-                                            },
-                                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                                23
-                                            } else {
-                                                48
-                                            }
-                                        ).toString()
-                                        printLeft(str8)
+                                            val str8 = padLine(
+                                                Constants.SURCHARGE_TEXT,
+                                                "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString()
+                                            printLeft(str8)
 
+                                        } else {
+
+                                            val str8 = padLine(
+                                                "Cash Discount",
+                                                if (receiptModel.cash_discount_or_surcharge == 0.0) {
+                                                    "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                                                } else {
+                                                    "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                                                },
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString()
+                                            printLeft(str8)
+
+                                        }
                                     }
-
 
                                     if (order?.isLoyaltyApplied == true) {
 
@@ -8471,7 +8474,11 @@ class AllOrdersListingFragment(
             }
 
 
-            PrintSunmiUtils.addHorizontalInner()
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.addHorizontalInnerNew()
+            } else {
+                PrintSunmiUtils.addHorizontalInner()
+            }
 
             if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                 PrintSunmiUtils.normalText("\n")
