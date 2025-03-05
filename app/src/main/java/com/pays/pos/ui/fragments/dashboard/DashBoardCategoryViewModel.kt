@@ -1076,7 +1076,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun deleteCart() {
+    fun deleteCart(isLastItem: Boolean = false) {
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
@@ -1095,6 +1095,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 )
                 posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                 destroyedList.clear()
+
+                //Added to clear all the data when last item is removed from the cart.
+                if (currentCartItems.size <= 1 && isLastItem) {
+                    deleteCartItems()
+                    clearCartModelBackup()
+                }
 
                 currentCartItems.clear()
                 duplicateCurrentCartItem.clear()

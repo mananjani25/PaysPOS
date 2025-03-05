@@ -1976,7 +1976,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     viewModel.currentCartItems.clear()
                     viewModel.duplicateCurrentCartItem.clear()
                     //   viewModel.deleteCartItems()
-                    viewModel.deleteCart()
+                    viewModel.deleteCart(true)
                     EventBus.getDefault().post(
                         MessageEvent(
                             "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
