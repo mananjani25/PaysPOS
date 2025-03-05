@@ -20649,7 +20649,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             lineBreak()
 
                                             val str5 = padLine(
-                                                "Total Price",
+                                                "Sub Total",
                                                 "$${giftCardAmount.toPrecision(2)}",
                                                 if (customerSettingModel.fonts == LARGE) 23 else 48
                                             ).toString()
@@ -20665,17 +20665,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             ) {
 
                                                 val surcharge =
-                                                    paidAmount - giftCardAmount.toPrecision(2)
-                                                        .toDouble()
+                                                    giftCardReceiptModel?.gift_card?.payments?.last()?.cash_discount_or_surcharge
                                                 val str8 = padLine(
                                                     Constants.SURCHARGE_TEXT,
-                                                    "$" + MethodUtils.roundOffAmountString(surcharge),
+                                                    "$" + surcharge?.let {
+                                                        MethodUtils.roundOffAmountString(
+                                                            it
+                                                        )
+                                                    },
                                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                                 ).toString()
 
                                                 printLeft(str8, isBold = true)
                                             }
                                             lineBreak()
+
+                                            val totalPrice = giftCardAmount + giftCardReceiptModel?.gift_card?.payments?.last()?.cash_discount_or_surcharge!!
+                                            val str20 = padLine(
+                                                "Total Price",
+                                                "$" + MethodUtils.roundOffAmountString(
+                                                    totalPrice
+                                                ),
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
+                                            printLeft(str20, isBold = true)
 
                                             val str6 = padLine(
                                                 "Paid Amount",
@@ -20686,15 +20699,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             ).toString()
                                             printLeft(str6, isBold = true)
 
-                                            val str7 = padLine(
-                                                "Change Amount",
-                                                "$" + MethodUtils.roundOffAmountString(
-                                                    changeAmtGlobal
-                                                ),
-                                                if (customerSettingModel.fonts == LARGE) 23 else 48
-                                            ).toString()
+                                            if (customerSettingModel.showRefundAmount && giftCardReceiptModel?.gift_card?.payments?.get(
+                                                    giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type?.lowercase() == "Cash".lowercase()
+                                            ) {
 
-                                            printLeft(str7, isBold = true)
+                                                val str7 = padLine(
+                                                    "Change Amount",
+                                                    "$" + MethodUtils.roundOffAmountString(
+                                                        changeAmtGlobal
+                                                    ),
+                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                ).toString()
+
+                                                printLeft(str7, isBold = true)
+                                            }
                                             lineBreak()
                                             lineBreak()
 
@@ -20784,6 +20802,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             MethodUtils.formatPhoneNumber(
                                                                 it
                                                             )
+                                                        },
+                                                        "",
+                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                    ).toString()
+                                                )
+
+                                            }
+                                            lineBreak()
+
+                                            if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                printLeft(
+                                                    padLine(
+                                                        giftCardReceiptModel?.gift_card?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                            it
                                                         },
                                                         "",
                                                         if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -21023,7 +21056,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
                 val str5 = padLine(
-                    "Total Price",
+                    "Sub Total",
                     "$${giftCardAmount.toPrecision(2)}",
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
@@ -21044,10 +21077,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         .toDouble() != MethodUtils.roundOffAmountDouble(paidAmount)
                 ) {
 
-                    val surcharge = paidAmount - giftCardAmount.toPrecision(2).toDouble()
+                    val surcharge = giftCardReceiptModel?.gift_card?.payments?.last()?.cash_discount_or_surcharge
                     val str8 = padLine(
                         Constants.SURCHARGE_TEXT,
-                        "$" + MethodUtils.roundOffAmountString(surcharge),
+                        "$" + surcharge?.let { MethodUtils.roundOffAmountString(it) },
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
 
@@ -21061,6 +21094,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         PrintSunmiUtils.boldText(str8)
                     }
                 }
+
+                val totalPrice = giftCardAmount + giftCardReceiptModel?.gift_card?.payments?.last()?.cash_discount_or_surcharge!!
+                val str20 = padLine(
+                    "Total Price",
+                    "$" + MethodUtils.roundOffAmountString(totalPrice),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.boldTextNew(str20)
+                } else {
+                    PrintSunmiUtils.boldText(str20)
+                }
+
+
 
                 val str6 = padLine(
                     "Paid Amount",
@@ -21076,7 +21125,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PrintSunmiUtils.boldText(str6)
                 }
 
-                if (customerSettingModel.showRefundAmount) {
+                if (customerSettingModel.showRefundAmount && giftCardReceiptModel?.gift_card?.payments?.get(
+                        giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type?.lowercase() == "Cash".lowercase()
+                    ) {
 
                     val str7 = padLine(
                         "Change Amount",
@@ -21096,6 +21147,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     SunmiPrintHelper.getInstance().lineWrap(1)
 
                 }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
                 val str10 = padLine(
                     "Transaction ID",
@@ -21224,37 +21277,60 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if (customerSettingModel.showCustomerAddress) {
                             if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
 
-                                giftCardReceiptModel?.gift_card?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                    ?.forEach {
 
-                                        if (it.typeOfAddress.equals(
-                                                SHIPPING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            if (sunmiFrameworkVersion?.get(0)
-                                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
-                                                    ?.toInt() != 39
-                                            ) {
-                                                PrintSunmiUtils.normalTextNew(
-                                                    padLine(
-                                                        it.fullAddress,
-                                                        "",
-                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
-                                                    ).toString()
-                                                )
-                                            } else {
-                                                PrintSunmiUtils.normalText(
-                                                    padLine(
-                                                        it.fullAddress,
-                                                        "",
-                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
-                                                    ).toString()
-                                                )
-                                            }
-                                        }
-                                    }
+                                if (sunmiFrameworkVersion?.get(0)
+                                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
+                                        ?.toInt() != 39
+                                ) {
+                                    PrintSunmiUtils.normalTextNew(
+                                        padLine(
+                                            giftCardReceiptModel?.gift_card?.customer?.addresses?.get(0)?.fullAddress,
+                                            "",
+                                            if (customerSettingModel.fonts == LARGE) 23 else 48
+                                        ).toString()
+                                    )
+                                } else {
+                                    PrintSunmiUtils.normalText(
+                                        padLine(
+                                            giftCardReceiptModel?.gift_card?.customer?.addresses?.get(0)?.fullAddress,
+                                            "",
+                                            if (customerSettingModel.fonts == LARGE) 23 else 48
+                                        ).toString()
+                                    )
+                                }
+
+//                                giftCardReceiptModel?.gift_card?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+//                                    ?.forEach {
+//
+//                                        if (it.typeOfAddress.equals(
+//                                                SHIPPING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            if (sunmiFrameworkVersion?.get(0)
+//                                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+//                                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
+//                                                    ?.toInt() != 39
+//                                            ) {
+//                                                PrintSunmiUtils.normalTextNew(
+//                                                    padLine(
+//                                                        it.fullAddress,
+//                                                        "",
+//                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                                    ).toString()
+//                                                )
+//                                            } else {
+//                                                PrintSunmiUtils.normalText(
+//                                                    padLine(
+//                                                        it.fullAddress,
+//                                                        "",
+//                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                                    ).toString()
+//                                                )
+//                                            }
+//                                        }
+//                                    }
 
                             }
                         }
