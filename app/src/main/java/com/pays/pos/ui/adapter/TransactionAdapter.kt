@@ -297,13 +297,9 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
         }
     }
 
-    fun getItem(pos: Int): GetTransactionListResponse.Data.Payment? {
-        return if (pos in 0 until filterList.size) {
-            filterList[pos]
-        } else {
-            Log.e("TransactionAdapter", "Invalid index: $pos, list size: ${filterList.size}")
-            null // Prevents crash
-        }
+    fun getItem(pos: Int): GetTransactionListResponse.Data.Payment {
+
+        return filterList[pos]
     }
 
     override fun getItemId(position: Int): Long {
@@ -330,12 +326,10 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
     fun updateTip(selectedPos: Int, amountTip: Double) {
         val singleTransaction = getItem(selectedPos)
-        singleTransaction?.let { singleTransactionValue ->
-            val amountTotal = singleTransactionValue.amount + amountTip
-            singleTransactionValue.tips = amountTip
-            singleTransactionValue.totalAmount = amountTotal
-            notifyItemChanged(selectedPos)
-        } ?: Log.e("TransactionAdapter", "updateTip() failed: No transaction found at index $selectedPos")
+        val amountTotal = singleTransaction.amount + amountTip
+        singleTransaction.tips = amountTip
+        singleTransaction.totalAmount = amountTotal
+        notifyItemChanged(selectedPos)
     }
 
 
