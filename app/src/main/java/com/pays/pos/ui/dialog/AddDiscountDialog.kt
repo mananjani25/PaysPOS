@@ -2,7 +2,6 @@ package com.pays.pos.ui.dialog
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
@@ -10,34 +9,38 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbDiscount
-import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.AMOUNT
 import com.pays.pos.data.remote.Constants.PERCENTAGE
 import com.pays.pos.databinding.DailogAddDiscountBinding
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.DialogDiscountListAdapter
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.settings.discount.DiscountListViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
-import com.pays.pos.utils.extensions.alert
-import com.google.gson.Gson
-import com.pays.pos.data.remote.Constants
-import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 
 @AndroidEntryPoint
 class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountInterface,
@@ -229,9 +232,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     amountView()
                 }
             }
-
-
         }
+
+        binding.txtCurrencyPercentage.isEnabled = false
+        binding.txtCurrencyDollar.isEnabled = false
 
         percentageView()
     }
