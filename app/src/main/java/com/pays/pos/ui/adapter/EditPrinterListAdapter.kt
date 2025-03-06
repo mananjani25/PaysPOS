@@ -88,6 +88,8 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
                 binding.txtCustomerReceipt.visible()
                 binding.chBoxCustomerManual2.visible()
                 binding.chBoxKitchenManual2.visible()
+                binding.viewLine.visible()
+                binding.viewLine2.visible()
                 if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
                   /*  binding.chBoxCustomerManual.isChecked =
                         model.printerSettings.get(0).manualPrinting*/
@@ -105,20 +107,12 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
                 }
 
                 if (model.printerSettings.get(1).printType == Constants.KITCHEN) {
-                    binding.txtCustomerReceipt.gone()
-                    binding.chBoxCustomerManual2.gone()
-                    binding.viewLine.gone()
-                    binding.viewLine2.gone()
                    /* binding.chBoxKitchenManual.isChecked =
                         model.printerSettings.get(1).manualPrinting*/
                     binding.chBoxKitchenManual2.isChecked =
                         model.printerSettings.get(1).autoPrinting
 
                 } else {
-                    binding.txtKitReceipt.gone()
-                    binding.chBoxKitchenManual2.gone()
-                    binding.viewLine.gone()
-                    binding.viewLine2.gone()
                   /*  binding.chBoxCustomerManual.isChecked =
                         model.printerSettings.get(1).manualPrinting*/
                     binding.chBoxCustomerManual2.isChecked =
