@@ -1522,7 +1522,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         selectedPos = pos
         singleTransaction = transactionAdapter.getItem(pos)
-        if (!singleTransaction?.payableType.equals(
+        if (singleTransaction != null && !singleTransaction?.payableType.equals(
                 "GiftCard",
                 true
             ) && !singleTransaction?.payableType.equals(
