@@ -541,7 +541,7 @@ open class PaymentViewModel @Inject constructor(
             "Payment received for order",
             order.terminalId,
             null,
-            null
+            order.totalTips
         )
 
         prefProvider.setValueInt(
