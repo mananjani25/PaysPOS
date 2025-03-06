@@ -23,6 +23,7 @@ import com.pays.pos.data.model.requestModel.DineInOrderPayment
 import com.pays.pos.data.model.requestModel.GuestPaymentRequest
 import com.pays.pos.data.model.requestModel.OrderServiceChargesAttribute
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
@@ -285,6 +286,7 @@ class PaymentBoldPosFragment : Fragment() {
                 var dineInOrderId = requireArguments().getInt("orderId")
                 var isGuest = requireArguments().getBoolean("isGuestPay") ?: false
                 var isLastPayment = requireArguments().getBoolean("isLastPayment") ?: false
+                var isClearTable = requireArguments().getBoolean(CLEAR_TABLE_DINE_IN) ?: false
                 var splitModel: DineInOrderPayment =
                     requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
 
@@ -301,7 +303,8 @@ class PaymentBoldPosFragment : Fragment() {
                         dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN),
                         guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA),
                         guestPosition = requireArguments()?.getInt(Constants.GUEST_POSITION),
-                        serviceChargeAppliedList
+                        serviceChargeAppliedList,
+                        isClearTable
                     )
                     LogUtil.logE(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                     prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, Gson().toJson(dineInModel))

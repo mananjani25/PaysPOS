@@ -143,6 +143,7 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 import androidx.lifecycle.Observer
+import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
 import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
 
 @AndroidEntryPoint
@@ -1143,6 +1144,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
 
+                    if(MethodUtils.roundOffAmountDouble(toFinalAmt) <=0.0)
+                        bundle.putBoolean(CLEAR_TABLE_DINE_IN,true)
+                    else bundle.putBoolean(CLEAR_TABLE_DINE_IN,false)
 
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
                 bundle.putDouble(

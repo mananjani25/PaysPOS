@@ -15,11 +15,12 @@ data class CheckOutDineInDataModel(
     val guestPaymentReq: GuestPaymentRequest?,
     val orderId: Int,
     val splitModel: DineInOrderPayment,
-    val dineInAdapterList:List<DineInModel>?= listOf(),
-    var dineInOrderDetails:GetOrderDetailsResponse.Data?=null,
-    val guestPaymentModel:GuestDataModel? = null,
-    val guestPosition:Int?=null,
-    val servicChargeAppliedlist:ArrayList<OrderServiceChargesAttribute>?=null
+    val dineInAdapterList: List<DineInModel>? = listOf(),
+    var dineInOrderDetails: GetOrderDetailsResponse.Data? = null,
+    val guestPaymentModel: GuestDataModel? = null,
+    val guestPosition: Int? = null,
+    val servicChargeAppliedlist: ArrayList<OrderServiceChargesAttribute>? = null,
+    val isClearTable: Boolean = false
 
 ) : Parcelable {
 

@@ -246,41 +246,66 @@ class CheckoutDineInFragmentNew : Fragment,
         binding.lifecycleOwner = this
         navigateOnPaymentSuccess()
 
-        val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+        if(dineInDataModel.isClearTable) {
+            AlertUtils.showCustomAlertClearTableDineIn(requireContext()){ result ->
 
-        if (device == 0) {
-            magtekModule.setupInit()
-            magtekModule.setCallback(this)
+                if(result == "Clear Table") {
+
+                    //clear table with cash 0.0 Payment
+                    restrictTvCashClicks()
+                    custom_paymentAmount = 0.0
+                    prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
+                    paymentviewModel.totalPayAmount(
+                        0.0
+                    )
+                    paymentAmount = 0.0
+                    cashPaymentWithVariation()
+
+                } else
+                    findNavController().popBackStack()
+
+            }
         } else {
-            mSessionManager.setDineInFragment(this)
 
-        }
 
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplayDineIn(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                dineInViewModel
-            )
-        }
-        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
-            binding.llManualCardEntry.visibility = View.GONE
-        }
+            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
-            /* For now the gift card button is hidden, when required the below code will be uncommented*/
-            binding.tvOther.visible()
+            if (device == 0) {
+                magtekModule.setupInit()
+                magtekModule.setCallback(this)
+            } else {
+                mSessionManager.setDineInFragment(this)
+
+            }
+
+            getCustomerDisplay(requireContext())?.let { display ->
+                presentation = CustomDisplayDineIn(
+                    display,
+                    requireContext(),
+                    viewLifecycleOwner,
+                    dashboardViewModel,
+                    passcodeViewModel,
+                    dineInViewModel
+                )
+            }
+            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                binding.llManualCardEntry.visibility = View.GONE
+            }
+
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
+                /* For now the gift card button is hidden, when required the below code will be uncommented*/
+                binding.tvOther.visible()
 //            binding.lnrGiftCard.visible()
-        } else {
-            binding.tvOther.gone()
-            binding.lnrGiftCard.gone()
-        }
+            } else {
+                binding.tvOther.gone()
+                binding.lnrGiftCard.gone()
+            }
 
-        initPOSLink()
-        getMerchantDataObserver()
+
+            initPOSLink()
+
+            getMerchantDataObserver()
+        }
 
         return binding.root
     }

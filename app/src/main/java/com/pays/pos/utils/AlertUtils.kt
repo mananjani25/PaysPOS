@@ -568,6 +568,44 @@ object AlertUtils {
 
     }
 
+    fun showCustomAlertClearTableDineIn(
+        context: Context,
+        title: String? = context.getString(R.string.app_name),
+        onButtonClicked: (action: String) -> Unit
+    ) {
+
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog_clear_table_dine_in, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+
+        val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val tvMessage = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
+        val btnClearTable = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
+        val btnCancel = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
+
+        tvTitle.text = title
+
+        btnClearTable.text = context.getString(R.string.clear_table)
+        btnCancel.text = context.getString(android.R.string.cancel)
+        tvMessage.text = "Do you want to clear the table ?"
+
+        btnClearTable.setBackgroundColor(ContextCompat.getColor(context, R.color.btnColorDark))
+        btnCancel.visibility = View.VISIBLE
+
+        btnClearTable.setOnClickListener {
+            customDialog.dismiss()
+            onButtonClicked.invoke("Clear Table")
+        }
+
+        btnCancel.setOnClickListener {
+            customDialog.dismiss()
+            onButtonClicked.invoke("Cancel")
+        }
+    }
+
+
     fun showCustomAlertWithTitleListenerWithRefresh(
         context: Context,
         title: String? = context.getString(R.string.app_name),
