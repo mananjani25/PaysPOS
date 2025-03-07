@@ -3334,7 +3334,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             cartItemsAdapter.submitList(emptyList())
             reSetTaxBifurcationData()
             binding.relativeOrderNotes?.visibility = View.GONE
-            binding.relativeLoylatyPoints?.visibility = View.GONE
             binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
