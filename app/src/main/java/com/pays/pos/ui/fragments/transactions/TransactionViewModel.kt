@@ -291,8 +291,8 @@ class TransactionViewModel @Inject constructor(
                         val isChangeReturned = lastReason.contains("change returned")
 
                         val shouldCreateCashLog = response.data.isEmpty() ||
-                                (response.data.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete == 1.toByte()) ||
-                                (fromOrderComplete == 1.toByte() && (isPaymentReceived || isGiftCard) && isChange == 1.toByte())
+                                (response.data.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete.toInt() == 1) ||
+                                (fromOrderComplete.toInt() == 1 && (isPaymentReceived || isGiftCard) && isChange.toInt() == 1)
 
                         if (shouldCreateCashLog) {
                             val cashLogRequest = CashLogRequest(
@@ -301,13 +301,13 @@ class TransactionViewModel @Inject constructor(
                                 event,
                                 orderId,
                                 id,
-                                if (isChange == 1.toByte()) "Change returned after order's payment done" else "Tip added to the order",
+                                if (isChange.toInt() == 1) "Change returned after order's payment done" else "Tip added to the order",
                                 prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
                                 null,
                                 null
                             )
                             makeCashLogCreateRequest(cashLogRequest)
-                        } else if (isChange == 0.toByte() && isChangeReturned && fromOrderComplete == 1.toByte()) {
+                        } else if (isChange.toInt() == 0 && isChangeReturned && fromOrderComplete.toInt() == 1) {
                             val cashLogRequest = CashLogRequest(
                                 tippedAmount,
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
@@ -332,9 +332,9 @@ class TransactionViewModel @Inject constructor(
                                 Log.e("PAYMENT_ID", "Tip adjust paymentId - $filteredCashEvent")
 
                                 var updatedTippedAmount: Double = tippedAmount
-                                var reason = if (isChange == 1.toByte()) "Change returned after order's payment" else "Tip updated for order"
+                                var reason = if (isChange.toInt() == 1) "Change returned after order's payment" else "Tip updated for order"
 
-                                if (cashEvents.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete == 0.toByte()) {
+                                if (cashEvents.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete.toInt() == 0) {
                                     lastEvent?.let { cashEvent ->
                                         updatedTippedAmount += (cashEvent.amount?.toDouble() ?: 0.0) - (cashEvent.totalTips?.toDouble() ?: 0.0)
                                         reason = "Payment received for order"
