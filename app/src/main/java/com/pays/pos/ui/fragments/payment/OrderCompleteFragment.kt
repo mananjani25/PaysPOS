@@ -2231,9 +2231,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (isDineIn) {
                     LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
                     customerPrintWholeOrder(false)
+                    binding.llPrint.isEnabled = false
+
+                    Handler().postDelayed({
+                        binding.llPrint.isEnabled = true
+                    }, 2000)
 
                 } else {
                     getCustomerPrinters(false)
+                    binding.llPrint.isEnabled = false
+
+                    Handler().postDelayed({
+                        binding.llPrint.isEnabled = true
+                    }, 2000)
+
                 }
 
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
