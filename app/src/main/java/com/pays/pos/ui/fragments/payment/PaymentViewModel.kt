@@ -537,11 +537,11 @@ open class PaymentViewModel @Inject constructor(
             order.employeeId,
             event,
             order.id,
-            order.payments[order.payments.size - 1].id,
+            order.payments.last().id,
             "Payment received for order",
             order.terminalId,
             null,
-            order.totalTips
+            order.payments.last().tips
         )
 
         prefProvider.setValueInt(

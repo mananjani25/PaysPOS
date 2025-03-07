@@ -555,15 +555,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun cashLogEventCall(bundle: Bundle) {
         if (bundle.containsKey("tipAmount")) {
             if (bundle.getDouble("tipAmount") > 0.0) {
-                getTipDetails(bundle.getDouble("tipAmount"),singleTransaction?.orderId)
+                getTipDetails(bundle.getDouble("tipAmount"),singleTransaction?.orderId, singleTransaction?.id ?: -1)
 //                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
             }
         }
 
     }
 
-    private fun getTipDetails(tippedAmount: Double, orderId: Int?){
-        viewModel.getCashEventDetails(tippedAmount, orderId?:-1,singleTransaction?.id?:-1,"in",0)
+    private fun getTipDetails(tippedAmount: Double, orderId: Int?, id:Int = -1){
+        Log.e("PAYMENT_ID", "Tip adjust paymentId - ${singleTransaction?.id ?: id}")
+        viewModel.getCashEventDetails(tippedAmount, orderId?:-1,singleTransaction?.id ?: id,"in",0)
     }
 
     private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {

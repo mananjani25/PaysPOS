@@ -283,7 +283,7 @@ class TransactionViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     resource.data?.let { response ->
-                        val lastEvent = response.data.lastOrNull()
+                        var lastEvent = response.data.lastOrNull()
                         val lastReason = lastEvent?.reason?.lowercase() ?: ""
 
                         val isPaymentReceived = lastReason.contains("payment received")
@@ -301,13 +301,13 @@ class TransactionViewModel @Inject constructor(
                                 event,
                                 orderId,
                                 id,
-                                if (isChange == 1.toByte()) "Change returned after order's payment" else "Tip added to the order",
+                                if (isChange == 1.toByte()) "Change returned after order's payment done" else "Tip added to the order",
                                 prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
                                 null,
                                 null
                             )
                             makeCashLogCreateRequest(cashLogRequest)
-                        } else if (isChange == 0.toByte() && isChangeReturned) {
+                        } else if (isChange == 0.toByte() && isChangeReturned && fromOrderComplete == 1.toByte()) {
                             val cashLogRequest = CashLogRequest(
                                 tippedAmount,
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
@@ -321,27 +321,52 @@ class TransactionViewModel @Inject constructor(
                             )
                             makeCashLogCreateRequest(cashLogRequest)
                         } else {
-                            var updatedTippedAmount: Double = tippedAmount
-                            var reason: String = if (isChange == 1.toByte()) "Change returned after order's payment" else "Tip updated for order"
-                            if (response.data.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete == 0.toByte()) {
-                                lastEvent?.let { cashEvent ->
-                                    updatedTippedAmount = tippedAmount + cashEvent.amount!!.toDouble() - cashEvent.totalTips!!.toDouble()
-                                    reason = "Payment received for order"
-                                }
-                            }
-                            val updateCashLogRequest = CashLogRequest(
-                                updatedTippedAmount,
-                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
-                                event,
-                                lastEvent?.orderId ?: orderId,
-                                lastEvent?.id ?: id,
-                                reason,
-                                prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
-                                null,
-                                tippedAmount
-                            )
+                            var fetchedOrderId = lastEvent?.orderId ?: orderId
+                            var paymentId = lastEvent?.paymentId ?: id
 
-                            lastEvent?.id?.let { updateCashLog(it, updateCashLogRequest) }
+                            // Ensure response data is available before filtering
+                            val cashEvents = response.data
+                            if (cashEvents.isNotEmpty()) {
+                                val filteredCashEvent = cashEvents.filter { it.paymentId == id && it.event.equals("in", ignoreCase = true) }
+
+                                Log.e("PAYMENT_ID", "Tip adjust paymentId - $filteredCashEvent")
+
+                                var updatedTippedAmount: Double = tippedAmount
+                                var reason = if (isChange == 1.toByte()) "Change returned after order's payment" else "Tip updated for order"
+
+                                if (cashEvents.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete == 0.toByte()) {
+                                    lastEvent?.let { cashEvent ->
+                                        updatedTippedAmount += (cashEvent.amount?.toDouble() ?: 0.0) - (cashEvent.totalTips?.toDouble() ?: 0.0)
+                                        reason = "Payment received for order"
+                                    }
+                                } else if (cashEvents.size > 1 && filteredCashEvent.isNotEmpty()) {
+                                    filteredCashEvent.lastOrNull()?.let { lastFilteredEvent ->
+                                        updatedTippedAmount += (lastFilteredEvent.amount?.toDouble() ?: 0.0) - (lastFilteredEvent.totalTips?.toDouble() ?: 0.0)
+                                        reason = "Payment received for order"
+                                        fetchedOrderId = lastFilteredEvent.orderId ?: orderId
+                                        paymentId = lastFilteredEvent.paymentId ?: id
+                                        lastEvent = lastFilteredEvent
+                                    }
+                                }
+
+                                val updateCashLogRequest = CashLogRequest(
+                                    updatedTippedAmount,
+                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                    event,
+                                    fetchedOrderId,
+                                    paymentId,
+                                    reason,
+                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                    null,
+                                    tippedAmount
+                                )
+
+                                lastEvent?.id?.let { updateCashLog(it, updateCashLogRequest)
+                                    Log.e("PAYMENT_ID", "Id - $id, Request - $updateCashLogRequest")
+                                }
+                            } else {
+                                Log.e("PAYMENT_ID", "Response data is empty, skipping processing")
+                            }
                         }
                     }
                 }
