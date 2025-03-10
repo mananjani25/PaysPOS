@@ -5367,11 +5367,15 @@ fun addOrderItemOnlineOrderLandi(
         if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
-                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
-                    "   "
-                } else {
-                    "" + modifierObj.modifier_quantity + "x "
-                } + getItemNameToShow(modifierObj.name)
+//                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+//                    "   "
+//                } else {
+//                    "" + modifierObj.modifier_quantity + "x "
+//                } + getItemNameToShow(modifierObj.name)
+
+                var part1 =
+                    "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(modifierObj.name)
+
                 var part2 =
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity)
 
@@ -5517,11 +5521,14 @@ fun addOrderItemOnlineOrderSunmiInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
-                    "   "
-                } else {
-                    "" + modifierObj.modifier_quantity + "x "
-                } + getItemNameToShow(modifierObj.name)
+//                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+//                    "   "
+//                } else {
+//                    "" + modifierObj.modifier_quantity + "x "
+//                } + getItemNameToShow(modifierObj.name)
+
+                var part1 =
+                    "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(modifierObj.name)
 
                 var part2 =
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity)
