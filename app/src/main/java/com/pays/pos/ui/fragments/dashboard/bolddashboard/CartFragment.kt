@@ -68,7 +68,6 @@ import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.pays.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
-import com.pays.pos.data.remote.Constants.IS_PRE_AUTH_ENABLE
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -108,11 +107,6 @@ import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
-import com.pays.pos.utils.*
-import com.pays.pos.utils.callback.*
-import com.pays.pos.utils.extensions.*
-
-import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.InternetUtils
@@ -135,6 +129,7 @@ import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.paxUtils.SettingINI
+import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -160,8 +155,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
-
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -3786,6 +3779,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         launch {
                             try {
                                 viewModel.wholetotalPrice = 0.0
+                                viewModel.totalPrice = 0.0
                                 viewModel.changeCustomerDispSignButtonTitle("")
                                 viewModel.selectedCatetory = 0
                                 // Do positive stuff here
@@ -3920,6 +3914,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     getOrderTypes()
 
                                     viewModel.deleteOrderAfterMarkup()
+
+                                    binding.relativeLoylatyPoints.gone()
+                                    binding.lblLoyaltyPoints.gone()
+                                    binding.lblLoyaltyBalance.gone()
+                                    binding.checkloylaty.isChecked = false
 
                                 }
 
