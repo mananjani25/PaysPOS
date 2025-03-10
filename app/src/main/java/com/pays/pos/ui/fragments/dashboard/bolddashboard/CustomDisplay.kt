@@ -6,8 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -1228,7 +1226,8 @@ class CustomDisplay(
                         } else {
                             if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
                                 if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
-                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+//                                    -dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 }else{
                                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
                                 }
@@ -1246,7 +1245,8 @@ class CustomDisplay(
                         } else {
                             if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)) {
                                 if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
-                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+//                                    -dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 }else{
                                     binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
                                 }
