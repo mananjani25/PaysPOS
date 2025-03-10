@@ -5224,8 +5224,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                     } else {
 //                                        Check for Custom items
-                                        var notPrinted =
-                                            printingData.filter { it.isPrinted == false }
+                                        val notPrinted =
+                                            printingData.filter { printingDataDetail -> !printingDataDetail.isPrinted && createOrderResponse.data.order.orderType == DINE_IN }
 
                                         try {
                                             if (notPrinted.isNotEmpty()) {
