@@ -11609,7 +11609,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              * Tip line
                                              */
 
-                                            if (receiptModel?.order?.totalTips == 0.0) {
+                                            if (receiptModel?.order?.totalTips == 0.0 && tipAfterAmount == 0.0) {
                                                 lineBreak()
 
                                                 if (customerSettingModel.showTipLineForCash) {
@@ -18957,7 +18957,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (receiptModel?.order?.totalTips == 0.0) {
+                    if (receiptModel?.order?.totalTips == 0.0 && tipAfterAmount == 0.0) {
 
 
                         if (customerSettingModel.showTipLineForCash) {
@@ -19956,7 +19956,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                        if (receiptModel?.order?.totalTips == 0.0) {
+                        if (receiptModel?.order?.totalTips == 0.0 && tipAfterAmount == 0.0) {
 
                             if (customerSettingModel.showTipLineForCash) {
 
