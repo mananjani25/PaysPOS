@@ -1100,7 +1100,7 @@ class AllOrdersListingFragment(
             val dateFormat = SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault())
 
             val startDate1 = dateFormat.parse(viewModel.startDate.value)
-            val endDate1 = dateFormat.parse(viewModel.endDate.value)
+            val endDate1 = dateFormat.parse(timeCalculateForStartEndTime(hour, minute, "isend"))
 
 
             if (startDate1 != null) {
