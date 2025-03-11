@@ -55,7 +55,7 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
         VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class, ActivePaymentGateway::class],
-    version = 29
+    version = 30
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -552,6 +552,16 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_27_28: Migration = object : Migration(27, 28) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbCancelOrderReason ADD COLUMN sort INTEGER DEFAULT 0 NOT NULL")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
@@ -581,7 +591,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_23_24,
                     MIGRATION_24_25,
                     MIGRATION_25_26,
-                    MIGRATION_26_27
+                    MIGRATION_26_27,
+                    MIGRATION_27_28
                 ).fallbackToDestructiveMigration()
                 .build()
     }
