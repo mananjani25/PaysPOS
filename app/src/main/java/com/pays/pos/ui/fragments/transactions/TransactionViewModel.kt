@@ -269,30 +269,45 @@ class TransactionViewModel @Inject constructor(
         return b
     }
 
-    fun getCashEventDetails(tippedAmount: Double, orderId: Int, id: Int,event:String,isChange:Byte, fromOrderComplete:Byte=0){
+    fun getCashEventDetails(
+        tippedAmount: Double,
+        orderId: Int,
+        id: Int,
+        event: String,
+        isChange: Byte,
+        fromOrderComplete: Byte = 0,
+    ) {
         viewModelScope.launch {
-            val resource=posRepository.getEventDetailsByOrderId(orderId.toString())
+            val resource = posRepository.getEventDetailsByOrderId(orderId.toString())
 
-            when(resource.status){
-                Status.SUCCESS->{
-                    resource.data?.let {
-      
-                        if ((it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))) || (fromOrderComplete.toInt() == 1 && ((it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false) || (it.data.last().reason?.contains("Gift card", ignoreCase = true)?:false)) && isChange.toInt() == 1)){
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data?.let { response ->
+                        var lastEvent = response.data.lastOrNull()
+                        val lastReason = lastEvent?.reason?.lowercase() ?: ""
 
+                        val isPaymentReceived = lastReason.contains("payment received")
+                        val isGiftCard = lastReason.contains("gift card")
+                        val isChangeReturned = lastReason.contains("change returned")
+
+                        val shouldCreateCashLog = response.data.isEmpty() ||
+                                (response.data.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete.toInt() == 1) ||
+                                (fromOrderComplete.toInt() == 1 && (isPaymentReceived || isGiftCard) && isChange.toInt() == 1)
+
+                        if (shouldCreateCashLog) {
                             val cashLogRequest = CashLogRequest(
                                 tippedAmount,
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
                                 event,
                                 orderId,
                                 id,
-                                if (isChange.toInt()==1) "Change returned after order's payment" else "Tip added to the order",
+                                if (isChange.toInt() == 1) "Change returned after order's payment done" else "Tip added to the order",
                                 prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
                                 null,
                                 null
                             )
                             makeCashLogCreateRequest(cashLogRequest)
-
-                        }else if (isChange.toInt()==0 && (it.data.last().reason?.contains("Change returned", ignoreCase = true)?:false)){
+                        } else if (isChange.toInt() == 0 && isChangeReturned && fromOrderComplete.toInt() == 1) {
                             val cashLogRequest = CashLogRequest(
                                 tippedAmount,
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
@@ -305,8 +320,110 @@ class TransactionViewModel @Inject constructor(
                                 null
                             )
                             makeCashLogCreateRequest(cashLogRequest)
-                        } else{
-                            /*{
+                        } else {
+                            var fetchedOrderId = lastEvent?.orderId ?: orderId
+                            var paymentId = lastEvent?.paymentId ?: id
+
+                            // Ensure response data is available before filtering
+                            val cashEvents = response.data
+                            if (cashEvents.isNotEmpty()) {
+                                val filteredCashEvent = cashEvents.filter { it.paymentId == id && it.event.equals("in", ignoreCase = true) }
+
+                                Log.e("PAYMENT_ID", "Tip adjust paymentId - $filteredCashEvent")
+
+                                var updatedTippedAmount: Double = tippedAmount
+                                var reason = if (isChange.toInt() == 1) "Change returned after order's payment" else "Tip updated for order"
+
+                                if (cashEvents.size == 1 && lastEvent?.event.equals("in", ignoreCase = true) && isPaymentReceived && fromOrderComplete.toInt() == 0) {
+                                    lastEvent?.let { cashEvent ->
+                                        updatedTippedAmount += (cashEvent.amount?.toDouble() ?: 0.0) - (cashEvent.totalTips?.toDouble() ?: 0.0)
+                                        reason = "Payment received for order"
+                                    }
+                                } else if (cashEvents.size > 1 && filteredCashEvent.isNotEmpty()) {
+                                    filteredCashEvent.lastOrNull()?.let { lastFilteredEvent ->
+                                        updatedTippedAmount += (lastFilteredEvent.amount?.toDouble() ?: 0.0) - (lastFilteredEvent.totalTips?.toDouble() ?: 0.0)
+                                        reason = "Payment received for order"
+                                        fetchedOrderId = lastFilteredEvent.orderId ?: orderId
+                                        paymentId = lastFilteredEvent.paymentId ?: id
+                                        lastEvent = lastFilteredEvent
+                                    }
+                                }
+
+                                val updateCashLogRequest = CashLogRequest(
+                                    updatedTippedAmount,
+                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                    event,
+                                    fetchedOrderId,
+                                    paymentId,
+                                    reason,
+                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                    null,
+                                    tippedAmount
+                                )
+
+                                lastEvent?.id?.let { updateCashLog(it, updateCashLogRequest)
+                                    Log.e("PAYMENT_ID", "Id - $id, Request - $updateCashLogRequest")
+                                }
+                            } else {
+                                Log.e("PAYMENT_ID", "Response data is empty, skipping processing")
+                            }
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+
+    /*
+        fun getCashEventDetails(tippedAmount: Double, orderId: Int, id: Int, event:String, isChange:Byte, fromOrderComplete:Byte=0){
+            viewModelScope.launch {
+                val resource=posRepository.getEventDetailsByOrderId(orderId.toString())
+
+                when(resource.status){
+                    Status.SUCCESS->{
+                        resource.data?.let {
+
+                            if ((it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))) || (fromOrderComplete.toInt() == 1 && ((it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false) || (it.data.last().reason?.contains("Gift card", ignoreCase = true)?:false)) && isChange.toInt() == 1)){
+
+                                val cashLogRequest = CashLogRequest(
+                                    tippedAmount,
+                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                    event,
+                                    orderId,
+                                    id,
+                                    if (isChange.toInt()==1) "Change returned after order's payment" else "Tip added to the order",
+                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                    null,
+                                    null
+                                )
+                                makeCashLogCreateRequest(cashLogRequest)
+
+                            }else if (isChange.toInt()==0 && (it.data.last().reason?.contains("Change returned", ignoreCase = true)?:false)){
+                                val cashLogRequest = CashLogRequest(
+                                    tippedAmount,
+                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                    event,
+                                    orderId,
+                                    id,
+                                    "Tip added to the order",
+                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                    null,
+                                    null
+                                )
+                                makeCashLogCreateRequest(cashLogRequest)
+                            } else{
+                                */
+/*{
                                 "payment_id": 0,
                                 "order_id": 0,
                                 "amount": 0,
@@ -316,7 +433,8 @@ class TransactionViewModel @Inject constructor(
                                 "terminal_id": 0,
                                 "reason": "string",
                                 "event": "string"
-                            }*/
+                            }*//*
+
 
                             val updateCashLogRequest = CashLogRequest(
                                 tippedAmount,
@@ -348,6 +466,7 @@ class TransactionViewModel @Inject constructor(
             }
         }
     }
+*/
 
     private fun updateCashLog(cashEventId: Int, cashLogRequest: CashLogRequest) {
         viewModelScope.launch {
