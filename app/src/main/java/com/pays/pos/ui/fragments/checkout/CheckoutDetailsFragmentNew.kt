@@ -5011,7 +5011,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             Log.e("checkTotalAmount","totalPrice:  ${totalPrice}")
                             Log.e("checkDataAmount","amount:  ${it.data.amount}")
                             Log.e("checkDataAmount","amountDashboard:  ${dashboardViewModel.totalPrice}")
-                            if (dashboardViewModel.totalPrice > it.data.amount) {
+                            if (dashboardViewModel.totalPrice / isSelectedCount > it.data.amount) {
                                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
 
                                 splitAllAmounts(
@@ -5054,7 +5054,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         Constants.SUB_TOTAL,
                                         dashboardViewModel.totalPrice.toDouble()
                                     )*/
-                                    paymentAmount = dashboardViewModel.totalPrice
+                                    paymentAmount = dashboardViewModel.totalPrice / isSelectedCount
                                     paymentviewModel.totalPayAmount(dashboardViewModel.totalPrice)
 
 
