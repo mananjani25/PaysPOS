@@ -2318,7 +2318,7 @@ fun addHorizontalKitchenLineSunmiSmall(fontSize: String): String {
 
 fun addHorizontalKitchenLineSunmiNew(fontSize: String): String {
 
-    var int = 80
+    var int = 81
     when (fontSize) {
         Constants.LARGE -> {
             int = 23
