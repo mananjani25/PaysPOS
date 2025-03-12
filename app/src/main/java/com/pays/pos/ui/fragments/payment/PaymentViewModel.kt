@@ -251,11 +251,12 @@ open class PaymentViewModel @Inject constructor(
                                             }"
                                         )
                                     )
-                                    posRepository.deleteCart(
+                                    Log.e("checkOnly","checkOnlySave")
+                                    /*posRepository.deleteCart(
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID, 0
                                         )
-                                    )
+                                    )*/
                                 }
 
                                 LogUtil.logE(TAG, "isOnlySave:  ${onlySave}")

@@ -32,6 +32,7 @@ object Constants {
      */
     const val PRE_AUTH_DETAILS = "pre_auth_details"
     const val PRE_AUTH_AMOUNT = 1.0
+    const val GIFT_CARD_TEMP_STORE = "gift_card_temp_store"
 
     const val DO_PRINT: String = "DO_PRINT"
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"
