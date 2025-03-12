@@ -11763,7 +11763,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         if (order?.customer?.phones?.isNotEmpty()) {
 
                                                             val phoneNoFormatted =
-                                                                MethodUtils.getUSFormatNumber(
+                                                                MethodUtils.formatPhoneNumber(
                                                                     order.customer.phones.get(
                                                                         order.customer.phones.size - 1
                                                                     ).phoneNumber
