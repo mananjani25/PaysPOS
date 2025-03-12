@@ -12493,7 +12493,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Left)
-                                            .actionPrintText(employee)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(if (employee.length > 12) employee.take(21) + ".." else employee)
                                     )
                                     actionFeedLine(1)
                                 }
@@ -12501,6 +12504,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             orderTime
                                         )
