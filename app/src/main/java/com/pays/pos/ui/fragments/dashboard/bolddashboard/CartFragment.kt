@@ -3915,10 +3915,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                     viewModel.deleteOrderAfterMarkup()
 
-                                    binding.relativeLoylatyPoints.gone()
-                                    binding.lblLoyaltyPoints.gone()
-                                    binding.lblLoyaltyBalance.gone()
                                     binding.checkloylaty.isChecked = false
+                                    viewModel.redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
+                                    viewModel.redeemLoyaltyInfo.usedLoyaltyPoints = 0
+                                    viewModel.redeemLoyaltyInfo.remainingAmount = 0.0
+                                    viewModel.redeemLoyaltyInfo.total = 0.0
 
                                 }
 
