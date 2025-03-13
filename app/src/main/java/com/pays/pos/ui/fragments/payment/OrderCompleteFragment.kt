@@ -20755,41 +20755,59 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             lineBreak()
                                             lineBreak()
 
-                                            printLeft("Customer Details", isBold = true)
+                                            if (customerSettingModel.showCustomerName || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerAddress) {
 
-                                            lineBreak()
+                                                printLeft("Customer Details", isBold = true)
 
-                                            printDashedLineAndBreak()
+                                                lineBreak()
 
-                                            lineBreak()
+                                                printDashedLineAndBreak()
 
-                                            if (giftCardReceiptModel?.gift_card?.customer?.firstName?.isNotEmpty() == true) {
-                                                printLeft(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
-                                            }
-                                            lineBreak()
+                                                lineBreak()
 
-                                            if (giftCardReceiptModel?.gift_card?.customer?.phones?.isNotEmpty() == true) {
+                                                if (customerSettingModel.showCustomerName && giftCardReceiptModel?.gift_card?.customer?.firstName?.isNotEmpty() == true) {
+                                                    printLeft(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
+                                                }
+                                                lineBreak()
 
-                                                val phone =
-                                                    giftCardReceiptModel?.gift_card?.customer?.phones?.size?.minus(
-                                                        1
-                                                    )?.let {
-                                                        giftCardReceiptModel?.gift_card?.customer?.phones?.get(
-                                                            it
-                                                        )?.phoneNumber
-                                                    }
-                                                printLeft(
-                                                    padLine(
-                                                        phone?.let {
-                                                            MethodUtils.formatPhoneNumber(
+                                                if (giftCardReceiptModel?.gift_card?.customer?.phones?.isNotEmpty() == true) {
+
+                                                    val phone =
+                                                        giftCardReceiptModel?.gift_card?.customer?.phones?.size?.minus(
+                                                            1
+                                                        )?.let {
+                                                            giftCardReceiptModel?.gift_card?.customer?.phones?.get(
                                                                 it
-                                                            )
-                                                        },
-                                                        "",
-                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
-                                                    ).toString()
-                                                )
+                                                            )?.phoneNumber
+                                                        }
+                                                    printLeft(
+                                                        padLine(
+                                                            phone?.let {
+                                                                MethodUtils.formatPhoneNumber(
+                                                                    it
+                                                                )
+                                                            },
+                                                            "",
+                                                            if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                        ).toString()
+                                                    )
+                                                    lineBreak()
+                                                }
 
+                                                if (customerSettingModel.showCustomerAddress) {
+                                                    if (giftCardReceiptModel?.gift_card?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                        printLeft(
+                                                            padLine(
+                                                                giftCardReceiptModel?.gift_card?.customer?.addresses?.get(0)?.fullAddress,
+                                                                "",
+                                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                            ).toString()
+                                                        )
+                                                        lineBreak()
+
+                                                    }
+                                                }
                                             }
 
                                             lineBreak()
