@@ -218,7 +218,6 @@ class PaymentBoldPosFragment : Fragment() {
                     Log.d(TAG, "loadCartFragmentCalled 182: ")
                     loadCartFragment(CartFragment(null, null, true, model, true))
                 } else {
-
                     LogUtil.logE(TAG, "elsePAymentDion")
                     var model = GuestPaymentCalculationModel(
                         requireArguments().getDouble("subTotalPrice"),
@@ -276,10 +275,7 @@ class PaymentBoldPosFragment : Fragment() {
 
         } else {
             Log.d(TAG, "loadCartFragmentCalled 240: ")
-            Handler(Looper.getMainLooper()).postDelayed({
-
             loadCartFragment(CartFragment(null, null))
-            }, 450)
         }
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
             if (arguments != null) {
