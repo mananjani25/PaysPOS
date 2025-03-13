@@ -339,10 +339,10 @@ class TransactionViewModel @Inject constructor(
                                         updatedTippedAmount += (cashEvent.amount?.toDouble() ?: 0.0) - (cashEvent.totalTips?.toDouble() ?: 0.0)
                                         reason = "Payment received for order"
                                     }
-                                } else if (cashEvents.size > 1 && filteredCashEvent.isNotEmpty()) {
+                                } else if (cashEvents.size > 1 && filteredCashEvent.isNotEmpty() && isChange.toInt() == 0) {
                                     filteredCashEvent.lastOrNull()?.let { lastFilteredEvent ->
                                         updatedTippedAmount += (lastFilteredEvent.amount?.toDouble() ?: 0.0) - (lastFilteredEvent.totalTips?.toDouble() ?: 0.0)
-                                        reason = "Payment received for order"
+                                        reason = if (lastFilteredEvent.reason!!.contains("Tip added", true)) "Tip updated for order" else "Payment received for order"
                                         fetchedOrderId = lastFilteredEvent.orderId ?: orderId
                                         paymentId = lastFilteredEvent.paymentId ?: id
                                         lastEvent = lastFilteredEvent
@@ -361,7 +361,8 @@ class TransactionViewModel @Inject constructor(
                                     tippedAmount
                                 )
 
-                                lastEvent?.id?.let { updateCashLog(it, updateCashLogRequest)
+                                lastEvent?.id?.let {
+                                    updateCashLog(it, updateCashLogRequest)
                                     Log.e("PAYMENT_ID", "Id - $id, Request - $updateCashLogRequest")
                                 }
                             } else {
