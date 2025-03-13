@@ -298,7 +298,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@{@string/symbole+String.format(@string/format,cashLogModel.totalLeftAmountInDrawer)}"
+                    android:text="@{cashLogModel.totalLeftAmountInDrawer &lt; 0 ? ('-' + @string/symbole + String.format(@string/format, -cashLogModel.totalLeftAmountInDrawer)) : (@string/symbole + String.format(@string/format, cashLogModel.totalLeftAmountInDrawer))}"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="@string/_0_00" />
