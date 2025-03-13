@@ -3237,7 +3237,7 @@ class CustomDisplay(
             "Tip added to the order",
             prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
             null,
-            null
+            tippedAmount
         )
         dashBoardCategoryViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
 
