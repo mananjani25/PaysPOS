@@ -6,8 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -2973,7 +2971,7 @@ class CustomDisplay(
             if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
                 askForTipLayout.visible()
             } else {
-                showThankyouLayout()
+                showThankYou(mWholeTotalPrice)
             }
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
@@ -3260,7 +3258,7 @@ class CustomDisplay(
                 if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
                     askForTipLayout.visible()
                 } else {
-                    showThankyouLayout()
+                    showThankYou(mWholeTotalPrice)
                 }
             }
         }
