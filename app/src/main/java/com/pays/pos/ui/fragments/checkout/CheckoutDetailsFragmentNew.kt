@@ -1230,16 +1230,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - String.format(
-                                "%.2f",
-                                paymentAmount - (cashDiscountSurcharge)
-                            ).toDouble()
+                            wholePrice - (paymentAmount - cashDiscountSurcharge)
                         } else {
                             wholePrice - paymentAmount
                         }
 
-                        if (remainingValue <= 0.0) {
+                        if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
                             remainingValue = 0.0
+                        } else{
+                            remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
                         }
 
 
