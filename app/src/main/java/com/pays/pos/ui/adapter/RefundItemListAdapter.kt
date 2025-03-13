@@ -140,7 +140,13 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val nfone: NumberFormat = NumberFormat.getNumberInstance()
             nfone.maximumFractionDigits = 3
             val rounded1: String = nfone.format(orderDiscount)
-            orderDiscount = rounded1.replace(",", "").toDouble()
+//            orderDiscount = rounded1.replace(",", "").toDouble()
+            if (rounded1.contains(',')) {
+                val result = rounded1.filter { it != ',' }
+                orderDiscount=result.toDouble()
+            }else {
+                orderDiscount = rounded1.toDouble()
+            }
             Log.d(
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
