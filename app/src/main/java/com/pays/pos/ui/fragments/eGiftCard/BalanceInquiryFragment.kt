@@ -173,7 +173,9 @@ class BalanceInquiryFragment : Fragment() {
                         title = getString(R.string.msg_remaining_balance),
                         message = "$${it.data.amount.toPrecision(2)}"
                     ) { _, _ ->
-                        findNavController().popBackStack()
+                        if (isAdded && view != null) {
+                            findNavController().popBackStack()
+                        }
                     }
                 } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(
