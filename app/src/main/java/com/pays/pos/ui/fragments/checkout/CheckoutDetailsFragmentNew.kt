@@ -5096,7 +5096,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     Log.e("insideTrueCase","SplitYES ${totalPrice}")
 
                                     paymentAmount = dashboardViewModel.totalPrice / isSelectedCount
-                                    paymentviewModel.totalPayAmount(totalPrice)
+                                    paymentviewModel.totalPayAmount(paymentAmount)
 
 
                                     val giftCardNumber =
