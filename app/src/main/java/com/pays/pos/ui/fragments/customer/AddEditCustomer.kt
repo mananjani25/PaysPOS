@@ -20,30 +20,34 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
-import com.pays.pos.data.remote.Constants
-import com.pays.pos.databinding.FragmentAddEditCustomerBinding
-import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.adapter.AddressListAdapter
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter
-import com.pays.pos.utils.*
-import com.pays.pos.utils.callback.AddressTextChangeListner
-import com.pays.pos.utils.extensions.liveSnackBar
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.data.entities.CartModel
+import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DELIVERY
+import com.pays.pos.databinding.FragmentAddEditCustomerBinding
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.adapter.AddressListAdapter
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.CustomerAddressTextWatcher
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.callback.AddressTextChangeListner
+import com.pays.pos.utils.extensions.liveSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -1228,9 +1232,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     private fun proceedWithCustomerCreateOrUpdate() {
         if (orderType.equals(DELIVERY)){
-            if (listAddress.isNotEmpty()){
-                viewModel.submit(listAddress, isFromPhoneOrderEdit)
-            }else{
+            if (!listAddress.get(0).address1.isNotEmpty()){
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     "Please Enter Delivery Address.",
@@ -1238,7 +1240,29 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                 { _, _ ->
 
                 }
+            } else if (!listAddress.get(0).postcode.isNotEmpty()){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter zipcode.",
+                )
+                { _, _ ->
+
+                }
+            } else {
+                viewModel.submit(listAddress, isFromPhoneOrderEdit)
             }
+
+//            if (listAddress.isNotEmpty()){
+//                viewModel.submit(listAddress, isFromPhoneOrderEdit)
+//            }else{
+//                AlertUtils.showCustomAlertWithListenerWithOK(
+//                    requireContext(),
+//                    "Please Enter Delivery Address.",
+//                )
+//                { _, _ ->
+//
+//                }
+//            }
         }else{
             viewModel.submit(listAddress, isFromPhoneOrderEdit)
         }
