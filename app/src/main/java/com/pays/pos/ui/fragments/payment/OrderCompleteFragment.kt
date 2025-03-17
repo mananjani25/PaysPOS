@@ -10019,6 +10019,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                 val remain = requireArguments().getDouble("remainingAmount")
+                                if (requireArguments().getBoolean("isDineIn")) {
+                                    customerPrintWholeOrder(true)
+                                } else {
+                                    getCustomerPrinters(true)
+                                }
 
 
 
@@ -10344,13 +10349,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
 
-                                if (requireArguments().getBoolean("isDineIn")) {
-                                    customerPrintWholeOrder(true)
-                                } else {
-                                    Handler().postDelayed({
-                                        getCustomerPrinters(true)
-                                    }, 2000)
-                                }
+//                                if (requireArguments().getBoolean("isDineIn")) {
+//                                    customerPrintWholeOrder(true)
+//                                } else {
+//                                    Handler().postDelayed({
+//                                        getCustomerPrinters(true)
+//                                    }, 2000)
+//                                }
 
                                 pd?.dismiss()
 
