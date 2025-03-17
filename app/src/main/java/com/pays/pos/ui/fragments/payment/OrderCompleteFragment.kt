@@ -11484,7 +11484,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             val newPaidAmount = if (isCustomCash) {
                                                 paidAmount
                                             } else {
-                                                paidAmount + tipAmount
+                                                paidAmount + order?.payments?.last()?.tips!!
                                             }
 
                                             val paidAmt = padLine(
@@ -11584,13 +11584,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              */
 
                                             if (order!!.payments.last().paymentType == "Cash") {
+
+                                                val changeAmount = paidAmount - receiptModel?.order?.payments?.last()?.amount?.plus(receiptModel?.order?.payments?.last()?.tips!!)!!
+
                                                 val changeAmt = padLine(
                                                     "Change Amount",
-                                                    "$" + MethodUtils.roundOffAmountString(
-                                                        changeAmtGlobal
-                                                    ),
+                                                    "$" + if (changeAmount > 0.0) MethodUtils.roundOffAmountString(changeAmount) else "0.00",
                                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                                 ).toString()
+
+//                                                val changeAmt = padLine(
+//                                                    "Change Amount",
+//                                                    "$" + MethodUtils.roundOffAmountString(
+//                                                        changeAmtGlobal
+//                                                    ),
+//                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                                ).toString()
 
                                                 printBoldLeft(changeAmt)
                                             }
