@@ -20241,24 +20241,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 if (customerSettingModel.showCustomerAddress) {
                                     if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                            ?.forEach {
+                                        val address = receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress
 
-                                                if (it.typeOfAddress.equals(
-                                                        SHIPPING_ADDRESS,
-                                                        ignoreCase = true
-                                                    )
-                                                ) {
+                                        PrintSunmiUtils.normalText(
+                                            padLine(
+                                                address,
+                                                "",
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
+                                        )
 
-                                                    PrintSunmiUtils.normalText(
-                                                        padLine(
-                                                            it.fullAddress,
-                                                            "",
-                                                            if (customerSettingModel.fonts == LARGE) 23 else 48
-                                                        ).toString()
-                                                    )
-                                                }
-                                            }
+//                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+//                                            ?.forEach {
+//
+//                                                if (it.typeOfAddress.equals(
+//                                                        SHIPPING_ADDRESS,
+//                                                        ignoreCase = true
+//                                                    )
+//                                                ) {
+//
+//                                                    PrintSunmiUtils.normalText(
+//                                                        padLine(
+//                                                            it.fullAddress,
+//                                                            "",
+//                                                            if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                                        ).toString()
+//                                                    )
+//                                                }
+//                                            }
 
 
                                     }
@@ -20276,11 +20286,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
 
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+
                         }
 
                         //  PrintSunmiUtils.boldText("__________________________")
-                        SunmiPrintHelper.getInstance().lineWrap(1)
-
                         SunmiPrintHelper.getInstance().lineWrap(2)
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             PrintSunmiUtils.boldText("Customer Signature ____")
