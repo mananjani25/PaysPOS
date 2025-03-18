@@ -5148,7 +5148,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     totalDiscount += cartModel?.discountPrice ?: 0.0
-                    order_note = cartModel?.note ?: ""
+                    if (totalDiscount > 0.0) {
+                        Log.e("CheckOrderNote", "Discount added -> ${cartModel?.discountPrice ?: 0.0}")
+                    }
+                    Log.e("CheckOrderNote", "AfterAddingDiscount -> ${cartModel?.note ?: "null"}")
+                    order_note = cartModel?.note ?: (order_note ?: "")
 
                     var finalTotal = 0.0
                     if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00) {
