@@ -25,6 +25,7 @@
                 app:srcCompat="@drawable/ic_cancel_white" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtImgDialogTitle"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -970,5 +970,9 @@
     <string name="surcharge_included">Tip will include surcharge.</string>
     <string name="proceed_with_refund_void">Do you want to proceed with Void/Refund?</string>
 
+    <!--    DIALOG TITLE-->
+    <string name="update_category_image">Update Category Image</string>
+    <string name="update_item_image">Update Item Image</string>
+
 </resources>
 

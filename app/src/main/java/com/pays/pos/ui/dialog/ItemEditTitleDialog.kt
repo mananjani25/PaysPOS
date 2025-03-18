@@ -33,6 +33,7 @@ import com.pays.pos.R
 import com.pays.pos.data.model.OptionListModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DIALOG_IMAGE_PATH
+import com.pays.pos.data.remote.Constants.IMAGE_DIALOG_TITTLE
 import com.pays.pos.databinding.DialogEditItemTitleBinding
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.ChooseColorsAdapter
@@ -46,7 +47,7 @@ import java.io.File
 
 @AndroidEntryPoint
 class ItemEditTitleDialog : DialogFragment() {
-
+    private lateinit var str: String
     private var imgUrl: String? = ""
     private lateinit var adapter: ChooseColorsAdapter
     private lateinit var binding: DialogEditItemTitleBinding
@@ -66,6 +67,10 @@ class ItemEditTitleDialog : DialogFragment() {
             DataBindingUtil.inflate(inflater, R.layout.dialog_edit_item_title, container, false)
         binding.lifecycleOwner = this
 
+        str = arguments?.getString(IMAGE_DIALOG_TITTLE) ?: ""
+        if (str?.isNotEmpty() == true) {
+            binding.txtImgDialogTitle!!.text = str
+        }
         imgUrl = arguments?.getString("imgUrl") ?: ""
         if (imgUrl?.isNotEmpty() == true) {
             imagePath = imgUrl
