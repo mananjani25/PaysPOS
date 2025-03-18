@@ -905,9 +905,19 @@ class AllOrdersListingFragment(
                         res.filter { it.orderType == ONLINE_ORDER_TAB || it.orderType == THIRD_PARTY_ORDER_TAB }
                     val found = relevantOrders.find { it.id == orderTabTypeId.toInt() }
 
+                    val activeOpenOrdersType =
+                        res.filter { it.orderType == KIOSK_OPEN_ORDER || it.orderType == OPEN_ORDER_TAB }
+                    val foundActiveOpenOrdersType = activeOpenOrdersType.find { it.id == orderTabTypeId.toInt() }
+
                     if (found != null) {
                         val listIds =
                             relevantOrders.joinToString(separator = ",") { it.id.toString() }
+                        orderTabTypeId = "[$listIds]"
+                    }
+
+                    if (foundActiveOpenOrdersType != null) {
+                        val listIds =
+                            activeOpenOrdersType.joinToString(separator = ",") { it.id.toString() }
                         orderTabTypeId = "[$listIds]"
                     }
                 } else {
@@ -949,6 +959,7 @@ class AllOrdersListingFragment(
 
                                         OPEN_ORDER_TAB -> {
                                             binding.lblDelivery.gone()
+                                            binding.tvOrderType.visible()
                                         }
 
                                     }
