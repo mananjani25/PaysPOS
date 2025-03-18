@@ -6,8 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,11 +16,9 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -265,6 +261,10 @@ class CustomDisplay(
                 }
             }
         })
+
+        if (prefProvider.getValue(OPTION_TYPE,"CashDiscount").isNullOrEmpty()) {
+            binding.txtsurchargeAdded.visibility = View.GONE
+        }
 
 
     }
