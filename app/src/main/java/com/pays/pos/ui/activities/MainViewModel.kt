@@ -133,7 +133,17 @@ class MainViewModel @Inject constructor(
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
                                 posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
 
-                                try {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    try {
+                                        val printerSettings = posRepository.getLabelPrinterSettingsData()
+                                        val printOrderId = printerSettings?.printOrderId ?: false // Provide a default value
+                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
+                                    } catch (e: Exception) {
+                                        Log.e("LabelPrinterError", "Error updating label printer settings", e)
+                                    }
+                                }
+
+                                /*try {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         runBlocking {
                                             var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
@@ -144,7 +154,7 @@ class MainViewModel @Inject constructor(
 
                                 } catch (e: Exception) {
 
-                                }
+                                }*/
 
 
                             }
