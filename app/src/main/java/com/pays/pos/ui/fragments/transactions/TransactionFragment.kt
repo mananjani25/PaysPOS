@@ -591,6 +591,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
+            presentation.showSplashLayout()
         }
     }
 
