@@ -18,9 +18,11 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -2962,6 +2964,10 @@ class CustomDisplay(
             mPaymentViewModel = paymentViewModel!!
             magtekRequestUtils = magRequestUtils!!
             magensaResponse = mPaymentViewModel.magensaResponse ?: ""
+        }
+        
+        if (transactionViewModel != null) {
+            mTransactionViewModel = transactionViewModel
         }
 
 
