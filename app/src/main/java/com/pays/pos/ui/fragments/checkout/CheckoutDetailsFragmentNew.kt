@@ -3306,8 +3306,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             showPaymentNotConnectedMessage()
                         }
                     }else if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.VELOR,ignoreCase = true) || prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.VALOR,ignoreCase = true)){
+                        transactionInProgress()
                         makeValorPaymentRequest()
                     }else if(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.DEJAVOO,ignoreCase = true)){
+                        transactionInProgress()
                         makeDejavooPaymentRequest()
                     }else if(mSessionManager.isConnected){
 //                        Magtek
