@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +16,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.pays.pos.BuildConfig
 import com.pays.pos.R
 import com.pays.pos.data.db.AppDatabase
@@ -44,14 +39,10 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
-import com.pays.pos.utils.workmanager.UploadWorker2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -106,6 +97,7 @@ class MenuFragment : DialogFragment() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
+            presentation.showSplashLayout()
             presentation.onLogOutOrClockOutWithApiService(apiService)
         }
     }
@@ -287,8 +279,13 @@ class MenuFragment : DialogFragment() {
             clearManualCartItems()
         }
         binding.header.imgBack.setOnClickListener {
-            findNavController().navigateUp()
-            manageCustomerDisplay()
+            if (findNavController().currentDestination?.id == R.id.menuFragment) {
+                findNavController().navigate(R.id.action_menuFragment_to_dashboardCategoryBoldPOS)
+
+                manageCustomerDisplay()
+            }
+//            findNavController().navigateUp()
+//            manageCustomerDisplay()
 
         }
         binding.linearInventory.setOnClickListener {
