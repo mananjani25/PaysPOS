@@ -7240,7 +7240,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         dineInClickEvent()
     }
 
-    fun dineInClickEvent() {
+    private fun dineInClickEvent() {
+        val navController = findNavController()
+
         if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
             Log.e(TAG, "DineinNewCh ORderTypeYES")
             if (cartList.isNotEmpty()) {
@@ -7256,11 +7258,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             )
                         }
                         prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                        if (navController.currentDestination?.id != R.id.dineInFragmentPays) {
+                            navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                        }
                     }
                 } else {
                     prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                    if (navController.currentDestination?.id != R.id.dineInFragmentPays) {
+                        navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                    }
                 }
             }
         } else {
@@ -7269,7 +7275,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                if (navController.currentDestination?.id != R.id.dineInFragmentPays) {
+                    navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                }
             }
         }
     }
