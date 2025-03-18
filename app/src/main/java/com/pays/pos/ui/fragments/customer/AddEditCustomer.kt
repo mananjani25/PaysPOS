@@ -1232,7 +1232,15 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     private fun proceedWithCustomerCreateOrUpdate() {
         if (orderType.equals(DELIVERY)){
-            if (!listAddress.get(0).address1.isNotEmpty()){
+            if (listAddress.isEmpty()) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter Delivery Address.",
+                )
+                { _, _ ->
+
+                }
+            }else if (!listAddress.get(0).address1.isNotEmpty()){
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     "Please Enter Delivery Address.",
