@@ -3356,6 +3356,39 @@ class TransactionDetailsFragment : Fragment() {
                             } catch (e: Exception) {
 
                             }
+
+                            try {
+                                if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                                        0
+                                                    ) != null
+                                                ) {
+
+                                                    var address =
+                                                        paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                                            0
+                                                        )?.fullAddress
+
+                                                    address
+
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            } catch (e: Exception) {
+
+                            }
+
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
@@ -3398,6 +3431,11 @@ class TransactionDetailsFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
                 setService2(data, type)
+            }
+        } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(200)
+                generateKitchenReceiptLandiInner(data)
             }
         } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
@@ -3791,18 +3829,22 @@ class TransactionDetailsFragment : Fragment() {
                                         Builder.TRUE,
                                         Builder.COLOR_1
                                     )
-                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                        .forEach {
-                                            if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                builder!!.addText(
-                                                    it.fullAddress
-                                                )
-                                            }
-                                        }
+
+                                    paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                        builder!!.addText(it)
+                                    }
+//                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                        .forEach {
+//                                            if (it.typeOfAddress.equals(
+//                                                    Constants.BILLING_ADDRESS,
+//                                                    ignoreCase = true
+//                                                )
+//                                            ) {
+//                                                builder!!.addText(
+//                                                    it.fullAddress
+//                                                )
+//                                            }
+//                                        }
                                 }
                             }
                         }
@@ -4128,19 +4170,23 @@ class TransactionDetailsFragment : Fragment() {
                                         Builder.COLOR_1
                                     )
 
-                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                        .forEach {
+                                    paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                        builder.addText(it)
+                                    }
 
-                                            if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                builder.addText(
-                                                    it.fullAddress
-                                                )
-                                            }
-                                        }
+//                                    paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                        .forEach {
+//
+//                                            if (it.typeOfAddress.equals(
+//                                                    Constants.BILLING_ADDRESS,
+//                                                    ignoreCase = true
+//                                                )
+//                                            ) {
+//                                                builder.addText(
+//                                                    it.fullAddress
+//                                                )
+//                                            }
+//                                        }
                                     // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                                 }
                             }
@@ -4332,18 +4378,21 @@ class TransactionDetailsFragment : Fragment() {
                         ) {
                         } else {
                             if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
-                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                    .forEach {
-                                        if (it.typeOfAddress.equals(
-                                                Constants.BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            PrintSunmiUtils.customerAddress(
-                                                it.fullAddress
-                                            )
-                                        }
-                                    }
+                                paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                    PrintSunmiUtils.customerAddress(it)
+                                }
+//                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    .forEach {
+//                                        if (it.typeOfAddress.equals(
+//                                                Constants.BILLING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            PrintSunmiUtils.customerAddress(
+//                                                it.fullAddress
+//                                            )
+//                                        }
+//                                    }
                             }
                         }
                     }
@@ -4650,18 +4699,21 @@ class TransactionDetailsFragment : Fragment() {
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                .forEach {
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        mPrinter.addText(
-                                            it.fullAddress
-                                        )
-                                    }
-                                }
+                            paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                mPrinter.addText(it)
+                            }
+//                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                .forEach {
+//                                    if (it.typeOfAddress.equals(
+//                                            Constants.BILLING_ADDRESS,
+//                                            ignoreCase = true
+//                                        )
+//                                    ) {
+//                                        mPrinter.addText(
+//                                            it.fullAddress
+//                                        )
+//                                    }
+//                                }
                         }
                     }
                 }
@@ -4897,24 +4949,24 @@ class TransactionDetailsFragment : Fragment() {
                         ) {
                         } else {
                             if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
-//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                    PrintSunmiUtils.normalTextLarge(
-//                                        it
-//                                    )
-//                                }
-                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                    .forEach {
-
-                                        if (it.typeOfAddress.equals(
-                                                Constants.BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            PrintSunmiUtils.normalTextLarge(
-                                                it.fullAddress
-                                            )
-                                        }
-                                    }
+                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                    PrintSunmiUtils.normalTextLarge(
+                                        it
+                                    )
+                                }
+//                                paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    .forEach {
+//
+//                                        if (it.typeOfAddress.equals(
+//                                                Constants.BILLING_ADDRESS,
+//                                                ignoreCase = true
+//                                            )
+//                                        ) {
+//                                            PrintSunmiUtils.normalTextLarge(
+//                                                it.fullAddress
+//                                            )
+//                                        }
+//                                    }
                             }
                         }
                     }
@@ -4932,6 +4984,183 @@ class TransactionDetailsFragment : Fragment() {
             e.printStackTrace()
         }
 
+    }
+
+    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters) {
+
+        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
+
+            override fun onPermissionsGranted() {
+                val order = paymentDetailsResponse.data
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(kitchenReceiptPrinters.macAddress)?.let { outputStream ->
+                        LPrint.apply {
+                            setOutputStream(outputStream)
+
+                            try {
+
+                                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                                    printCenter(
+                                        "OrderID:" + paymentDetailsResponse.data.custom_order_id,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                } else {
+                                    printCenter(
+                                        "OrderID:" + paymentDetailsResponse.data.order.id,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                        )
+                                }
+                                lineBreak()
+                                lineBreak()
+
+                                if (kitchenSettingModel.showOrderType) {
+                                    printCenter(
+                                        paymentDetailsResponse.data.order.order_type_name.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+                                }
+                                lineBreak()
+
+                                if (paymentDetailsResponse.data.order.order_type.equals("Online Order", true) ||
+                                    paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder", true) ||
+                                    paymentDetailsResponse.data.order.order_type.equals(PHONE_ORDER, true)
+                                ) {
+                                    printCenter(
+                                        paymentDetailsResponse.data.order.delivery_type.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+                                }
+                                lineBreak()
+
+                                if (kitchenSettingModel.showTeamMember && paymentDetailsResponse.data.order.employee != null) {
+                                    printLeft(
+                                        "Employee:" + paymentDetailsResponse.data.order.employee,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+
+                                lineBreak()
+
+                                printLeft(
+                                    Constants.getReceiptFormatDateFromUTCServer(
+                                        requireContext(),
+                                        paymentDetailsResponse.data.order.created_at.toString()
+                                    ),
+                                    isBold = true,
+                                    fontSize = FONT_SIZE_5X
+                                )
+
+                                lineBreak()
+
+                                printDashedLineAndBreak()
+                                lineBreak()
+
+                                paymentDetailsResponse.data.order.order_items.let {
+                                    addOrdersForKitchenLandiTransitionInner(
+                                        it,
+                                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()),
+                                        LPrint
+                                    )
+                                    lineBreak()
+                                }
+
+
+                                if (paymentDetailsResponse.data.order.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                                    lineBreak()
+
+                                    printCenter(
+                                        paymentDetailsResponse.data.order.note.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+
+                                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                                    if (paymentDetailsResponse.data.order.customer != null) {
+                                        lineBreak()
+                                        printLeft(
+                                            "Customer Details", isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                        lineBreak()
+                                        printDashedLineAndBreak()
+                                        lineBreak()
+
+                                        if (kitchenSettingModel.showCustomerName) {
+                                            printLeft(
+                                                paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName,
+                                                isBold = false,
+                                                fontSize = FONT_SIZE_5X
+                                            )
+                                            lineBreak()
+                                        }
+
+                                        if (kitchenSettingModel.showCustomerPhone) {
+                                            if (paymentDetailsResponse.data.order.customer.phones.isNotEmpty() == true) {
+                                                paymentDetailsResponse.data.order.customer.phones.get(0).phoneNumber.let {
+                                                    printLeft(
+                                                        MethodUtils.getUSFormatNumber(it),
+                                                        isBold = false,
+                                                        fontSize = FONT_SIZE_5X
+                                                    )
+                                                    lineBreak()
+                                                }
+                                            }
+                                        }
+
+                                        if (kitchenSettingModel.showCustomerAddress) {
+                                            if (paymentDetailsResponse.data.order.order_type.trim().toString()
+                                                    .lowercase() == "Open Order".trim()
+                                                    .toString().lowercase()
+                                                && paymentDetailsResponse.data.order.delivery_type.trim().toString()
+                                                    .lowercase() == "Pickup".trim().lowercase()
+                                            ) {
+                                            } else {
+                                                if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty() == true) {
+
+                                                    paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.let {
+                                                        printLeft(
+                                                            it,
+                                                            isBold = false,
+                                                            fontSize = FONT_SIZE_5X
+                                                        )
+                                                    }
+                                                    lineBreak()
+
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                lineBreak()
+                                lineBreak()
+                                paperCut()
+                                disconnectLandiPrinter()
+
+
+                            } catch (e: Exception) {
+                                // printerDialog.dismiss()
+                                e.printStackTrace()
+                            }
+
+                        }
+                    }
+
+
+                }
+            }
+
+        })
     }
 
     private fun setService2(

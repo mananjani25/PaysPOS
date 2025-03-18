@@ -4806,6 +4806,53 @@ fun addOrdersForKitchenTransitionInner(
 
 }
 
+fun addOrdersForKitchenLandiTransitionInner(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
+    lprint:LPrint
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+                lprint.printLeft(obj.quantity.toString() + " " + obj.itemName.uppercase(),isBold = true,
+                    fontSize = FONT_SIZE_5X)
+                lprint.lineBreak()
+
+
+//                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        lprint.printLeft(
+                            if (modifierObj.modifier_quantity == 1) {
+                                "     " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
+                            },isBold = true,
+                            fontSize = FONT_SIZE_5X
+                        )
+                        lprint.lineBreak()
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    lprint.printLeft("  Note:" + obj.note,isBold = true,
+                        fontSize = FONT_SIZE_5X)
+                    lprint.lineBreak()
+                }
+
+//                lprint.lineBreak()
+            }
+        }
+    }
+
+}
+
 fun addOrdersForKitchenInner(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
