@@ -104,6 +104,7 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -874,6 +875,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                 binding.orderTypeDisplay.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(p0: View?) {
+                        DashboardCategoryBoldPOS.binding.layoutHeader.edtSearch.setText("")
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                             findNavController().navigate(
                                 R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
