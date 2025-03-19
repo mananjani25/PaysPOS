@@ -853,7 +853,7 @@ class GiftCardViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.data?.gift_card?.let {
-                                if (isCashPaymentType) {
+                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash")) {
 //                                    it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
