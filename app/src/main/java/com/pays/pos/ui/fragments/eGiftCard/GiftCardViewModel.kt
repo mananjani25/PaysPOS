@@ -209,8 +209,8 @@ class GiftCardViewModel @Inject constructor(
         paymentAttributes =
             com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
                 amount = giftCardPurchaseAmount,
-                card_name = cardName,
-                card_number = cardNumber,
+                card_name = if (cardName.isNotEmpty()) cardName else cardNamePax,
+                card_number = if (cardNumber.isNotEmpty()) cardNumber else cardNumberLast4,
                 card_type = 0,
                 employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
                 magensa_response = magensaResponse,
@@ -772,8 +772,8 @@ class GiftCardViewModel @Inject constructor(
         paymentAttributes =
             GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
                 amount = giftCardPurchaseAmount,
-                card_name = cardName,
-                card_number = cardNumber,
+                card_name = if (cardName.isNotEmpty()) cardName else cardNamePax,
+                card_number = if (cardNumber.isNotEmpty()) cardNumber else cardNumberLast4,
                 card_type = 0,
                 employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
                 magensa_response = magensaResponse,
