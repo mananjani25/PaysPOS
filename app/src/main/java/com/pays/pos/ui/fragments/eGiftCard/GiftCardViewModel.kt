@@ -528,7 +528,7 @@ class GiftCardViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             resource.data?.data?.gift_card?.let {
-                                if (!it.payments[it.payments.size - 1].payment_type.equals("External")) {
+                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash")) {
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
                                         if (customCashAmount > 0.0) customCashAmount else sellGiftCardRequestModel.gift_card.amount.toDouble(),
@@ -853,7 +853,8 @@ class GiftCardViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.data?.gift_card?.let {
-                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)) {
+                                if (isCashPaymentType) {
+//                                    it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
                                         if (customCashAmount > 0.0) customCashAmount else giftCardAddValueRequest.gift_card.added_amount,
