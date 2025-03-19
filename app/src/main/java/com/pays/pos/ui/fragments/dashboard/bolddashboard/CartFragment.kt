@@ -3139,7 +3139,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             prefProvider,
                             requireContext()
                         )
-                    } else {
+
+                        viewModel.customerCashPrice.value = total
+
+                    } else
+                    {
                         val total =
                             viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
 
