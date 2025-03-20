@@ -23,7 +23,7 @@ object Constants {
     * paymentLive = false -> SANDBOX
     * paymentLive = true -> LIVE
     * */
-    const val paymentLive: Boolean = true
+    const val paymentLive: Boolean = false
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
