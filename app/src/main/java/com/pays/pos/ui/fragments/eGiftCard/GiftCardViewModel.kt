@@ -209,8 +209,8 @@ class GiftCardViewModel @Inject constructor(
         paymentAttributes =
             com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
                 amount = giftCardPurchaseAmount,
-                card_name = cardName,
-                card_number = cardNumber,
+                card_name = if (cardName.isNotEmpty()) cardName else cardNamePax,
+                card_number = if (cardNumber.isNotEmpty()) cardNumber else cardNumberLast4,
                 card_type = 0,
                 employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
                 magensa_response = magensaResponse,
@@ -528,7 +528,7 @@ class GiftCardViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             resource.data?.data?.gift_card?.let {
-                                if (!it.payments[it.payments.size - 1].payment_type.equals("External")) {
+                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash")) {
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
                                         if (customCashAmount > 0.0) customCashAmount else sellGiftCardRequestModel.gift_card.amount.toDouble(),
@@ -772,8 +772,8 @@ class GiftCardViewModel @Inject constructor(
         paymentAttributes =
             GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
                 amount = giftCardPurchaseAmount,
-                card_name = cardName,
-                card_number = cardNumber,
+                card_name = if (cardName.isNotEmpty()) cardName else cardNamePax,
+                card_number = if (cardNumber.isNotEmpty()) cardNumber else cardNumberLast4,
                 card_type = 0,
                 employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
                 magensa_response = magensaResponse,
@@ -853,7 +853,8 @@ class GiftCardViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.data?.gift_card?.let {
-                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)) {
+                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash")) {
+//                                    it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
                                         if (customCashAmount > 0.0) customCashAmount else giftCardAddValueRequest.gift_card.added_amount,
