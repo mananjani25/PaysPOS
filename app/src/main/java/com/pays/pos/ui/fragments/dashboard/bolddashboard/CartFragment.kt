@@ -367,7 +367,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 var data: TbCustomer? =
                                                     prefProvider.getCustomerData()
                                                 if (data != null) {
-                                                    if (viewModel.loyaltyPointCondition(data)) {
+                                                    if (viewModel.loyaltyPointCondition(data) && cartModelsList.isNotEmpty()) {
 
                                                         binding.liinearInfoLayout.layoutParams.height =
                                                             resources.getDimension(R.dimen._70sdp)
@@ -407,6 +407,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         binding.checkloylaty.isChecked =
                                                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
+                                                    } else {
+                                                        binding.checkloylaty.isChecked = false
+                                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                                                     }
                                                 }
                                                 return@breaking
