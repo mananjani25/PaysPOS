@@ -1551,10 +1551,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     bundle.putDouble("totalTip", singleTransaction!!.tips)
                     bundle.putBoolean("isFromTransaction", true)
                     singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-                    findNavController().navigate(
-                        R.id.action_transactionFragment_to_addTipsDialog,
-                        bundle
-                    )
+                    if (findNavController().currentDestination?.id != R.id.addTipsDialog) {
+                        findNavController().navigate(
+                            R.id.action_transactionFragment_to_addTipsDialog,
+                            bundle
+                        )
+                    }
                 }
             }
         }
