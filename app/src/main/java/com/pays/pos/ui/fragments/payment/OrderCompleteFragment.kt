@@ -11719,9 +11719,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 applabStartIndex + "<APPLAB>".length,
                                                                 applabEndIndex
                                                             )
+                                                    } else {
+                                                        strCardType = "N/A"
                                                     }
-                                                } else {
-                                                    strCardType = "N/A"
                                                 }
 
                                                 printLeft(
