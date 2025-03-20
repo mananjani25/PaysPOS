@@ -14735,29 +14735,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                         )
                                                                                     }
 
-                                                                                    if (kitchenSettingModel.showCustomerAddress) {
 
-                                                                                        var address =
-                                                                                            ""
-                                                                                        receiptModel?.order?.customer?.addresses?.get(
-                                                                                            0
-                                                                                        )?.fullAddress?.let {
+                                                                            /*val address =
+                                                                                receiptModel?.order?.customer?.addresses?.get(
+                                                                                    0
+                                                                                )?.fullAddress
+
+                                                                                    if (kitchenSettingModel.showCustomerAddress && !address.isNullOrEmpty()) {
+
+
+                                                                                        address.let {
                                                                                             if (it.isNotEmpty()) {
-                                                                                                address =
-                                                                                                    it
+                                                                                                add(
+                                                                                                    PrinterBuilder()
+                                                                                                        .styleAlignment(
+                                                                                                            Alignment.Left
+                                                                                                        )
+                                                                                                        .actionPrintText(
+                                                                                                            content = it
+                                                                                                        )
+                                                                                                )
                                                                                             }
                                                                                         }
 
-                                                                                        add(
-                                                                                            PrinterBuilder()
-                                                                                                .styleAlignment(
-                                                                                                    Alignment.Left
-                                                                                                )
-                                                                                                .actionPrintText(
-                                                                                                    content = address
-                                                                                                )
-                                                                                        )
-                                                                                    }
+
+                                                                                    }*/
 
 
 
