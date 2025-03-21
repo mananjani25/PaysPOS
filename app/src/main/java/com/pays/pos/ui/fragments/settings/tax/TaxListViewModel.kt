@@ -43,6 +43,16 @@ class TaxListViewModel @Inject constructor(
         taxList.value = getTaxList.value?.data!!
     }
 
+    fun newTaxData() {
+        viewModelScope.launch {
+            val response = taxServiceChargeRepository.getTaxesList()
+            if (response.status == Status.SUCCESS && response.data != null) {
+                _taxesData.value = Event(response.data)
+                taxList.value = response.data.data
+                taxServiceChargeRepository.addAllTaxListDatabase(response.data.data)
+            }
+        }
+    }
 
     fun getTextList() {
         _showProgress.value = Event(true)
