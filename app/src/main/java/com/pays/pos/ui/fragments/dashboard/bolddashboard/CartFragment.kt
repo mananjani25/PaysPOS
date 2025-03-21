@@ -1070,6 +1070,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
+        if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
+            binding.labelCashSurcharge.visibility = View.GONE
+            binding.txtNoncashAdj.visibility = View.GONE
+        } else {
+            binding.labelCashSurcharge.visibility = View.VISIBLE
+            binding.txtNoncashAdj.visibility = View.VISIBLE
+        }
+
         if (!isFromPayment) {
             var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
             totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
@@ -1079,13 +1087,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtLoyaltyPoints.visible()
                 binding.txtlabelloyaltyPoints.visible()
             } else {
-              if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
-                binding.labelCashSurcharge.visibility = View.GONE
-                binding.txtNoncashAdj.visibility = View.GONE
-              } else {
-                binding.labelCashSurcharge.visibility = View.VISIBLE
-                binding.txtNoncashAdj.visibility = View.VISIBLE
-              }
               binding.checkloylaty.gone()
               binding.checkloylaty.isChecked =false
               binding.txtLoyaltyAmount.gone()
