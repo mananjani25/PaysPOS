@@ -360,7 +360,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 var data: TbCustomer? =
                                                     prefProvider.getCustomerData()
                                                 if (data != null) {
-                                                    if (viewModel.loyaltyPointCondition(data)) {
+                                                    if (viewModel.loyaltyPointCondition(data) && cartModelsList.isNotEmpty()) {
 
                                                         binding.liinearInfoLayout.layoutParams.height =
                                                             resources.getDimension(R.dimen._70sdp)
@@ -400,6 +400,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         binding.checkloylaty.isChecked =
                                                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
+                                                    } else {
+                                                        binding.checkloylaty.isChecked = false
+                                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                                                     }
                                                 }
                                                 return@breaking
@@ -1067,12 +1070,29 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
-        if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
-            binding.labelCashSurcharge.visibility = View.GONE
-            binding.txtNoncashAdj.visibility = View.GONE
-        } else {
-            binding.labelCashSurcharge.visibility = View.VISIBLE
-            binding.txtNoncashAdj.visibility = View.VISIBLE
+        if (!isFromPayment) {
+            var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
+            totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+            if (viewModel.activeLoyaltyProgram?.amount != null && totalAmount >= viewModel.activeLoyaltyProgram?.amount!! && totalAmount != 0.00) {
+                binding.checkloylaty.visible()
+                binding.txtLoyaltyAmount.visible()
+                binding.txtLoyaltyPoints.visible()
+                binding.txtlabelloyaltyPoints.visible()
+            } else {
+              if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
+                binding.labelCashSurcharge.visibility = View.GONE
+                binding.txtNoncashAdj.visibility = View.GONE
+              } else {
+                binding.labelCashSurcharge.visibility = View.VISIBLE
+                binding.txtNoncashAdj.visibility = View.VISIBLE
+              }
+              binding.checkloylaty.gone()
+              binding.checkloylaty.isChecked =false
+              binding.txtLoyaltyAmount.gone()
+              binding.txtLoyaltyPoints.gone()
+              binding.txtlabelloyaltyPoints.gone()
+            }
+
         }
 
         uiSave()
@@ -3255,6 +3275,21 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
+                        var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
+                        totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                        if (totalAmount >= viewModel.activeLoyaltyProgram?.amount!! && totalAmount != 0.00) {
+                            binding.checkloylaty.visible()
+                            binding.txtLoyaltyAmount.visible()
+                            binding.txtLoyaltyPoints.visible()
+                            binding.txtlabelloyaltyPoints.visible()
+                        } else {
+                            binding.checkloylaty.gone()
+                            binding.checkloylaty.isChecked = false
+                            binding.txtLoyaltyAmount.gone()
+                            binding.txtLoyaltyPoints.gone()
+                            binding.txtlabelloyaltyPoints.gone()
+
+                        }
 
 
                         Log.e(TAG, "InsideLoyalty")

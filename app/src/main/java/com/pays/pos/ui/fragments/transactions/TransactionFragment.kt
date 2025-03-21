@@ -1523,7 +1523,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         selectedPos = pos
         singleTransaction = transactionAdapter.getItem(pos)
-        if (!singleTransaction?.payableType.equals(
+        if (singleTransaction != null && !singleTransaction?.payableType.equals(
                 "GiftCard",
                 true
             ) && !singleTransaction?.payableType.equals(
@@ -1551,10 +1551,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     bundle.putDouble("totalTip", singleTransaction!!.tips)
                     bundle.putBoolean("isFromTransaction", true)
                     singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-                    findNavController().navigate(
-                        R.id.action_transactionFragment_to_addTipsDialog,
-                        bundle
-                    )
+                    if (findNavController().currentDestination?.id != R.id.addTipsDialog) {
+                        findNavController().navigate(
+                            R.id.action_transactionFragment_to_addTipsDialog,
+                            bundle
+                        )
+                    }
                 }
             }
         }

@@ -2979,7 +2979,7 @@ class CustomDisplay(
             if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
                 askForTipLayout.visible()
             } else {
-                showThankyouLayout()
+                showThankYou(mWholeTotalPrice)
             }
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
@@ -3266,7 +3266,7 @@ class CustomDisplay(
                 if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
                     askForTipLayout.visible()
                 } else {
-                    showThankyouLayout()
+                    showThankYou(mWholeTotalPrice)
                 }
             }
         }

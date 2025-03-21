@@ -88,6 +88,8 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
                 binding.txtCustomerReceipt.visible()
                 binding.chBoxCustomerManual2.visible()
                 binding.chBoxKitchenManual2.visible()
+                binding.viewLine.visible()
+                binding.viewLine2.visible()
                 if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
                   /*  binding.chBoxCustomerManual.isChecked =
                         model.printerSettings.get(0).manualPrinting*/

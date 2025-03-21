@@ -6096,6 +6096,63 @@ class AllOrdersListingFragment(
                                                                             )
                                                                     )
 
+                                                                    try {
+                                                                        if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                                                                0
+                                                                            ) != null
+                                                                        ) {
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                                                                                0
+                                                                                            ) != null
+                                                                                        ) {
+
+                                                                                            var phoneNumber =
+                                                                                                orderData.customer?.phones?.get(
+                                                                                                    0
+                                                                                                )?.phoneNumber.toString()
+                                                                                            if (phoneNumber.length != 10) {
+                                                                                                // Handle invalid input (must be 10 digits)
+                                                                                                "Invalid phone number"
+                                                                                            }
+
+                                                                                            val areaCode = phoneNumber.substring(0, 3)
+                                                                                            val firstPart = phoneNumber.substring(3, 6)
+                                                                                            val secondPart = phoneNumber.substring(6)
+
+                                                                                            "($areaCode)$firstPart-$secondPart"
+
+                                                                                        } else ""
+                                                                                    )
+                                                                            )
+                                                                        }
+                                                                    } catch (e: Exception) {
+
+                                                                    }
+
+                                                                    if (kitchenSettingModel.showCustomerAddress && orderData.customer?.addresses?.get(
+                                                                            0
+                                                                        ) != null
+                                                                    ) {
+                                                                        var address = orderData.customer.addresses.get(0).fullAddress
+
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleAlignment(
+                                                                                    Alignment.Left
+                                                                                )
+                                                                                .actionPrintText(
+                                                                                    content = address
+                                                                                )
+                                                                        )
+
+                                                                    }
+
                                                                 }
                                                             }
 
@@ -6334,6 +6391,25 @@ class AllOrdersListingFragment(
                                 } catch (e: Exception) {
 
                                 }
+
+                                if (kitchenSettingModel.showCustomerAddress && orderData.customer?.addresses?.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    val address = orderData.customer.addresses.get(0).fullAddress
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                content = address
+                                            )
+                                    )
+                                }
+
                                 printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                             }
 
@@ -6689,26 +6765,25 @@ class AllOrdersListingFragment(
 
                                                         } else if (receiptModel?.customer?.addresses?.isNotEmpty()) {
 
+                                                            printLeft(
+                                                                receiptModel.customer.addresses.get(0).fullAddress,
+                                                                isBold = true,
+                                                                fontSize = FONT_SIZE_5X
+                                                            )
 
-//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                PrintSunmiUtils.normalTextLarge(
-//                                    it
-//                                )
-//                            }
-
-                                                            receiptModel?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                                                ?.forEach {
-
-                                                                    if (it.typeOfAddress.equals(
-                                                                            Constants.BILLING_ADDRESS,
-                                                                            ignoreCase = true
-                                                                        )
-                                                                    ) {
-                                                                        printLeft(
-                                                                            it.fullAddress
-                                                                        )
-                                                                    }
-                                                                }
+//                                                            receiptModel?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                                                ?.forEach {
+//
+//                                                                    if (it.typeOfAddress.equals(
+//                                                                            Constants.BILLING_ADDRESS,
+//                                                                            ignoreCase = true
+//                                                                        )
+//                                                                    ) {
+//                                                                        printLeft(
+//                                                                            it.fullAddress
+//                                                                        )
+//                                                                    }
+//                                                                }
 
 
                                                         }
@@ -9166,6 +9241,10 @@ class AllOrdersListingFragment(
 
                         if (orderData.customer.addresses.isNotEmpty() == true) {
 
+                            PrintSunmiUtils.normalTextLarge(
+                                orderData.customer.addresses.get(0).fullAddress
+                            )
+
 
 //                        PrintSunmiUtils.normalTextLarge(
 //                            orderData?.data?.customer?.addresses.get(
@@ -9174,19 +9253,19 @@ class AllOrdersListingFragment(
 //                        )
 
 
-                            orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                .forEach {
-
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        PrintSunmiUtils.normalTextLarge(
-                                            it.fullAddress
-                                        )
-                                    }
-                                }
+//                            orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                .forEach {
+//
+//                                    if (it.typeOfAddress.equals(
+//                                            Constants.BILLING_ADDRESS,
+//                                            ignoreCase = true
+//                                        )
+//                                    ) {
+//                                        PrintSunmiUtils.normalTextLarge(
+//                                            it.fullAddress
+//                                        )
+//                                    }
+//                                }
                         }
                     }
 
