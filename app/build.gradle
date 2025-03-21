@@ -16,7 +16,7 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 39
+        versionCode 39 // version 1.39 PAYS
         versionName "1.39"
 
 
