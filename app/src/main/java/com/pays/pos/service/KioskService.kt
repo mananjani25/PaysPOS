@@ -943,10 +943,10 @@ class KioskService : Service(), StatusChangeEventListener {
 
                                                             add(
                                                                 PrinterBuilder()
-                                                                    .styleAlignment(Alignment.Center)
+                                                                    .styleAlignment(Alignment.Left)
                                                                     .actionPrintText(
                                                                         content =
-                                                                        "--------------------------------------------"
+                                                                        "---------------------------------------------"
                                                                     )
                                                             )
 
@@ -966,6 +966,50 @@ class KioskService : Service(), StatusChangeEventListener {
                                                     }
 
                                                 }
+                                            }
+
+                                            if (kitchenSettingModel.showCustomerPhone) {
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(
+                                                            Alignment.Left
+                                                        )
+                                                        .actionPrintText(
+                                                            content = if (kitchenSettingModel.showCustomerPhone && orderData?.data?.customer?.phones?.get(
+                                                                    0
+                                                                ) != null
+                                                            ) {
+
+                                                                var phoneNumber =
+                                                                    orderData?.data?.customer?.phones?.get(
+                                                                        0
+                                                                    )?.phoneNumber.toString()
+                                                                if (phoneNumber.length != 10) {
+                                                                    // Handle invalid input (must be 10 digits)
+                                                                    "Invalid phone number"
+                                                                }
+
+                                                                val areaCode =
+                                                                    phoneNumber.substring(
+                                                                        0,
+                                                                        3
+                                                                    )
+                                                                val firstPart =
+                                                                    phoneNumber.substring(
+                                                                        3,
+                                                                        6
+                                                                    )
+                                                                val secondPart =
+                                                                    phoneNumber.substring(
+                                                                        6
+                                                                    )
+
+                                                                "($areaCode)$firstPart-$secondPart"
+                                                            } else ""
+
+                                                        )
+                                                )
                                             }
 
 
