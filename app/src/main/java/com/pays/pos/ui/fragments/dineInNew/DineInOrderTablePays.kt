@@ -1282,6 +1282,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             val list = dineInTableAdapter.getList()
             var newList: ArrayList<DineInModel> = arrayListOf()
 
+            //set whole table / 0th postiopn header selected by default
+            dashboardViewModel.currentSelectedHeaderDineIn = 0
+
             dashboardViewModel.currentDestination = DINE_IN_UPDATE
 
             dashboardViewModel.currentDineCartItems = arrayListOf()

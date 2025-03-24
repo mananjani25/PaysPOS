@@ -1938,6 +1938,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                         if (foundItem == null) {
                                             CoroutineScope(Dispatchers.IO).launch {
+                                                item.guestIndexForDineIn = viewModel.currentSelectedHeaderDineIn
                                                 viewModel.addItemToCartItems(item)
 
                                                 viewModel.cartModel.let {
