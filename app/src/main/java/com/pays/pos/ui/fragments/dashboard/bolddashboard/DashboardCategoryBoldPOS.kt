@@ -7275,8 +7275,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                if (navController.currentDestination?.id != R.id.dineInFragmentPays) {
-                    navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+
+                try {
+
+                    if (navController.currentDestination?.id != R.id.dineInFragmentPays) {
+                        navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                    }
+                }catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
