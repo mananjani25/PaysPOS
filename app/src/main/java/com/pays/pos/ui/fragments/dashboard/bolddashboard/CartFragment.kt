@@ -1394,9 +1394,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.dineInHeaderPosition = 0
         viewModel.dineInSelectedItemHeaderPos = 0
         cartModelsList.get(0).orderType = Constants.DINE_IN
-        viewModel.newCartLogicModifier(
-            cartModelsList, null, Constants.ADD, false, dineInList = dineInList
-        )
+
+        try {
+            viewModel.newCartLogicModifier(
+                cartModelsList, null, Constants.ADD, false, dineInList = dineInList
+            )
+
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 

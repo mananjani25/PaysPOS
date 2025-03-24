@@ -6755,10 +6755,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                                                48
 //                                            ).toString()
 
+
+
                                             val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-                                                "-$" + MethodUtils.roundOffAmountString(divideDiscount),
+                                                (if(divideDiscount <= 0.0) "$" else "-$") + MethodUtils.roundOffAmountString(divideDiscount),
                                                 48
                                             ).toString()
 
