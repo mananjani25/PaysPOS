@@ -143,6 +143,7 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 import androidx.lifecycle.Observer
+import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
 import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
 
 @AndroidEntryPoint
@@ -1143,6 +1144,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
 
+                    if(MethodUtils.roundOffAmountDouble(toFinalAmt) <=0.0)
+                        bundle.putBoolean(CLEAR_TABLE_DINE_IN,true)
+                    else bundle.putBoolean(CLEAR_TABLE_DINE_IN,false)
 
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
                 bundle.putDouble(
@@ -11317,12 +11321,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
                                         val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
 
+                                        val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
 
                                         var serviceChargesFinal = 0.0
                                         serviceChargesList.forEach {
                                             if(it.min_guest_count!=null && it.max_guest_count!=null)
                                                 if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
-                                            serviceChargesFinal += ((getOrderDetailsResponse?.subTotal?:0.0) * it.percentage) / 100
+                                            serviceChargesFinal += ((/*getOrderDetailsResponse?.subTotal?:0.0*/currentSubtotal) * it.percentage) / 100
                                         }
 
                                         val serviceChargeToPrint =
