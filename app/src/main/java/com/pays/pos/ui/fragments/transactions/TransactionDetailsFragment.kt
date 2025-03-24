@@ -8158,6 +8158,7 @@ class TransactionDetailsFragment : Fragment() {
                                      */
                                     if (customerSettingModel.showTipSuggestion) {
                                         lineBreak()
+                                        lineBreak()
                                         printBoldLeft("Additional Tips")
                                         lineBreak()
 
