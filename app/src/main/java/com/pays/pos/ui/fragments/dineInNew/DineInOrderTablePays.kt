@@ -10418,7 +10418,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         data,
                         type,
                         item,
-                        listItemWithGuest
+                        listItemWithGuest,
+                        updateFireItemsForPrinterQueue
                     )
                 } catch (e: Exception) {
 
@@ -12524,6 +12525,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 actionFeedLine(1)
 
 
+                                val firedItems = mutableListOf<Int>()
+
                                 listItemWithGuest.forEach {
 
                                     var isGuestNamePrinted = false
@@ -12633,9 +12636,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 actionFeedLine(1)
 
 
-                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                                                    true
-                                                )
+                                                firedItems.add(obj.itemId)
+//                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+//                                                    true
+//                                                )
                                             }
                                         }
                                     }
@@ -12711,6 +12715,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 }
 
                                                 dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+//                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+//                                                    true
+//                                                )
 
                                             }
                                         }
