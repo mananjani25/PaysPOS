@@ -5133,6 +5133,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.backupPaymentId = null
         viewModel.backupPaymentOfflineId = ""
         viewModel.backupOrderOfflineId = ""
+        viewModelPayment.orderId = null
     }
 
     private fun restrictButtonClick(value: Boolean) {
