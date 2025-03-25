@@ -451,7 +451,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-//                if (foundGiftCard==null) {
+                if (foundGiftCard==null) {
                 presentation.showWouldYouLikeToAddTipScreen(
                     tipListViewModel,
                     transactionViewModel,
@@ -469,14 +469,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                     )
                 )
-//                }else{
-//                    presentation.showThankyouLayout()
-//                }
+                }else{
+                    Handler().postDelayed({
+                        presentation.showThankYou(finalPaidAmount)
+                    }, 200)
+
+                }
             }
 
-            if(isDineIn)
+            if(isDineIn) {
                 presentation.showThankYou(finalPaidAmount)
-
+            }
         }
     }
 
