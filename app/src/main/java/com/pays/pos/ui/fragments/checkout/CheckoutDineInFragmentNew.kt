@@ -456,6 +456,7 @@ class CheckoutDineInFragmentNew : Fragment,
     }
 
     private fun startDynamicPayment(name: String?, id: Int) {
+        paymentType = "External"
         val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
             .replace(")", "").trim().toDouble()
         val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
@@ -2233,6 +2234,7 @@ class CheckoutDineInFragmentNew : Fragment,
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
+            paymentType = "External"
             val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                 .replace(")", "").trim().toDouble()
             val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
