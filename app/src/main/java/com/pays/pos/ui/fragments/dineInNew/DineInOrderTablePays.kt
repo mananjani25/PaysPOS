@@ -10193,11 +10193,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 for (j in 0 until obj.modifiers.size) {
                                     val modifierObj = obj.modifiers.get(j)
                                     appendText(
-                                        "  " + if (modifierObj.modifier_quantity == 1) {
-                                            "   "
-                                        } else {
-                                            "" + modifierObj.modifier_quantity + "x "
-                                        } + modifierObj.name.uppercase()
+                                        "  " + "" + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
                                     )
                                     lineFeed(1)
 
@@ -12608,11 +12604,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                     )
                                                                 )
                                                                 .actionPrintText(
-                                                                    "  " + if (modifierObj.modifier_quantity == 1) {
-                                                                        "   "
-                                                                    } else {
-                                                                        "" + modifierObj.modifier_quantity + "x "
-                                                                    } + modifierObj.name.uppercase()
+                                                                    "  " + "" + modifierObj.name.uppercase()
                                                                 )
                                                         )
 

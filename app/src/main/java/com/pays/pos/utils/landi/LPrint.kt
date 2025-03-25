@@ -618,11 +618,7 @@ final object LPrint {
 
                                 lineBreak()
                                 printText(
-                                    "  " + if (modifierObj.modifier_quantity == 1) {
-                                        "   "
-                                    } else {
-                                        "" + modifierObj.modifier_quantity + "x "
-                                    } + modifierObj.name.uppercase()
+                                    "  " + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
                                 )
 
 
