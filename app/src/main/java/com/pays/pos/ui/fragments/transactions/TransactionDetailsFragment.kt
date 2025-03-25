@@ -2212,12 +2212,12 @@ class TransactionDetailsFragment : Fragment() {
 
                 binding.tvTransactionTime.text =
                     convertCurrentTime(
-                        it.data.order.created_at,
+                        it.data.order.updated_at,
                         context
                     )
 
                 binding.tvTransactionDate.text = convertCurrentDate(
-                    it.data.order.created_at,
+                    it.data.order.updated_at,
                     context
                 )
                 if (it.data.order.note.isNotEmpty()) {
