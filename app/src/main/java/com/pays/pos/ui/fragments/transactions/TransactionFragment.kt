@@ -206,7 +206,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value)
+            var fromDate = SimpleDateFormat("MM/dd/yyyy hh:mm a").parse(viewModel.startDate.value)
 //                .getTime() / 1000
 //            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(
 //                timeCalculateForStartEndTime(
@@ -226,7 +226,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
 
             val startDate1 = dateFormat.parse(viewModel.startDate.value)
-            val endDate1 = dateFormat.parse(viewModel.endDate.value)
+            val endDate1 = dateFormat.parse(timeCalculateForStartEndTime(hour, minute, "isend"))
 
             if (startDate1 <= endDate1) {
                 checkFilter = true
