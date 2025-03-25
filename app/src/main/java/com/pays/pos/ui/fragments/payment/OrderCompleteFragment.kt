@@ -451,7 +451,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-//                if (foundGiftCard==null) {
+                if (foundGiftCard==null) {
                 presentation.showWouldYouLikeToAddTipScreen(
                     tipListViewModel,
                     transactionViewModel,
@@ -469,14 +469,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                     )
                 )
-//                }else{
-//                    presentation.showThankyouLayout()
-//                }
+                }else{
+                    Handler().postDelayed({
+                        presentation.showThankYou(finalPaidAmount)
+                    }, 200)
+
+                }
             }
 
-            if(isDineIn)
+            if(isDineIn) {
                 presentation.showThankYou(finalPaidAmount)
-
+            }
         }
     }
 
@@ -2231,9 +2234,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (isDineIn) {
                     LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
                     customerPrintWholeOrder(false)
+                    binding.llPrint.isEnabled = false
+
+                    Handler().postDelayed({
+                        binding.llPrint.isEnabled = true
+                    }, 2000)
 
                 } else {
                     getCustomerPrinters(false)
+                    binding.llPrint.isEnabled = false
+
+                    Handler().postDelayed({
+                        binding.llPrint.isEnabled = true
+                    }, 2000)
+
                 }
 
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -11618,7 +11632,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              * Tip line
                                              */
 
-                                            if (receiptModel?.order?.totalTips == 0.0) {
+                                            if (receiptModel?.order?.totalTips == 0.0 && tipAfterAmount == 0.0) {
                                                 lineBreak()
 
                                                 if (customerSettingModel.showTipLineForCash) {
@@ -11719,9 +11733,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 applabStartIndex + "<APPLAB>".length,
                                                                 applabEndIndex
                                                             )
+                                                    } else {
+                                                        strCardType = "N/A"
                                                     }
-                                                } else {
-                                                    strCardType = "N/A"
                                                 }
 
                                                 printLeft(
@@ -14735,29 +14749,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                         )
                                                                                     }
 
-                                                                                    if (kitchenSettingModel.showCustomerAddress) {
 
-                                                                                        var address =
-                                                                                            ""
-                                                                                        receiptModel?.order?.customer?.addresses?.get(
-                                                                                            0
-                                                                                        )?.fullAddress?.let {
+                                                                            /*val address =
+                                                                                receiptModel?.order?.customer?.addresses?.get(
+                                                                                    0
+                                                                                )?.fullAddress
+
+                                                                                    if (kitchenSettingModel.showCustomerAddress && !address.isNullOrEmpty()) {
+
+
+                                                                                        address.let {
                                                                                             if (it.isNotEmpty()) {
-                                                                                                address =
-                                                                                                    it
+                                                                                                add(
+                                                                                                    PrinterBuilder()
+                                                                                                        .styleAlignment(
+                                                                                                            Alignment.Left
+                                                                                                        )
+                                                                                                        .actionPrintText(
+                                                                                                            content = it
+                                                                                                        )
+                                                                                                )
                                                                                             }
                                                                                         }
 
-                                                                                        add(
-                                                                                            PrinterBuilder()
-                                                                                                .styleAlignment(
-                                                                                                    Alignment.Left
-                                                                                                )
-                                                                                                .actionPrintText(
-                                                                                                    content = address
-                                                                                                )
-                                                                                        )
-                                                                                    }
+
+                                                                                    }*/
 
 
 
@@ -18966,7 +18982,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (receiptModel?.order?.totalTips == 0.0) {
+                    if (receiptModel?.order?.totalTips == 0.0 && tipAfterAmount == 0.0) {
 
 
                         if (customerSettingModel.showTipLineForCash) {
@@ -19965,7 +19981,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                        if (receiptModel?.order?.totalTips == 0.0) {
+                        if (receiptModel?.order?.totalTips == 0.0 && tipAfterAmount == 0.0) {
 
                             if (customerSettingModel.showTipLineForCash) {
 

@@ -1,9 +1,7 @@
 package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,10 +22,11 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.pays.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.pays.pos.utils.callback.ItemCallback
-import java.util.*
+import java.util.Locale
 
 class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: PrefProvider) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
@@ -212,7 +211,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             itemBinding.txtTip.setOnClickListener {
 
 //                (filterList[position].paymentType == "Card" && filterList[position].tips > 0) ||
-                if (filterList[position].paymentType == "External") {
+                if (filterList[position].paymentType == "External" || (filterList[position].tips > 0.0 && ( MethodUtils.roundOffAmountDouble(filterList[position].refundedAmount + filterList[position].tips)) ==  MethodUtils.roundOffAmountDouble(filterList[position].totalAmount))) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         context,
                         "Tip cannot be adjusted for this transaction."
@@ -297,9 +296,13 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
         }
     }
 
-    fun getItem(pos: Int): GetTransactionListResponse.Data.Payment {
-
-        return filterList[pos]
+    fun getItem(pos: Int): GetTransactionListResponse.Data.Payment? {
+        return if (pos in 0 until filterList.size) {
+            filterList[pos]
+        } else {
+            Log.e("TransactionAdapter", "Invalid index: $pos, list size: ${filterList.size}")
+            null // Prevents crash
+        }
     }
 
     override fun getItemId(position: Int): Long {
@@ -326,10 +329,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
     fun updateTip(selectedPos: Int, amountTip: Double) {
         val singleTransaction = getItem(selectedPos)
-        val amountTotal = singleTransaction.amount + amountTip
-        singleTransaction.tips = amountTip
-        singleTransaction.totalAmount = amountTotal
-        notifyItemChanged(selectedPos)
+        singleTransaction?.let { singleTransactionValue ->
+            val amountTotal = singleTransactionValue.amount + amountTip
+            singleTransactionValue.tips = amountTip
+            singleTransactionValue.totalAmount = amountTotal
+            notifyItemChanged(selectedPos)
+        } ?: Log.e("TransactionAdapter", "updateTip() failed: No transaction found at index $selectedPos")
     }
 
 

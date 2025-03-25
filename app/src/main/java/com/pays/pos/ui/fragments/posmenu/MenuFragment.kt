@@ -281,11 +281,10 @@ class MenuFragment : DialogFragment() {
         binding.header.imgBack.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.menuFragment) {
                 findNavController().navigate(R.id.action_menuFragment_to_dashboardCategoryBoldPOS)
-
+                
                 manageCustomerDisplay()
             }
 //            findNavController().navigateUp()
-//            manageCustomerDisplay()
 
         }
         binding.linearInventory.setOnClickListener {

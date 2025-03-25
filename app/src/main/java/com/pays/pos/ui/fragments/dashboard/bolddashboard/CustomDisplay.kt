@@ -1226,7 +1226,8 @@ class CustomDisplay(
                         } else {
                             if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
                                 if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
-                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+//                                    -dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 }else{
                                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
                                 }
@@ -1244,7 +1245,8 @@ class CustomDisplay(
                         } else {
                             if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)) {
                                 if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
-                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+//                                    -dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 }else{
                                     binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
                                 }
@@ -2987,7 +2989,7 @@ class CustomDisplay(
             if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
                 askForTipLayout.visible()
             } else {
-                showThankyouLayout()
+                showThankYou(mWholeTotalPrice)
             }
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
@@ -3274,7 +3276,7 @@ class CustomDisplay(
                 if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
                     askForTipLayout.visible()
                 } else {
-                    showThankyouLayout()
+                    showThankYou(mWholeTotalPrice)
                 }
             }
         }
