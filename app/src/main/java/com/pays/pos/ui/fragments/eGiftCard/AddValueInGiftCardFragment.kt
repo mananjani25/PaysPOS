@@ -91,7 +91,7 @@ class AddValueInGiftCardFragment : Fragment() {
     }
 
     private fun startPAXWithGiftCard() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        GlobalScope.launch {
             try {
                 // Ensure the fragment is attached before accessing requireContext()
                 if (!isAdded || activity == null) {
@@ -352,42 +352,37 @@ class AddValueInGiftCardFragment : Fragment() {
 
     private var countDownTimer: CountDownTimer? = null
     private fun onClick() {
-        binding.btnReadCard?.let {
-            it.setOnSingleClickListener(object:View.OnClickListener{
-                override fun onClick(p0: View?) {
-                    when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
-                        Constants.PAX->{
-                            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
-                                countDownTimer?.cancel()
-                                binding.btnReadCard?.isClickable=false
+        binding.btnReadCard?.setOnClickListener {
+            when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                Constants.PAX->{
+                    if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
+                        countDownTimer?.cancel()
+                        binding.btnReadCard?.isClickable=false
 
-                                countDownTimer = object : CountDownTimer(5000, 1000) {
-                                    override fun onTick(millisUntilFinished: Long) {
-                                    }
-                                    override fun onFinish() {
-                                        binding.btnReadCard?.isClickable=true
-                                    }
-                                }.start()
-
-                                startPAXWithGiftCard()
-                            }else{
-                                showAlertDialog(getString(R.string.please_connect_pax))
+                        countDownTimer = object : CountDownTimer(5000, 1000) {
+                            override fun onTick(millisUntilFinished: Long) {
                             }
-                        }
-                        Constants.DEJAVOO->{
-                            showAlertDialog(getString(R.string._not_supported, Constants.DEJAVOO))
-                        }
-                        Constants.VALOR->{
-                            showAlertDialog(getString(R.string._not_supported, Constants.VALOR))
-                        }
-                        else->{
-                            showAlertDialog(getString(R.string.please_connect_payment_device))
-                        }
+                            override fun onFinish() {
+                                binding.btnReadCard?.isClickable=true
+                            }
+                        }.start()
 
+                        startPAXWithGiftCard()
+                    }else{
+                        showAlertDialog(getString(R.string.please_connect_pax))
                     }
-
                 }
-            })
+                Constants.DEJAVOO->{
+                    showAlertDialog(getString(R.string._not_supported, Constants.DEJAVOO))
+                }
+                Constants.VALOR->{
+                    showAlertDialog(getString(R.string._not_supported, Constants.VALOR))
+                }
+                else->{
+                    showAlertDialog(getString(R.string.please_connect_payment_device))
+                }
+
+            }
         }
 
 
