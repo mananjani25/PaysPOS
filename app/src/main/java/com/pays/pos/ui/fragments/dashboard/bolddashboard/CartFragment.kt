@@ -3553,9 +3553,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "cartList" to cartModelsList,
                     "listOfCustomersID" to listOfCustomersID
                 )
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+                    )
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                }
             } else
                 AlertUtils.showCustomAlert(
                     requireContext(),
