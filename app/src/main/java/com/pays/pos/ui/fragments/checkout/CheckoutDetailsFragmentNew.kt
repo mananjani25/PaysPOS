@@ -1229,8 +1229,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                         var remainingValue = 0.0
+
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - (paymentAmount - cashDiscountSurcharge)
+                            val paymentAmount = paymentAmount - (cashDiscountSurcharge) - surchargeOnTip
+                            wholePrice - paymentAmount
                         } else {
                             wholePrice - paymentAmount
                         }
@@ -1244,8 +1246,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                          //to resolve tip before transaction issue
 
-                        if(isSelectedCount > 1)
-                        remainingValue += surchargeOnTip
+//                        if(isSelectedCount > 1)
+//                        remainingValue += surchargeOnTip
 
 
                         prefProvider.setValue(
