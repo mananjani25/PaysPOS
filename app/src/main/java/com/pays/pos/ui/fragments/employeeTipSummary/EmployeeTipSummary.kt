@@ -717,7 +717,7 @@ class EmployeeTipSummary : Fragment() {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                         val current = LocalDateTime.now()
                                         val formatter =
-                                            DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                                            DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm a")
                                         val formatted = current.format(formatter)
                                         printLeft(
                                             "Print Time: " + formatted,
@@ -1110,7 +1110,12 @@ class EmployeeTipSummary : Fragment() {
         SunmiPrintHelper.getInstance().lineWrap(1)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm a")
+            val formatted = current.format(formatter)
+
+            PrintSunmiUtils.normalText("Print Time:$formatted")
+
         }
 //        SunmiPrintHelper.getInstance().lineWrap(1)
 
