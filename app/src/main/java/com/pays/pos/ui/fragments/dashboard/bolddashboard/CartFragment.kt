@@ -403,6 +403,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     } else {
                                                         binding.checkloylaty.isChecked = false
                                                         viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                                                        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
                                                     }
                                                 }
                                                 return@breaking
@@ -3359,6 +3361,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             cartItemsAdapter.submitList(emptyList())
             reSetTaxBifurcationData()
             binding.relativeOrderNotes?.visibility = View.GONE
+            binding.checkloylaty.isChecked = false
             binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
