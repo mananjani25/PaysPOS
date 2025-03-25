@@ -301,19 +301,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 try {
                     Log.d("AddItemFragment.kt", "txtCancel: setOnClickListener")
 
-                    viewModel.duplicateCurrentCartItem.forEach { duplicateCartItem ->
-                        viewModel.currentCartItems.forEach { currentCartItem ->
-                            if (duplicateCartItem.cartItemId == currentCartItem.cartItemId) {
-                                if (duplicateCartItem.note.isNullOrEmpty()) {
-                                    currentCartItem.note = ""
+                    if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) != DINE_IN) {
+                        viewModel.duplicateCurrentCartItem.forEach { duplicateCartItem ->
+                            viewModel.currentCartItems.forEach { currentCartItem ->
+                                if (duplicateCartItem.cartItemId == currentCartItem.cartItemId) {
+                                    if (duplicateCartItem.note.isNullOrEmpty()) {
+                                        currentCartItem.note = ""
+                                    }
                                 }
-                            }
-                            if (currentCartItem.cartItemId == item.cartItemId) {
-                                item.note = ""
+                                if (currentCartItem.cartItemId == item.cartItemId) {
+                                    item.note = ""
+                                }
                             }
                         }
                     }
-
 
                 } catch (e: Exception) {
                     Log.d("AddItemFragment.kt", "txtCancel: catch")
