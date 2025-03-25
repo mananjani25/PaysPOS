@@ -3128,6 +3128,8 @@ class CheckoutDineInFragmentNew : Fragment,
             tvCash1.isEnabled = false
             tvCash2.isEnabled = false
             tvCash3.isEnabled = false
+            llDynamicLink.invisible()
+            lnrGiftCard.invisible()
         }
 
         Handler().postDelayed({
@@ -3136,6 +3138,8 @@ class CheckoutDineInFragmentNew : Fragment,
                 tvCash1.isEnabled = true
                 tvCash2.isEnabled = true
                 tvCash3.isEnabled = true
+                llDynamicLink.visible()
+                lnrGiftCard.visible()
             }
         }, 5000)
 
