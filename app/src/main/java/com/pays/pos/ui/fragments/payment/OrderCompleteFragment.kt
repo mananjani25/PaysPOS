@@ -7603,16 +7603,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         write(LPrint.CENTER_ALIGN)
 
                                         val dineInList = dineInList
+
+                                        var guestNo = -1
+
                                         for (i in 0 until dineInList.size) {
                                             if (dineInList[i].isHeader == 0) {
+                                                guestNo++
 
                                                 if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
 
-                                                    if (dineInList[i]?.customer == null) {
+                                                    var isPaid = ""
+                                                    try {
+                                                        getDineInOrderDetails!!.guestAttributes[guestNo].isPaid.let {
+                                                            if (it)
+                                                                isPaid = "(Paid) \n"
+                                                        }
+                                                    }catch (e:Exception) {}
 
+
+                                                    if (dineInList[i]?.customer == null) {
                                                         dineInList[i]?.title?.let {
                                                             write(LPrint.CENTER_ALIGN)
-                                                            write(it.toByteArray())
+                                                            write((isPaid+it).toByteArray())
                                                             write(LPrint.LINE_FEED)
                                                         }
 
@@ -7626,7 +7638,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         ""
                                                                     }
                                                         write(LPrint.CENTER_ALIGN)
-                                                        write(tableName.trim().toByteArray())
+                                                        write((isPaid+tableName).trim().toByteArray())
                                                         write(LPrint.LINE_FEED)
 
                                                     }
