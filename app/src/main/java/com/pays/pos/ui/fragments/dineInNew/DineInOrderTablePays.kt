@@ -1893,7 +1893,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 //binding.maskLayout?.gone()
                 ProgressUtils.dismissProgressDialog()
                 if (it.toString() != "null") {
-                    AlertUtils.showCustomAlert(requireContext(), it)
+                   // AlertUtils.showCustomAlert(requireContext(), it)
+                    AlertUtils.showAlertDineIn(requireContext(), it)
                 }
                 try {
                     dineInTableAdapter.notifyDataSetChanged()

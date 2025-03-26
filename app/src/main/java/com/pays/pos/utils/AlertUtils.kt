@@ -20,6 +20,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.pays.pos.R
 import java.nio.file.Files.delete
 import java.util.*
+import java.util.logging.Handler
 
 
 /**
@@ -34,6 +35,50 @@ import java.util.*
  * @author Mohit Kanada
  */
 object AlertUtils {
+
+    private var currentDialog: AlertDialog? = null
+
+    fun showAlertDineIn(
+        context: Context,
+        message: String?
+    ) {
+        if (message == null || message.equals("null", ignoreCase = true)) {
+            return
+        }
+
+        if (currentDialog?.isShowing == true) {
+            return
+        }
+
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.view_custom_dialog, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .create()
+
+        val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
+        val tvSubTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
+
+        tvTitle.text = context.getString(R.string.app_name)
+        tvSubTitle.text = message
+
+        val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
+        btSave.text = context.getString(android.R.string.ok)
+        btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.btnColorDark))
+        btSave.setOnClickListener {
+            customDialog.dismiss()
+            currentDialog = null
+        }
+        val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
+        btDismiss.visibility = View.GONE
+
+        customDialog.setOnDismissListener {
+            currentDialog = null
+        }
+
+        customDialog.show()
+        currentDialog = customDialog
+    }
+
     fun showAlert(
         context: Context,
         message: String?
