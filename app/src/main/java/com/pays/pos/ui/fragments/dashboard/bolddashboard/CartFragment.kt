@@ -400,11 +400,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         binding.checkloylaty.isChecked =
                                                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
-                                                    } else {
-                                                        binding.checkloylaty.isChecked = false
-                                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
-                                                        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-                                                        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+                                                    }
+                                                    else {
+                                                        if (!isFromPayment) {
+                                                            binding.checkloylaty.isChecked = false
+                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+//                                                            prefProvider.setValueboolean( Constants.LOYALTY_ADDED, false )
+//                                                            prefProvider.setValueboolean( Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+                                                        }
                                                     }
                                                 }
                                                 return@breaking
