@@ -7444,7 +7444,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                if (navController.currentDestination?.id != R.id.dineInFragmentPays) {
+                if (navController.currentDestination?.id != R.id.dashboardCategoryBoldPOS) {
                     navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
                 }
             }
