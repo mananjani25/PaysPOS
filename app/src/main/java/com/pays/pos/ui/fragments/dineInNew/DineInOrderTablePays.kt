@@ -12683,11 +12683,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 try {
 
-                                    val firedItems = addOrdersForKitchenDineInLandi(
-                                        item, customerReceiptPrinters.printerCategories.toCollection(
-                                            arrayListOf()
-                                        ), listItemWithGuest
-                                    )
+//                                    val firedItems = addOrdersForKitchenDineInTSPStar(
+//                                        item, customerReceiptPrinters.printerCategories.toCollection(
+//                                            arrayListOf()
+//                                        ), listItemWithGuest
+//                                    )
+
+
+                                    val firedItems = mutableListOf<String>()
+
+                                    listItemWithGuest.forEach { guest ->
+                                        guest.value.forEach { obj ->
+                                            customerReceiptPrinters.printerCategories.forEach {
+                                                if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
+
+                                                    firedItems.add(obj.orderItemId.toString())
+                                                }
+                                            }
+                                        }
+
+                                    }
+
 
                                     updateFireItemsForPrinterQueue?.apply {
 
