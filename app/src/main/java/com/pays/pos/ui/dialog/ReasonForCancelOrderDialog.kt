@@ -209,7 +209,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                             })
                             binding.rvReasons.adapter = cancelOrderReasonAdapter
 
-                            cancelOrderReasonAdapter.add(cancelOrderReasonsList)
+                            cancelOrderReasonAdapter.add(cancelOrderReasonsList.sortedBy { cancelOrderReason ->  cancelOrderReason.sort })
 
 
                         }
