@@ -1001,7 +1001,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
                                         printCenter(
-                                            "TOTAL CASH PAYMENT",
+                                            "TOTAL CASH PAYMENTS",
                                             fontSize = FONT_SIZE_4X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -1025,7 +1025,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     if (eodReportData?.externalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
                                         printCenter(
-                                            "TOTAL EXTERNAL PAYMENT",
+                                            "TOTAL EXTERNAL PAYMENTS",
                                             fontSize = FONT_SIZE_4X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -2252,7 +2252,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                builder.addText("TOTAL CASH PAYMENT")
+                builder.addText("TOTAL CASH PAYMENTS")
                 builder.addFeedLine(2)
 
                 builder.addTextStyle(
@@ -3090,7 +3090,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
             if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
-                PrintSunmiUtils.addLable("TOTAL CASH PAYMENT")
+                PrintSunmiUtils.addLable("TOTAL CASH PAYMENTS")
 
 
                 eodReportData?.totalCashPayments?.forEach {
@@ -3333,7 +3333,10 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
+                val current = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm a")
+                val formatted = current.format(formatter)
+                PrintSunmiUtils.normalText("Print Time:$formatted")
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -3750,7 +3753,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
             if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
-                PrintSunmiUtils.headerText("TOTAL CASH PAYMENT")
+                PrintSunmiUtils.headerText("TOTAL CASH PAYMENTS")
 
 
                 eodReportData?.totalCashPayments?.forEach {
@@ -3777,7 +3780,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
             if (eodReportData?.externalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
-                PrintSunmiUtils.headerText("TOTAL EXTERNAL PAYMENT")
+                PrintSunmiUtils.headerText("TOTAL EXTERNAL PAYMENTS")
 
 
                 eodReportData?.externalPayments?.forEach { report ->
@@ -4160,8 +4163,8 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
 
-            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
-            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
+            var fromDate = SimpleDateFormat("MM/dd/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
+            var endDate = SimpleDateFormat("MM/dd/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
             if (fromDate<=endDate){
                 val timecalender = Calendar.getInstance()
                 timecalender.set(Calendar.HOUR_OF_DAY, hour)

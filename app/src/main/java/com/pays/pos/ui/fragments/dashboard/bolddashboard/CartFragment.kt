@@ -400,9 +400,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         binding.checkloylaty.isChecked =
                                                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
-                                                    } else {
-                                                        binding.checkloylaty.isChecked = false
-                                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                    }
+                                                    else {
+                                                        if (!isFromPayment) {
+                                                            binding.checkloylaty.isChecked = false
+                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+//                                                            prefProvider.setValueboolean( Constants.LOYALTY_ADDED, false )
+//                                                            prefProvider.setValueboolean( Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+                                                        }
                                                     }
                                                 }
                                                 return@breaking
@@ -3359,6 +3364,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             cartItemsAdapter.submitList(emptyList())
             reSetTaxBifurcationData()
             binding.relativeOrderNotes?.visibility = View.GONE
+            binding.checkloylaty.isChecked = false
             binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
@@ -3814,6 +3820,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         launch {
                             try {
                                 viewModel.wholetotalPrice = 0.0
+                                viewModel.totalPrice = 0.0
                                 viewModel.changeCustomerDispSignButtonTitle("")
                                 viewModel.selectedCatetory = 0
                                 // Do positive stuff here
@@ -3948,6 +3955,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     getOrderTypes()
 
                                     viewModel.deleteOrderAfterMarkup()
+
+                                    binding.checkloylaty.isChecked = false
+                                    viewModel.redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
+                                    viewModel.redeemLoyaltyInfo.usedLoyaltyPoints = 0
+                                    viewModel.redeemLoyaltyInfo.remainingAmount = 0.0
+                                    viewModel.redeemLoyaltyInfo.total = 0.0
 
                                 }
 
@@ -5133,6 +5146,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.backupPaymentId = null
         viewModel.backupPaymentOfflineId = ""
         viewModel.backupOrderOfflineId = ""
+        viewModelPayment.orderId = null
     }
 
     private fun restrictButtonClick(value: Boolean) {
