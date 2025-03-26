@@ -11317,6 +11317,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print Serivce charge
                                      */
 
+                                    var serviceChargesFinal = 0.0
+
                                     if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
                                             SERVICECHARGE_DINEIN_ORDER,
                                             false
@@ -11328,7 +11330,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
 
-                                        var serviceChargesFinal = 0.0
+
                                         serviceChargesList.forEach {
                                             if(it.min_guest_count!=null && it.max_guest_count!=null)
                                                 if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
@@ -11380,7 +11382,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      */
 
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt )
+                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + finalTaxAmt )
 
 
                                     val totalAmountToPrint =
