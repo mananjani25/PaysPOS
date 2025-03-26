@@ -1239,7 +1239,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 }
                 } else {
-                    AlertUtils.showCustomAlert(requireContext(),"Please fire all items to continue")
+
+                    val totalItem = dineInTableAdapter.getList().count { it.isHeader == 1 && it.item?.isDeleted == false && it.item?.isDestroy == false }
+
+                    if(totalItem == 0) {
+                        AlertUtils.showCustomAlert(requireContext(),"Add items to the cart before proceeding.")
+                    }else
+                    AlertUtils.showCustomAlert(requireContext(),"Please fire all items to continue.")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
