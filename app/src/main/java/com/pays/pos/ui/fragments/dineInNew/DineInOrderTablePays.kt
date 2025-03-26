@@ -6481,18 +6481,25 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 val guestCount = dineInTableAdapter.getList().size - 1
 
-                                listGuestItem.forEach {
-                                    guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
+                                val allItems = listWTitems + listGuestItem
+
+                                allItems.forEach {
+
+
+                                    var itemSubTotal = 0.0
+                                    var itemTaxes = 0.0
+
+                                    itemSubTotal += (it.price * it.itemQuantity) - it.discountPrice
 
                                     it.modifiers.forEach { mod ->
-                                        guestSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
+                                        itemSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
                                     }
 
 
                                     it.taxes?.forEach { tax ->
                                         if (tax.isActive) {
                                             LogUtil.logE(TAG, "getTaxP  ${Gson().toJson(tax)}")
-                                            guestTaxes += if (tax.taxType == "Percentage") {
+                                            itemTaxes += if (tax.taxType == "Percentage") {
 
                                                 var modifierPrice = 0.0
                                                 val price =
@@ -6521,6 +6528,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     }
                                     guestDiscount += it.discountPrice
+
+                                    guestSubTotal += if(it.guestIndexForDineIn == 0)
+                                        itemSubTotal/totalGuestCount
+                                    else
+                                        itemSubTotal
+
+                                    guestTaxes += if(it.guestIndexForDineIn == 0)
+                                        itemTaxes/totalGuestCount
+                                    else
+                                        itemTaxes
+
+                                    guestTaxes = MethodUtils.getTwoDecimal(guestTaxes)
 
                                 }
 
@@ -6789,7 +6808,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalGuest),
+                                        "$" + MethodUtils.roundOffAmountString(guestSubTotal),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -6879,7 +6898,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     var totalAmt =
                                         MethodUtils.roundOffAmountDouble(
-                                            guestSubTotal + guestTaxes + guestServiceCharge + dineInTableAdapter.getList()
+                                            guestSubTotal + guestTaxes + serviceChargeGuest + dineInTableAdapter.getList()
                                                 .get(0).guestDividedAmt
                                         )
 

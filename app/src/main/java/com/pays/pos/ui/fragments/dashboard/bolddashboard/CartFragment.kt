@@ -1248,6 +1248,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     private fun getDineInData() {
         if (updateBundle != null) {
+
+            viewModel.dineInHeaderPosition = 0
+            viewModel.dineInSelectedItemHeaderPos = 0
+
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
                 LogUtil.logE(TAG, "isFromDinein")
                 getDineInCartList()
