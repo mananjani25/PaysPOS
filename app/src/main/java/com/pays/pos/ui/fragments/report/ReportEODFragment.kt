@@ -1001,7 +1001,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
                                         printCenter(
-                                            "TOTAL CASH PAYMENT",
+                                            "TOTAL CASH PAYMENTS",
                                             fontSize = FONT_SIZE_4X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -1025,7 +1025,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     if (eodReportData?.externalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
                                         printCenter(
-                                            "TOTAL EXTERNAL PAYMENT",
+                                            "TOTAL EXTERNAL PAYMENTS",
                                             fontSize = FONT_SIZE_4X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -2252,7 +2252,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                builder.addText("TOTAL CASH PAYMENT")
+                builder.addText("TOTAL CASH PAYMENTS")
                 builder.addFeedLine(2)
 
                 builder.addTextStyle(
@@ -3090,7 +3090,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
             if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
-                PrintSunmiUtils.addLable("TOTAL CASH PAYMENT")
+                PrintSunmiUtils.addLable("TOTAL CASH PAYMENTS")
 
 
                 eodReportData?.totalCashPayments?.forEach {
@@ -3753,7 +3753,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
             if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
-                PrintSunmiUtils.headerText("TOTAL CASH PAYMENT")
+                PrintSunmiUtils.headerText("TOTAL CASH PAYMENTS")
 
 
                 eodReportData?.totalCashPayments?.forEach {
@@ -3780,7 +3780,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
             if (eodReportData?.externalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
-                PrintSunmiUtils.headerText("TOTAL EXTERNAL PAYMENT")
+                PrintSunmiUtils.headerText("TOTAL EXTERNAL PAYMENTS")
 
 
                 eodReportData?.externalPayments?.forEach { report ->
