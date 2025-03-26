@@ -4096,7 +4096,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             val wastageNote: String = bundle.getString("wastageNote", "")
             if (clickedPosition != -1 && dineInTableAdapter.getList()[clickedPosition].item != null) {
-                prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+                // This is commented due to after sending any item to wastage api , this line force to print ***updated*** label on prints
+               // prefProvider.setValueboolean(DINE_IN_UPDATE, true)
                 val wastageRequest = WastageItemRequest.WastageItem(
                     orderId = orderId ?: -1,
                     tableNo = getOrderDetailsResponse?.floorPlanTable?.tableNumber,
