@@ -3354,7 +3354,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
         } else {
-            cartModelsList = arrayListOf()
+
+            if(prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                cartModelsList = arrayListOf()
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
             taxClickable = false
