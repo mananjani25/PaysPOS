@@ -6544,10 +6544,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 }
 
                                 guestDiscount += MethodUtils.roundOffAmountDouble(
-                                    globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
-                                        1
-                                    ) ?: 1)
+                                    globalOrderDiscount / totalGuestCount
                                 )
+
+
+                                val finalGuestDiscount = 0.0
+                                /***
+                                 * Fetch discount percentage from subtotal and discount given
+                                 */
+                                val orderDiscountPrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+                                val discountSelectedValue = (getOrderDetailsResponse?.totalDiscount?.div(orderDiscountPrice) ?: 1.0) * 100
+
+                                val discountPriceForGuest = guestSubTotal * discountSelectedValue/100
 
                                 serviceChargeList.forEach {
                                     if (it.isEnabled) {
@@ -6791,7 +6799,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-                                                (if(divideDiscount <= 0.0) "$" else "-$") + MethodUtils.roundOffAmountString(divideDiscount),
+                                                (if(divideDiscount <= 0.0) "$" else "-$") + MethodUtils.roundOffAmountString(discountPriceForGuest),
                                                 48
                                             ).toString()
 
