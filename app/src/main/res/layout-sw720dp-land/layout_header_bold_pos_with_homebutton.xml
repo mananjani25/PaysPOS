@@ -54,6 +54,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="DINE IN"
                 android:textAllCaps="true"
+                android:visibility="gone"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 

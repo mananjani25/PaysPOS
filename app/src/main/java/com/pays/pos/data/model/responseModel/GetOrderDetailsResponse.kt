@@ -505,9 +505,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("transaction_id")
             val transactionId: String,
             @SerializedName("updated_at")
-            val updatedAt: String,
-            @SerializedName("guest_index_for_dine_in")
-            val guestIndexForDineIn :Int = -1
+            val updatedAt: String
         ) : Parcelable
 
     }
