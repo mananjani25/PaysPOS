@@ -141,6 +141,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         return binding.root
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        viewModel.apply {
+            isItemEditing = false
+            isItemEditInProgress = false
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
