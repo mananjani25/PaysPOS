@@ -11570,7 +11570,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             val newPaidAmount = if (isCustomCash) {
                                                 paidAmount
                                             } else {
-                                                paidAmount + tipAmount
+                                                paidAmount + order?.payments?.last()?.tips!!
                                             }
 
                                             val paidAmt = padLine(
