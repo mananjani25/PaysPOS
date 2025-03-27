@@ -145,6 +145,8 @@ import javax.inject.Inject
 import androidx.lifecycle.Observer
 import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
 import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
+import kotlin.math.abs
+import kotlin.math.min
 
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -4244,6 +4246,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                          adapter.getItem(viewHolder.layoutPosition).id
                      )*/
                     updateAdapterData()
+                    recyclerView.post {
+                        dineInTableAdapter.notifyItemMoved(dragFrom, dragTo)
+                        dineInTableAdapter.notifyItemRangeChanged(min(dragFrom, dragTo), abs(dragTo - dragFrom) + 1)
+                    }
                 }
 
                 try {
