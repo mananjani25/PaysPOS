@@ -4034,6 +4034,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         prefProvider.setValueboolean(LOYALTY_ADDED, false)
+        binding.checkloylaty.isChecked = false
+        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+        viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
+        setupLoyalytyPoints()
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
