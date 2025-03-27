@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.pax.poslink.ManageRequest
@@ -91,64 +92,80 @@ class AddValueInGiftCardFragment : Fragment() {
 
     private fun startPAXWithGiftCard() {
         GlobalScope.launch {
-            posLink.SetCommSetting(
-                SettingINI.getCommSettingFromFile(
-                    requireContext(),
-                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+            try {
+                // Ensure the fragment is attached before accessing requireContext()
+                if (!isAdded || activity == null) {
+                    Log.e("startPAXWithGiftCard", "Fragment not attached to activity.")
+                    return@launch
+                }
+                posLink.SetCommSetting(
+                    SettingINI.getCommSettingFromFile(
+                        requireContext(),
+                        "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                    )
                 )
-            )
 
-            val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
-            manageRequest.EDCType=manageRequest.ParseEDCType("GIFT")
-            manageRequest.MagneticSwipeEntryFlag = "1";
-            manageRequest.ManualEntryFlag = "1";
-            manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "200";
-            manageRequest.ContinuousScreen = "0";
-            manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
-            posLink.ManageRequest = manageRequest
-            val result = posLink.ProcessTrans()
+                val manageRequest = ManageRequest()
+                manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+                manageRequest.EDCType = manageRequest.ParseEDCType("GIFT")
+                manageRequest.MagneticSwipeEntryFlag = "1";
+                manageRequest.ManualEntryFlag = "1";
+                manageRequest.ContactlessEntryFlag = "0";
+                manageRequest.TimeOut = "200";
+                manageRequest.ContinuousScreen = "0";
+                manageRequest.ECRRefNum = System.currentTimeMillis()
+                    .toString(); // Enable swipe entry (adjust based on your use case)
+                posLink.ManageRequest = manageRequest
+                val result = posLink.ProcessTrans()
 
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ManageResponse
-                val response = msg.obj as com.pax.poslink.ManageResponse
-                val resultCode = response.ResultCode
+                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                    val msg = Message()
+                    msg.what = Constants.TRANSACTION_SUCCESSED
+                    msg.obj = posLink.ManageResponse
+                    val response = msg.obj as com.pax.poslink.ManageResponse
+                    val resultCode = response.ResultCode
 
-                if (resultCode == "000000") {
-                    withContext(Dispatchers.Main){
+                    if (resultCode == "000000") {
+                        withContext(Dispatchers.Main) {
+                            if (!isAdded || view == null) return@withContext  // Prevent crashes
 
-                        binding.apply {
-                            btnReadCard?.isClickable = true
-                            fromPAXSwipe=true
-                            if (response.PAN.isNullOrEmpty()){
-                                edtGiftCardNumber.setText(response.Track2Data.toString())
-                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
-                            }else{
-                                edtGiftCardNumber.setText(response.PAN.toString())
-                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            binding.apply {
+                                btnReadCard?.isClickable = true
+                                fromPAXSwipe = true
+                                if (response.PAN.isNullOrEmpty()) {
+                                    edtGiftCardNumber.setText(response.Track2Data.toString())
+                                    Log.d(
+                                        "VALID: ",
+                                        "Here__Track: ${response.Track2Data.toString()}"
+                                    )
+                                } else {
+                                    edtGiftCardNumber.setText(response.PAN.toString())
+                                    Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                                }
+                                startProcessingForAddValue()
                             }
-                            startProcessingForAddValue()
                         }
+                    } else {
+                        runOnUiThread(object : Runnable {
+                            override fun run() {
+                                binding.btnReadCard?.isClickable = true
+                            }
+                        })
                     }
-                }else{
+
+                } else {
                     runOnUiThread(object : Runnable {
                         override fun run() {
                             binding.btnReadCard?.isClickable = true
                         }
                     })
                 }
-
-            }else{
-                runOnUiThread(object : Runnable {
-                    override fun run() {
-                        binding.btnReadCard?.isClickable = true
-                    }
-                })
+            } catch (e: Exception) {
+                Log.e("startPAXWithGiftCard", "Error: ${e.localizedMessage}")
+                withContext(Dispatchers.Main) {
+                    binding.btnReadCard?.isClickable = true
+                }
             }
-
         }
     }
 
@@ -335,42 +352,37 @@ class AddValueInGiftCardFragment : Fragment() {
 
     private var countDownTimer: CountDownTimer? = null
     private fun onClick() {
-        binding.btnReadCard?.let {
-            it.setOnSingleClickListener(object:View.OnClickListener{
-                override fun onClick(p0: View?) {
-                    when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
-                        Constants.PAX->{
-                            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
-                                countDownTimer?.cancel()
-                                binding.btnReadCard?.isClickable=false
+        binding.btnReadCard?.setOnClickListener {
+            when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                Constants.PAX->{
+                    if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
+                        countDownTimer?.cancel()
+                        binding.btnReadCard?.isClickable=false
 
-                                countDownTimer = object : CountDownTimer(5000, 1000) {
-                                    override fun onTick(millisUntilFinished: Long) {
-                                    }
-                                    override fun onFinish() {
-                                        binding.btnReadCard?.isClickable=true
-                                    }
-                                }.start()
-
-                                startPAXWithGiftCard()
-                            }else{
-                                showAlertDialog(getString(R.string.please_connect_pax))
+                        countDownTimer = object : CountDownTimer(5000, 1000) {
+                            override fun onTick(millisUntilFinished: Long) {
                             }
-                        }
-                        Constants.DEJAVOO->{
-                            showAlertDialog(getString(R.string._not_supported, Constants.DEJAVOO))
-                        }
-                        Constants.VALOR->{
-                            showAlertDialog(getString(R.string._not_supported, Constants.VALOR))
-                        }
-                        else->{
-                            showAlertDialog(getString(R.string.please_connect_payment_device))
-                        }
+                            override fun onFinish() {
+                                binding.btnReadCard?.isClickable=true
+                            }
+                        }.start()
 
+                        startPAXWithGiftCard()
+                    }else{
+                        showAlertDialog(getString(R.string.please_connect_pax))
                     }
-
                 }
-            })
+                Constants.DEJAVOO->{
+                    showAlertDialog(getString(R.string._not_supported, Constants.DEJAVOO))
+                }
+                Constants.VALOR->{
+                    showAlertDialog(getString(R.string._not_supported, Constants.VALOR))
+                }
+                else->{
+                    showAlertDialog(getString(R.string.please_connect_payment_device))
+                }
+
+            }
         }
 
 
@@ -428,7 +440,11 @@ class AddValueInGiftCardFragment : Fragment() {
     private fun startProcessingForAddValue() {
 
 //            closePaxRequest()
-        MethodUtils.hideSoftKeyboard(requireActivity())
+        activity?.let {
+            MethodUtils.hideSoftKeyboard(it)
+        }
+
+//        MethodUtils.hideSoftKeyboard(requireActivity())
         val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
         val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
         giftCardNumberGlb = giftCardNumber

@@ -100,8 +100,6 @@ import com.pays.pos.utils.callback.ItemListner
 import com.pays.pos.utils.callback.SyncDataCallback
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
-import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Resource
@@ -144,7 +142,6 @@ import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -3254,6 +3251,74 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                             }
                                                                         }
 
+                                                                        if (kitchenSettingModel.showCustomerPhone) {
+
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                                                                                0
+                                                                                            ) != null
+                                                                                        ) {
+
+                                                                                            var phoneNumber =
+                                                                                                createOrderResponse.data?.order?.customer?.phones?.get(
+                                                                                                    0
+                                                                                                )?.phoneNumber.toString()
+                                                                                            if (phoneNumber.length != 10) {
+                                                                                                // Handle invalid input (must be 10 digits)
+                                                                                                "Invalid phone number"
+                                                                                            }
+
+                                                                                            val areaCode =
+                                                                                                phoneNumber.substring(
+                                                                                                    0,
+                                                                                                    3
+                                                                                                )
+                                                                                            val firstPart =
+                                                                                                phoneNumber.substring(
+                                                                                                    3,
+                                                                                                    6
+                                                                                                )
+                                                                                            val secondPart =
+                                                                                                phoneNumber.substring(
+                                                                                                    6
+                                                                                                )
+
+                                                                                            "($areaCode)$firstPart-$secondPart"
+                                                                                        } else ""
+
+                                                                                    )
+                                                                            )
+                                                                        }
+
+                                                                        if (kitchenSettingModel.showCustomerAddress) {
+
+                                                                            var address =
+                                                                                ""
+                                                                            createOrderResponse.data?.order?.customer?.addresses?.get(
+                                                                                0
+                                                                            )?.fullAddress?.let {
+                                                                                if (it.isNotEmpty()) {
+                                                                                    address =
+                                                                                        it
+                                                                                }
+                                                                            }
+
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content = address
+                                                                                    )
+                                                                            )
+                                                                        }
+
                                                                     }
                                                                 }
                                                             } catch (e: Exception) {
@@ -3428,6 +3493,74 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                                 )
 
                                                                             }
+                                                                        }
+
+                                                                        if (kitchenSettingModel.showCustomerPhone) {
+
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                                                                                0
+                                                                                            ) != null
+                                                                                        ) {
+
+                                                                                            var phoneNumber =
+                                                                                                createOrderResponse.data?.order?.customer?.phones?.get(
+                                                                                                    0
+                                                                                                )?.phoneNumber.toString()
+                                                                                            if (phoneNumber.length != 10) {
+                                                                                                // Handle invalid input (must be 10 digits)
+                                                                                                "Invalid phone number"
+                                                                                            }
+
+                                                                                            val areaCode =
+                                                                                                phoneNumber.substring(
+                                                                                                    0,
+                                                                                                    3
+                                                                                                )
+                                                                                            val firstPart =
+                                                                                                phoneNumber.substring(
+                                                                                                    3,
+                                                                                                    6
+                                                                                                )
+                                                                                            val secondPart =
+                                                                                                phoneNumber.substring(
+                                                                                                    6
+                                                                                                )
+
+                                                                                            "($areaCode)$firstPart-$secondPart"
+                                                                                        } else ""
+
+                                                                                    )
+                                                                            )
+                                                                        }
+
+                                                                        if (kitchenSettingModel.showCustomerAddress) {
+
+                                                                            var address =
+                                                                                ""
+                                                                            createOrderResponse.data?.order?.customer?.addresses?.get(
+                                                                                0
+                                                                            )?.fullAddress?.let {
+                                                                                if (it.isNotEmpty()) {
+                                                                                    address =
+                                                                                        it
+                                                                                }
+                                                                            }
+
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content = address
+                                                                                    )
+                                                                            )
                                                                         }
 
                                                                     }
@@ -3877,6 +4010,38 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             } catch (e: Exception) {
 
                             }
+
+                            try {
+                                if (kitchenSettingModel.showCustomerAddress && createOrderResponse.data.order.customer.addresses.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerAddress && createOrderResponse.data.order.customer.addresses.get(
+                                                        0
+                                                    ) != null
+                                                ) {
+
+                                                    val address =
+                                                        createOrderResponse.data.order.customer.addresses.get(
+                                                            0
+                                                        ).fullAddress
+
+                                                    address
+
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            } catch (e: Exception) {
+
+                            }
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
@@ -4317,6 +4482,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                                         } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
+                                                            printLeft(
+                                                                receiptModel.order.customer.addresses.get(0).fullAddress,
+                                                                isBold = true,
+                                                                fontSize = FONT_SIZE_5X
+                                                            )
+
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
 //                                PrintSunmiUtils.normalTextLarge(
@@ -4324,19 +4495,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //                                )
 //                            }
 
-                                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                                                ?.forEach {
-
-                                                                    if (it.typeOfAddress.equals(
-                                                                            Constants.BILLING_ADDRESS,
-                                                                            ignoreCase = true
-                                                                        )
-                                                                    ) {
-                                                                        printLeft(
-                                                                            it.fullAddress
-                                                                        )
-                                                                    }
-                                                                }
+//                                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                                                ?.forEach {
+//
+//                                                                    if (it.typeOfAddress.equals(
+//                                                                            Constants.BILLING_ADDRESS,
+//                                                                            ignoreCase = true
+//                                                                        )
+//                                                                    ) {
+//                                                                        printLeft(
+//                                                                            it.fullAddress
+//                                                                        )
+//                                                                    }
+//                                                                }
 
 
                                                         }
@@ -6775,26 +6946,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
+                            receiptModel.order.customer.addresses.get(0).fullAddress.let {
+                                PrintSunmiUtils.customerAddress(
+                                    it
+                                )
+                            }
 
-//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                PrintSunmiUtils.customerAddress(
-//                                    it
-//                                )
-//                            }
-
-                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                ?.forEach {
-
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        PrintSunmiUtils.customerAddress(
-                                            it.fullAddress
-                                        )
-                                    }
-                                }
+//                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                ?.forEach {
+//
+//                                    if (it.typeOfAddress.equals(
+//                                            Constants.BILLING_ADDRESS,
+//                                            ignoreCase = true
+//                                        )
+//                                    ) {
+//                                        PrintSunmiUtils.customerAddress(
+//                                            it.fullAddress
+//                                        )
+//                                    }
+//                                }
 
 
                         }
@@ -6951,26 +7121,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                 } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
+                                    receiptModel.order.customer.addresses.get(0).fullAddress.let {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            it
+                                        )
+                                    }
 
-//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-//                                PrintSunmiUtils.normalTextLarge(
-//                                    it
-//                                )
-//                            }
-
-                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                        ?.forEach {
-
-                                            if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                PrintSunmiUtils.normalTextLarge(
-                                                    it.fullAddress
-                                                )
-                                            }
-                                        }
+//                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                        ?.forEach {
+//
+//                                            if (it.typeOfAddress.equals(
+//                                                    Constants.BILLING_ADDRESS,
+//                                                    ignoreCase = true
+//                                                )
+//                                            ) {
+//                                                PrintSunmiUtils.normalTextLarge(
+//                                                    it.fullAddress
+//                                                )
+//                                            }
+//                                        }
 
 
                                 }

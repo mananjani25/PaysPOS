@@ -115,6 +115,7 @@ import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.ui.fragments.magtekPro.MTParser
 import com.pays.pos.ui.fragments.magtekPro.SessionManager
 import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
+import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment.Companion
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
@@ -1229,8 +1230,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                         var remainingValue = 0.0
+
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - (paymentAmount - cashDiscountSurcharge)
+                            val paymentAmount = paymentAmount - (cashDiscountSurcharge) - surchargeOnTip
+                            wholePrice - paymentAmount
                         } else {
                             wholePrice - paymentAmount
                         }
@@ -1244,8 +1247,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                          //to resolve tip before transaction issue
 
-                        if(isSelectedCount > 1)
-                        remainingValue += surchargeOnTip
+//                        if(isSelectedCount > 1)
+//                        remainingValue += surchargeOnTip
 
 
                         prefProvider.setValue(
@@ -4953,6 +4956,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tvCash1.isEnabled = false
             tvCash2.isEnabled = false
             tvCash3.isEnabled = false
+            PaymentBoldPosFragment.binding.layoutHeaderCheckout.imgDrawer.isEnabled = false
+
         }
 
         Handler().postDelayed({
@@ -4962,6 +4967,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tvCash1.isEnabled = true
                 tvCash2.isEnabled = true
                 tvCash3.isEnabled = true
+                PaymentBoldPosFragment.binding.layoutHeaderCheckout.imgDrawer.isEnabled = true
+
             }
         }, 5000)
 

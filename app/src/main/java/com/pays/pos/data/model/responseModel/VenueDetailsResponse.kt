@@ -159,6 +159,8 @@ data class VenueDetailsResponse(
             val isActive: Boolean,
             @SerializedName("location_id")
             val locationId: Int,
+            @SerializedName("sort")
+            val sort: Int,
             @SerializedName("reason")
             val reason: String,
             @SerializedName("updated_at")

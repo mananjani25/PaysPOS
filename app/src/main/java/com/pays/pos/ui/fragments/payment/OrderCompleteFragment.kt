@@ -452,7 +452,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 }
 
-//                if (foundGiftCard==null) {
+                if (foundGiftCard==null) {
                 presentation.showWouldYouLikeToAddTipScreen(
                     tipListViewModel,
                     transactionViewModel,
@@ -470,14 +470,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                     )
                 )
-//                }else{
-//                    presentation.showThankyouLayout()
-//                }
+                }else{
+                    Handler().postDelayed({
+                        presentation.showThankYou(finalPaidAmount)
+                    }, 200)
+
+                }
             }
 
-            if(isDineIn)
+            if(isDineIn) {
                 presentation.showThankYou(finalPaidAmount)
-
+            }
         }
     }
 
@@ -2232,9 +2235,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (isDineIn) {
                     LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
                     customerPrintWholeOrder(false)
+                    binding.llPrint.isEnabled = false
+
+                    Handler().postDelayed({
+                        binding.llPrint.isEnabled = true
+                    }, 2000)
 
                 } else {
                     getCustomerPrinters(false)
+                    binding.llPrint.isEnabled = false
+
+                    Handler().postDelayed({
+                        binding.llPrint.isEnabled = true
+                    }, 2000)
+
                 }
 
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
