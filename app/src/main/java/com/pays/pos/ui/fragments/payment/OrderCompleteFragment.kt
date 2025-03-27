@@ -157,6 +157,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import java.io.*
+import java.lang.Runtime
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
@@ -9883,6 +9884,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putDouble("divideCashDiscount", totalDiscount)
                 bundle.putDouble("totalTax", totalTaxAmount)
                 prefProvider.setValueInt(PAYMENT_ID, 0)
+
+                if(isDineIn) {
+                    try {
+                        System.gc()
+                        System.runFinalization()
+                        Runtime.getRuntime().gc()
+                    }catch (e: Exception){}
+                }
+
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
             } else {
@@ -9903,6 +9913,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("isCustomCash", isCustomCash)
                 //saveDataInPrefrences()
                 prefProvider.setValueInt(PAYMENT_ID, 0)
+
+                if(isDineIn) {
+                    try {
+                        System.gc()
+                        System.runFinalization()
+                        Runtime.getRuntime().gc()
+                    }catch (e: Exception){}
+                }
+
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
                 viewModelDashBoard.employeeGivenTip = false
@@ -9914,6 +9933,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     val bundle = Bundle()
                     LogUtil.logE(TAG, "guestorderID ${orderID}")
                     bundle.putInt("orderId", orderID)
+
+                    if(isDineIn) {
+                        try {
+                            System.gc()
+                            System.runFinalization()
+                            Runtime.getRuntime().gc()
+                        }catch (e: Exception){}
+                    }
 
                     findNavController().navigate(
                         R.id.action_orderCompleteFragment_to_dineInOrderTable,
@@ -9933,6 +9960,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                      //preAuthPaymentviewModel.clearPreAuthDetails()
 
+                        if(isDineIn) {
+                            try {
+                                System.gc()
+                                System.runFinalization()
+                                Runtime.getRuntime().gc()
+                            }catch (e: Exception){}
+                        }
+
                         if (viewModelDashBoard.boldPosNeedToRefresh)
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                         else
@@ -9944,6 +9979,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+
+                        if(isDineIn) {
+                            try {
+                                System.gc()
+                                System.runFinalization()
+                                Runtime.getRuntime().gc()
+                            }catch (e: Exception){}
+                        }
 
                      //preAuthPaymentviewModel.clearPreAuthDetails()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -9967,6 +10010,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                      //preAuthPaymentviewModel.clearPreAuthDetails()
 
+                        if(isDineIn) {
+                            try {
+                                System.gc()
+                                System.runFinalization()
+                                Runtime.getRuntime().gc()
+                            }catch (e: Exception){}
+                        }
+
                         if (viewModelDashBoard.boldPosNeedToRefresh) {
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                         } else {
@@ -9980,6 +10031,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
                         clearObserver()
+
+                        if(isDineIn) {
+                            try {
+                                System.gc()
+                                System.runFinalization()
+                                Runtime.getRuntime().gc()
+                            }catch (e: Exception){}
+                        }
+
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
                 }
