@@ -3160,8 +3160,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                 val price =
                                                                     (it.price * it.quantity) - it.discountAmount
 
-                                                                it.orderItemModifiers.forEach {
-                                                                    modifierPrice += (it.price * it.quantity)
+                                                                it.orderItemModifiers.forEach { mod ->
+                                                                    modifierPrice += (mod.price * it.quantity)
                                                                 }
 
                                                                 val totalPrice =

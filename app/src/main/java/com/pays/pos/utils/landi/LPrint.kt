@@ -451,7 +451,7 @@ final object LPrint {
                                     },
                                     getModifierItemPriceToShow(
                                         modifierObj.price,
-                                        modifierObj.itemQuantity
+                                        item.itemQuantity
                                     ),
                                     48
                                 )

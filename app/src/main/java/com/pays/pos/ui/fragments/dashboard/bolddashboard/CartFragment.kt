@@ -935,6 +935,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         super.onViewCreated(view, savedInstanceState)
         prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
 
+        viewModel.dineInHeaderPosition = 0
+        viewModel.currentSelectedHeaderDineIn = 0
 
         initListeners()
         setCartAdapter()
