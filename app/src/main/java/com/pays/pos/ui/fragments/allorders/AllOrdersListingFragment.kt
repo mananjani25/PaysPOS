@@ -8480,7 +8480,8 @@ class AllOrdersListingFragment(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                         PrintSunmiUtils.normalText(
-                            "Print Time:" + Constants.getCurrentTimeFromTimeZone(
+//                            "Print Time:" + Constants.getCurrentTimeFromTimeZone(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
                                 requireContext(),
                                 MethodUtils.formatted()
                             )
@@ -8541,7 +8542,11 @@ class AllOrdersListingFragment(
 
                         val printTime = padLine(
                             if (customerSettingModel.showPrintTime) {
-                                "Print Time:${MethodUtils.formatted()}"
+//                                "Print Time:${MethodUtils.formatted()}"
+                                "Print Time" + getCurrentTimeFromTimeZone(
+                                    requireContext(),
+                                    MethodUtils.formatted()
+                                )
                             } else {
                                 ""
                             },
