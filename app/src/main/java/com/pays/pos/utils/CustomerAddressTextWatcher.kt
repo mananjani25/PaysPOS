@@ -60,7 +60,7 @@ class CustomerAddressTextWatcher(
 
             }
         }
-//        Check if the ZIP code length exceeds 10 digits
+//        Check if the inout field length exceeds max length
         maxLength?.let{
             if ((s?.length ?: 0) > it) {
                 edittext.error = "You can't enter more than $maxLength characters"
