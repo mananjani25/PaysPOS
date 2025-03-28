@@ -14719,64 +14719,69 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     actionFeedLine(1)
                                                                     actionFeedLine(1)
 
-                                                                    var printedName = StringBuilder("")
-                                                                    receiptModel?.order?.customer?.firstName?.let { firstName ->
-                                                                        receiptModel?.order?.customer?.lastName?.let { lastName ->
-                                                                            if (kitchenSettingModel.showCustomerName) {
-                                                                                if (!firstName.contains(
-                                                                                        "customer",
-                                                                                        ignoreCase = true
-                                                                                    )
-                                                                                ) {
-                                                                                    printedName.append(
-                                                                                        firstName
-                                                                                    )
-                                                                                    printedName.append(" ")
+                                                                    try {
+                                                                        var printedName =
+                                                                            StringBuilder("")
+                                                                        receiptModel?.order?.customer?.firstName?.let { firstName ->
+                                                                            receiptModel?.order?.customer?.lastName?.let { lastName ->
+                                                                                if (kitchenSettingModel.showCustomerName) {
+                                                                                    if (!firstName.contains(
+                                                                                            "customer",
+                                                                                            ignoreCase = true
+                                                                                        )
+                                                                                    ) {
+                                                                                        printedName.append(
+                                                                                            firstName
+                                                                                        )
+                                                                                        printedName.append(
+                                                                                            " "
+                                                                                        )
+                                                                                    }
+
+                                                                                    if (!lastName.isBlank()) {
+                                                                                        printedName.append(
+                                                                                            lastName
+                                                                                        )
+                                                                                    }
+
+                                                                                    if (printedName.isNotEmpty()) {
+                                                                                        add(
+                                                                                            PrinterBuilder()
+                                                                                                .styleAlignment(
+                                                                                                    Alignment.Left
+                                                                                                )
+                                                                                                .styleBold(
+                                                                                                    true
+                                                                                                )
+                                                                                                .actionPrintText(
+                                                                                                    content = "Customer Details\n"
+                                                                                                )
+                                                                                        )
+
+                                                                                        add(
+                                                                                            PrinterBuilder()
+                                                                                                .styleAlignment(
+                                                                                                    Alignment.Center
+                                                                                                )
+                                                                                                .actionPrintText(
+                                                                                                    content =
+                                                                                                        "------------------------------------------------"
+                                                                                                )
+                                                                                        )
+
+                                                                                        add(
+                                                                                            PrinterBuilder()
+                                                                                                .styleAlignment(
+                                                                                                    Alignment.Left
+                                                                                                )
+                                                                                                .actionPrintText(
+                                                                                                    content = printedName.toString()
+                                                                                                )
+                                                                                        )
+                                                                                    }
                                                                                 }
 
-                                                                                if (!lastName.isBlank()) {
-                                                                                    printedName.append(
-                                                                                        lastName
-                                                                                    )
-                                                                                }
-
-                                                                                if (printedName.isNotEmpty()) {
-                                                                                    add(
-                                                                                        PrinterBuilder()
-                                                                                            .styleAlignment(
-                                                                                                Alignment.Left
-                                                                                            )
-                                                                                            .styleBold(
-                                                                                                true
-                                                                                            )
-                                                                                            .actionPrintText(
-                                                                                                content = "Customer Details\n"
-                                                                                            )
-                                                                                    )
-
-                                                                                    add(
-                                                                                        PrinterBuilder()
-                                                                                            .styleAlignment(
-                                                                                                Alignment.Center
-                                                                                            )
-                                                                                            .actionPrintText(
-                                                                                                content =
-                                                                                                "------------------------------------------------"
-                                                                                            )
-                                                                                    )
-
-                                                                                    add(
-                                                                                        PrinterBuilder()
-                                                                                            .styleAlignment(
-                                                                                                Alignment.Left
-                                                                                            )
-                                                                                            .actionPrintText(
-                                                                                                content = printedName.toString()
-                                                                                            )
-                                                                                    )
-                                                                                }
-                                                                            }
-
+                                                                                try {
                                                                                     if (kitchenSettingModel.showCustomerPhone) {
 
                                                                                         add(
@@ -14820,9 +14825,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 )
                                                                                         )
                                                                                     }
+                                                                                }catch (e: Exception) {
+                                                                                    e.printStackTrace()
+                                                                                }
 
-
-                                                                            /*val address =
+                                                                                /*val address =
                                                                                 receiptModel?.order?.customer?.addresses?.get(
                                                                                     0
                                                                                 )?.fullAddress
@@ -14848,12 +14855,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                     }*/
 
 
-
+                                                                            }
 
                                                                         }
-
+                                                                    }catch (e: Exception) {
+                                                                        e.printStackTrace()
                                                                     }
-
 
                                                                     actionFeedLine(1)
 
@@ -14875,7 +14882,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         }
                                                     }
                                                 }
-                                            } else {
+                                            } else
+                                            {
                                                 var paidList =
                                                     receiptModel?.order?.orderItems?.filterNot { it.isPaid } // In case of Single item per receipt, isPaid variable is maintained
                                                 EventBus.getDefault().post(
