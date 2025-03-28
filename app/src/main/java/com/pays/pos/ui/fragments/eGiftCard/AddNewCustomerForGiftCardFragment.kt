@@ -167,7 +167,8 @@ class AddNewCustomerForGiftCardFragment : Fragment(), AddressTextChangeListner {
                 binding.edtZip,
                 changeField,
                 this,
-                false
+                false,
+                10
             )
         )
 
@@ -367,26 +368,32 @@ class AddNewCustomerForGiftCardFragment : Fragment(), AddressTextChangeListner {
     private fun onClick() {
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.sameAsAddressValueChanges(false)
+            var zipText = binding.edtZip.text.toString().trim()
 
-            listAddress = arrayListOf()
-            if (binding.edtStreet.text.toString().isNotEmpty())
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        null,
-                        binding.edtStreet.text.toString(),
-                        binding.edtSuite.text.toString(),
-                        binding.edtCity.text.toString(),
-                        binding.edtState.text.toString(),
-                        binding.edtAddress.selectedItem.toString(),
-                        binding.edtZip.text.toString(),
-                        "Shipping",
-                        0.0,
-                        0.0,
-                        "false"
+            if (zipText.length > 10) {
+                binding.edtZip.requestFocus() // Moves cursor to ZIP field
+            } else {
+                viewModel.sameAsAddressValueChanges(false)
+
+                listAddress = arrayListOf()
+                if (binding.edtStreet.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            null,
+                            binding.edtStreet.text.toString(),
+                            binding.edtSuite.text.toString(),
+                            binding.edtCity.text.toString(),
+                            binding.edtState.text.toString(),
+                            binding.edtAddress.selectedItem.toString(),
+                            binding.edtZip.text.toString(),
+                            "Shipping",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
-            viewModel.submit(listAddress, false)
+                viewModel.submit(listAddress, false)
+            }
         }
     }
 

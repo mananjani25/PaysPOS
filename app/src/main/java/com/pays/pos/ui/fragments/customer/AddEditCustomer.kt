@@ -466,7 +466,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                 binding.edtZip,
                 changeField,
                 this,
-                onTextChanges
+                onTextChanges,
+                10
             )
         )
         binding.edtZipDel.addTextChangedListener(
@@ -1041,66 +1042,71 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
-
-
         binding.header.txtSave.setOnClickListener(object: View.OnClickListener{
             override fun onClick(p0: View?) {
-                viewModel.sameAsAddressValueChanges(binding.chksameasbilling.isChecked)
-                if (isEdit) {
-                    if (isEmailAndPhoneEmpty){
-                        var doProcess=false
-                        if (binding.edtEmailAdd.text.toString().trim().isNotEmpty()){
-                            doProcess=true
-                        }
-                        if (binding.edtPhoneNo.text.toString().trim().isNotEmpty()){
-                            doProcess=true
-                        }
-                        if (doProcess){
+                var zipText = binding.edtZip.text.toString().trim()
+
+                if (zipText.length > 10) {
+                    binding.edtZip.requestFocus() // Moves cursor to ZIP field
+                } else {
+                    viewModel.sameAsAddressValueChanges(binding.chksameasbilling.isChecked)
+                    if (isEdit) {
+                        if (isEmailAndPhoneEmpty) {
+                            var doProcess = false
+                            if (binding.edtEmailAdd.text.toString().trim().isNotEmpty()) {
+                                doProcess = true
+                            }
+                            if (binding.edtPhoneNo.text.toString().trim().isNotEmpty()) {
+                                doProcess = true
+                            }
+                            if (doProcess) {
+                                createOrUpdateCustomerObject()
+                            } else {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    getString(com.pays.pos.R.string.lbl_please_add_phone_or_email)
+                                )
+                            }
+                        } else {
                             createOrUpdateCustomerObject()
-                        }else{
-                            AlertUtils.showCustomAlert(requireContext(),getString(com.pays.pos.R.string.lbl_please_add_phone_or_email))
                         }
-                    }else{
+                    } else {
+                        listAddress = arrayListOf()
+                        if (binding.edtStreet.text.toString().isNotEmpty())
+                            listAddress.add(
+                                CreateCustomerRequestModel.Customer.Addresses(
+                                    null,
+                                    binding.edtStreet.text.toString(),
+                                    binding.edtSuite.text.toString(),
+                                    binding.edtCity.text.toString(),
+                                    binding.edtState.text.toString(),
+                                    binding.edtAddress.selectedItem.toString(),
+                                    binding.edtZip.text.toString(),
+                                    "Shipping",
+                                    0.0,
+                                    0.0,
+                                    "false"
+                                )
+                            )
+                        if (binding.edtStreetDel.text.toString().isNotEmpty())
+                            listAddress.add(
+                                CreateCustomerRequestModel.Customer.Addresses(
+                                    null,
+                                    binding.edtStreetDel.text.toString(),
+                                    binding.edtSuiteDel.text.toString(),
+                                    binding.edtCityDel.text.toString(),
+                                    binding.edtStateDel.text.toString(),
+                                    binding.edtAddressDel.selectedItem.toString(),
+                                    binding.edtZipDel.text.toString(),
+                                    "Billing",
+                                    0.0,
+                                    0.0,
+                                    "false"
+                                )
+                            )
                         createOrUpdateCustomerObject()
+
                     }
-
-                }
-                else {
-                    listAddress = arrayListOf()
-                    if (binding.edtStreet.text.toString().isNotEmpty())
-                        listAddress.add(
-                            CreateCustomerRequestModel.Customer.Addresses(
-                                null,
-                                binding.edtStreet.text.toString(),
-                                binding.edtSuite.text.toString(),
-                                binding.edtCity.text.toString(),
-                                binding.edtState.text.toString(),
-                                binding.edtAddress.selectedItem.toString(),
-                                binding.edtZip.text.toString(),
-                                "Shipping",
-                                0.0,
-                                0.0,
-                                "false"
-                            )
-                        )
-                    if (binding.edtStreetDel.text.toString().isNotEmpty())
-                        listAddress.add(
-                            CreateCustomerRequestModel.Customer.Addresses(
-                                null,
-                                binding.edtStreetDel.text.toString(),
-                                binding.edtSuiteDel.text.toString(),
-                                binding.edtCityDel.text.toString(),
-                                binding.edtStateDel.text.toString(),
-                                binding.edtAddressDel.selectedItem.toString(),
-                                binding.edtZipDel.text.toString(),
-                                "Billing",
-                                0.0,
-                                0.0,
-                                "false"
-                            )
-                        )
-                    createOrUpdateCustomerObject()
-
                 }
 
             }

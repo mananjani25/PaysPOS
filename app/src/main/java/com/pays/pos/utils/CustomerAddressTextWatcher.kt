@@ -12,7 +12,8 @@ class CustomerAddressTextWatcher(
     var edittext: EditText,
     var changeField: Boolean,
     var listner: AddressTextChangeListner,
-    var isFromSelect: Boolean
+    var isFromSelect: Boolean,
+    var maxLength : Int? = null
 ) : TextWatcher {
     var pervText: String = ""
     private val TAG = this.javaClass.name
@@ -57,6 +58,14 @@ class CustomerAddressTextWatcher(
                 listner.oncheckBox(false)
                 isFromSelect = false
 
+            }
+        }
+//        Check if the ZIP code length exceeds 10 digits
+        maxLength?.let{
+            if ((s?.length ?: 0) > it) {
+                edittext.error = "You can't enter more than $maxLength characters"
+            } else {
+                edittext.error = null // Clear error if valid
             }
         }
 
