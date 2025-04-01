@@ -440,15 +440,16 @@ final object LPrint {
 
                             val modifiersToPrint =
                                 padLineCustomerItem(
-                                    if (modifierObj.modifier_quantity == 1) {
-                                        "     " + getItemNameToShow(
-                                            modifierObj.name
-                                        )
-                                    } else {
-                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(
-                                            modifierObj.name
-                                        )
-                                    },
+//                                    if (modifierObj.modifier_quantity == 1) {
+//                                        "     " + getItemNameToShow(
+//                                            modifierObj.name
+//                                        )
+//                                    } else {
+//                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(
+//                                            modifierObj.name
+//                                        )
+//                                    },
+                                    "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name),
                                     getModifierItemPriceToShow(
                                         modifierObj.price,
                                         item.itemQuantity
