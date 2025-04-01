@@ -5914,11 +5914,12 @@ fun addWholeTbItemToGuestInnerLandi(
         obj.modifiers.forEach {
             lPrint.printLeft(
                 padLineCustomerItem(
-                    if (it.modifier_quantity == 1) {
-                        "      " + it.name
-                    } else {
-                        "   " + it.modifier_quantity + "x " + it.name
-                    },
+//                    if (it.modifier_quantity == 1) {
+//                        "      " + it.name
+//                    } else {
+//                        "   " + it.modifier_quantity + "x " + it.name
+//                    },
+                    "   " + it.modifier_quantity + "x " + it.name,
                     "" + MethodUtils.roundOffAmount((it.price * obj.itemQuantity * it.modifier_quantity)),
                     48
                 ).toString()
@@ -6324,11 +6325,12 @@ fun addOrderItemForDineInInnerLandi(
 
             lPrint.printLeft(
                 padLineCustomerItem(
-                    if (modifierObj.modifier_quantity == 1) {
-                        "     " + getItemNameToShow(modifierObj.name)
-                    } else {
-                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
-                    },
+//                    if (modifierObj.modifier_quantity == 1) {
+//                        "     " + getItemNameToShow(modifierObj.name)
+//                    } else {
+//                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+//                    },
+                    "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name),
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     48
                 ).toString()
