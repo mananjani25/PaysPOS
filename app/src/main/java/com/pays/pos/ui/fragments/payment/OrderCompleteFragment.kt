@@ -11670,13 +11670,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                              */
 
                                             if (order!!.payments.last().paymentType == "Cash") {
+
+                                                val changeAmount = paidAmount - receiptModel?.order?.payments?.last()?.amount?.plus(receiptModel?.order?.payments?.last()?.tips!!)!!
+
                                                 val changeAmt = padLine(
                                                     "Change Amount",
-                                                    "$" + MethodUtils.roundOffAmountString(
-                                                        changeAmtGlobal
-                                                    ),
+                                                    "$" + if (changeAmount > 0.0) MethodUtils.roundOffAmountString(changeAmount) else "0.00",
                                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                                 ).toString()
+
+//                                                val changeAmt = padLine(
+//                                                    "Change Amount",
+//                                                    "$" + MethodUtils.roundOffAmountString(
+//                                                        changeAmtGlobal
+//                                                    ),
+//                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                                ).toString()
 
                                                 printBoldLeft(changeAmt)
                                             }
@@ -19644,8 +19653,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val order = receiptModel?.order
 
-                        if(tipAmount == 0.0)
+                        if(tipAmount == 0.0) {
                             tipAmount = tipAfterAmount
+                            order?.payments?.last()?.tips = tipAfterAmount
+                        }
                         if (tipAmount > 0) {
 
                             val str8 = padLine(
@@ -20018,9 +20029,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (customerSettingModel.showRefundAmount && receiptModel!!.order.payments.last().paymentType == "Cash") {
 
+                            val changeAmount = paidAmount - receiptModel?.order?.payments?.last()?.amount?.plus(receiptModel?.order?.payments?.last()?.tips!!)!!
+
                             val str7 = padLine(
                                 "Change Amount",
-                                "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                                "$" + if (changeAmount > 0.0) MethodUtils.roundOffAmountString(changeAmount) else "0.00",
                                 if (customerSettingModel.fonts == LARGE) 23 else 48
                             ).toString()
 
