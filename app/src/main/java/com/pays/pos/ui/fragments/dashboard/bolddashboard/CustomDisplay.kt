@@ -262,6 +262,10 @@ class CustomDisplay(
             }
         })
 
+        if (prefProvider.getValue(OPTION_TYPE,"CashDiscount").isNullOrEmpty()) {
+            binding.txtsurchargeAdded.visibility = View.GONE
+        }
+
 
     }
 
