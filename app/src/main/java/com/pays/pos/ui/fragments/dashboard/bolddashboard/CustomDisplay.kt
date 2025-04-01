@@ -3047,23 +3047,48 @@ class CustomDisplay(
 
 //                magtekCall(wholeTotalPrice)
 
-                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                    magtekCall(wholeTotalPrice)
-                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    adjustPaxTips()
-                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    AlertUtils.showCustomAlert(
-                        context,
-                        "Please connect to PAX device"
-                    )
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+
+                    Constants.VALOR, Constants.VELOR->{
+                        adjustValorTips()
+                    }
+
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }
+
+                    else->{
+                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                            magtekCall(wholeTotalPrice)
+                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect a payment device"
+                            )
+                        }
+                    }
                 }
 
             }
@@ -3412,6 +3437,7 @@ class CustomDisplay(
     private fun adjustDejavooTips() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
+            dashBoardCategoryViewModel.processingTipForCard.postValue(true)
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = PaymentGatewayFactory(
                 ValorPaymentGateway(),
@@ -3447,6 +3473,7 @@ class CustomDisplay(
                             tResponse,
                             String::class.java
                         )
+                        dashBoardCategoryViewModel.processingTipForCard.postValue(false)
                         mPaymentViewModel.dejavooRefTxnId=null
                         callUpdateTip(mTransactionViewModel)
 //                    transactionJsonResponse.nameValuePairs?.let {
@@ -3473,6 +3500,7 @@ class CustomDisplay(
 
                     },
                     onFailure = {
+                        dashBoardCategoryViewModel.processingTipForCard.postValue(false)
                         ProgressUtils.dismissProgressDialog()
 
                         /*runOnUiThread(Runnable {
@@ -3508,6 +3536,7 @@ class CustomDisplay(
     private fun adjustValorTips() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
+            dashBoardCategoryViewModel.processingTipForCard.postValue(true)
 //                        ProgressUtils.dismissProgressDialog()
 
             val gatewayType = PaymentGatewayType.VALOR
@@ -3546,6 +3575,7 @@ class CustomDisplay(
                                 tResponse,
                                 ValorSuccessResponse::class.java
                             )
+                            dashBoardCategoryViewModel.processingTipForCard.postValue(false)
                             transactionJsonResponse.nameValuePairs?.let {
                                 if (it.msg != null) {
                                     if (it.msg!!.contains(
@@ -3570,6 +3600,7 @@ class CustomDisplay(
 
                         },
                         onFailure = {
+                            dashBoardCategoryViewModel.processingTipForCard.postValue(false)
                             ProgressUtils.dismissProgressDialog()
 
                             /*runOnUiThread(Runnable {
