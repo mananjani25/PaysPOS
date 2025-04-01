@@ -504,6 +504,9 @@ object Constants {
 
     const val LINE_BREAK_TAB = "\n \t"
 
+    //Dialog Title
+    const val IMAGE_DIALOG_TITTLE = "dialog_title"
+
     //PAX
     const val TRANSACTION_SUCCESSED = 100 //transaction success
     const val TRANSACTION_FAILURE = 101 //transaction failure

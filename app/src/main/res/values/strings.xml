@@ -972,5 +972,9 @@
     <string name="clear_table">Clear Table</string>
     <string name="clear_and_close_table">Clear and close Table</string>
 
+    <!--    DIALOG TITLE-->
+    <string name="update_category_image">Update Category Image</string>
+    <string name="update_item_image">Update Item Image</string>
+
 </resources>
 
