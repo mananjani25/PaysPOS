@@ -4664,7 +4664,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         lineBreak()
                                     }
 
-
                                     /**
                                      * Print Subtotal
                                      */
