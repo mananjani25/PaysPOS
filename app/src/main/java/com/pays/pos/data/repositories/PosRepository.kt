@@ -104,6 +104,14 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
     }
 
+    suspend fun deleteCancelOrderReasonDatabase(id : Int){
+        appDatabase.cancelOrderReasonDao().deleteRoleById(id)
+    }
+
+    suspend fun allCancelOrderReasons(): List<VenueDetailsResponse.Data.CancelOrderReason> {
+        return appDatabase.cancelOrderReasonDao().allCancelOrderReasonList()
+    }
+
     fun getKitchenPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
@@ -114,6 +122,13 @@ class PosRepository @Inject constructor(
 
     suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
         appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
+    }
+    suspend fun deleteWastageReasonDB(id : Int) {
+        appDatabase.wastageReasonsDao().deleteWastageReasonById(id)
+    }
+
+    suspend fun allWastageReasons(): List<VenueDetailsResponse.Data.WastageReason> {
+        return appDatabase.wastageReasonsDao().allWastageReasonList()
     }
 
     fun getWastageReasonsListFromDb() =
@@ -417,7 +432,11 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.eodReportSettings().eodSettingsData })
 
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
-        appDatabase.notesDao().addAllNotesSuspend(data)
+        appDatabase.notesDao().addAllNotes(data)
+
+    suspend fun allNoteList(): List<NoteResponse.Data> {
+        return appDatabase.notesDao().allNotesList()
+    }
 
     suspend fun deleteKitchenReceiptSettingsFromDb() {
         appDatabase.kitchenSettingsDao().delete()

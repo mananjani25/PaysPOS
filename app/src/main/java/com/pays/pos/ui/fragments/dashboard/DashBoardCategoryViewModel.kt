@@ -8231,6 +8231,31 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.taxes.isNotEmpty()) {
                                     taxServiceChargeRepository.addAllTaxDatabase(it.settingData.data.taxes)
                                 }
+
+                                /*Added by Rahul Pandit to solve PA1-I812*/
+                                withContext(Dispatchers.IO) {
+                                    var allNotes=posRepository.allNoteList()
+                                    allNotes.forEach {localNote->
+                                        var found = it.settingData.data.notes.filter {it.id == localNote.id && it.name.equals(localNote.name) }
+                                        if (found.isEmpty()){
+                                            posRepository.deleteNoteDatabase(localNote.id)
+                                        }
+                                    }
+                                }
+                               /*Added by Rahul Pandit to solve PA1-I812*/
+
+                                /*Added by Rahul Pandit to solve PA1-I812*/
+                                withContext(Dispatchers.IO) {
+                                    var allDiscounts=tipDiscountRepository.allDiscountsList()
+                                    allDiscounts.forEach {localDiscount->
+                                        var found = it.settingData.data.discounts.filter {it.id == localDiscount.id && it.name.equals(localDiscount.name) }
+                                        if (found.isEmpty()){
+                                            tipDiscountRepository.deleteDiscountDatabase(localDiscount.id)
+                                        }
+                                    }
+                                }
+                               /*Added by Rahul Pandit to solve PA1-I812*/
+
 //                                tipDiscountRepository.deleteDiscountsFromDb()
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.settingData.data.notes)
@@ -8263,7 +8288,31 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 //                                posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
+                                /*Added by Rahul Pandit to solve PA1-I812*/
+                                withContext(Dispatchers.IO) {
+                                    var allReasons=posRepository.allCancelOrderReasons()
+                                    allReasons.forEach {localReason->
+                                        var found = it.settingData.data.cancelOrderReasons.filter {it.id == localReason.id}
+                                        if (found.isEmpty()){
+                                            posRepository.deleteCancelOrderReasonDatabase(localReason.id)
+                                        }
+                                    }
+                                }
+                                /*Added by Rahul Pandit to solve PA1-I812*/
                                 posRepository.addWastageReasonInDb(it.settingData.data.wastageReasons)
+
+                                /*Added by Rahul Pandit to solve PA1-I812*/
+                                withContext(Dispatchers.IO) {
+                                    var allReasons=posRepository.allWastageReasons()
+                                    allReasons.forEach {localReason->
+                                        var found = it.settingData.data.wastageReasons.filter {it.id == localReason.id}
+                                        if (found.isEmpty()){
+                                            posRepository.deleteWastageReasonDB(localReason.id)
+                                        }
+                                    }
+                                }
+                                /*Added by Rahul Pandit to solve PA1-I812*/
+
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 if (it.settingData.data.printers.kitchenPrinterList.isEmpty()) {

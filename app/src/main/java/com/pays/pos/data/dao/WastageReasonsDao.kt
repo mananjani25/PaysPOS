@@ -17,4 +17,16 @@ interface WastageReasonsDao {
     @get:Query("select * from TbWastageReason where TbWastageReason.isActive = 1 AND TbWastageReason.deletedAt IS NULL")
     val allWastageReasons: LiveData<List<VenueDetailsResponse.Data.WastageReason>>
 
+    @Query("DELETE FROM TbWastageReason")
+    suspend fun delete()
+
+
+    @Query("DELETE FROM TbWastageReason where TbWastageReason.id  = :id")
+    suspend fun deleteWastageReasonById(id: Int)
+
+
+    @Query("select * from TbWastageReason")
+    fun allWastageReasonList(): List<VenueDetailsResponse.Data.WastageReason>
+
+
 }
