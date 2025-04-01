@@ -357,10 +357,12 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         bundle.putBoolean("EOD", true)
                         bundle.putInt("type", 2)
                         bundle.putString("email", it.data?.email)
-                        findNavController().navigate(
-                            R.id.action_reports_to_sendReceiptFragment,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.reportEODFragment) {
+                            findNavController().navigate(
+                                R.id.action_reports_to_sendReceiptFragment,
+                                bundle
+                            )
+                        }
                     }
                 }
         } else {
