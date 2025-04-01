@@ -711,7 +711,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPendingPayments"
                     style="@style/ReportTitleStyle"
-                    android:text="TOTAL CREDIT PAYMENT"
+                    android:text="TOTAL CREDIT PAYMENTS"
                     android:textAllCaps="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
