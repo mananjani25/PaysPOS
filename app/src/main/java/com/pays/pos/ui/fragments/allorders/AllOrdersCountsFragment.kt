@@ -29,7 +29,6 @@ import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB_POS
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB_POS
 import com.pays.pos.databinding.FragmentAllOrdersCountsBinding
-import com.pays.pos.databinding.FragmentOnlineOrderBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.ui.adapter.InventoryAdapter
@@ -37,7 +36,6 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
-import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.TAG
 import com.pays.pos.utils.extensions.gone
@@ -131,6 +129,7 @@ class AllOrdersCountsFragment : Fragment() {
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
+            presentation.showSplashLayout()
         }
         if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
             getOrderTypes()
