@@ -4652,9 +4652,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-                                                "-$" + MethodUtils.roundOffAmountString(
+                                                (if(guestDiscount != 0.0) "-$" + MethodUtils.roundOffAmountString(
                                                     guestDiscount
-                                                ),
+                                                ) else "$" + MethodUtils.roundOffAmountString(
+                                                    guestDiscount
+                                                )).toString(),
                                                 48
                                             ).toString()
 
