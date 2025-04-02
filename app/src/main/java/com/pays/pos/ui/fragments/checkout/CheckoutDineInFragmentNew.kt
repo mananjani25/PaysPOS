@@ -74,6 +74,7 @@ import com.pays.payments.design.Dejavoo
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
 import com.pays.payments.design.TransactionType
+import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants.DINE_IN
@@ -423,6 +424,8 @@ class CheckoutDineInFragmentNew : Fragment,
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
+        initDynamicPayment()
+
         if(!dineInDataModel.isClearTable) {
             dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
                 Log.e("Dine in", "3 DATA ALREADY UPDATED $it")
@@ -435,7 +438,7 @@ class CheckoutDineInFragmentNew : Fragment,
                 callback()
                 setUpManualCardFocusChanged()
                 observeQueueCreate()
-                initDynamicPayment()
+
 
             }
         }else {
@@ -454,54 +457,57 @@ class CheckoutDineInFragmentNew : Fragment,
     private fun initDynamicPayment() {
         dashboardViewModel.getDynamicPaymentRecords(true, prefProvider.getLocationId()).asLiveData()
             .observe(
-                viewLifecycleOwner
-            ) { list ->
-                Log.d("DynamicLiveData: ", "Called")
-                list?.let { dynamicList ->
-                    if (dynamicList.isNotEmpty()) {
-                        binding.tvOther.visible()
-                        var layoutInflater = requireContext().getSystemService(
-                            Context.LAYOUT_INFLATER_SERVICE
-                        ) as LayoutInflater
-                        layoutInflater = LayoutInflater.from(requireContext())
-                        binding.llDynamicLink.removeAllViews()
-                        /* Render the dynamic button here with the help of loop */
-                        dynamicList.forEach {
-                            val itemDynamicButton =
-                                layoutInflater.inflate(R.layout.item_button, null, false)
-                            itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
-                                .setPadding(
-                                    resources.getDimensionPixelSize(R.dimen._20sdp),
-                                    resources.getDimensionPixelSize(R.dimen._10sdp),
-                                    resources.getDimensionPixelSize(R.dimen._20sdp),
-                                    resources.getDimensionPixelSize(R.dimen._10sdp)
-                                )
-                            itemDynamicButton.id = it.id
-                            itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
-                                it.name
+                viewLifecycleOwner,
+                object : androidx.lifecycle.Observer<List<TbDynamicPaymentRecords>> {
+                    override fun onChanged(list: List<TbDynamicPaymentRecords>?) {
+                        Log.d("DynamicLiveData: ", "Called")
+                        list?.let { dynamicList ->
+                            if (dynamicList.isNotEmpty()) {
+                                binding.tvOther.visible()
+                                var layoutInflater = requireContext().getSystemService(
+                                    Context.LAYOUT_INFLATER_SERVICE
+                                ) as LayoutInflater
+                                layoutInflater = LayoutInflater.from(requireContext())
+                                binding.llDynamicLink.removeAllViews()
+                                /* Render the dynamic button here with the help of loop */
+                                dynamicList.forEach {
+                                    val itemDynamicButton =
+                                        layoutInflater.inflate(R.layout.item_button, null, false)
+                                    itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
+                                        .setPadding(
+                                            resources.getDimensionPixelSize(R.dimen._20sdp),
+                                            resources.getDimensionPixelSize(R.dimen._10sdp),
+                                            resources.getDimensionPixelSize(R.dimen._20sdp),
+                                            resources.getDimensionPixelSize(R.dimen._10sdp)
+                                        )
+                                    itemDynamicButton.id = it.id
+                                    itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
+                                        it.name
 
-                            itemDynamicButton.setOnSingleClickListener { view ->
-                                view.isEnabled = false
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    view.isEnabled = true
-                                }, 5000)
-                                    startDynamicPayment(it.name, it.id)
+                                    itemDynamicButton.setOnSingleClickListener { view ->
+                                        view.isEnabled = false
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            view.isEnabled = true
+                                        }, 10000)
+                                        startDynamicPayment(it.name, it.id)
+                                    }
+
+                                    binding.llDynamicLink.addView(itemDynamicButton)
+                                }
+                            } else {
+                                binding.llDynamicLink.children.forEach {
+                                    it.isActivated = false
+                                    it.isClickable = false
+                                    it.isEnabled = false
+                                    it.alpha = 0f
+                                }
+
+                                //                                binding.tvOther.invisible()
                             }
-
-                            binding.llDynamicLink.addView(itemDynamicButton)
-                        }
-                    } else {
-                        binding.llDynamicLink.children.forEach {
-                            it.isActivated = false
-                            it.isClickable = false
-                            it.isEnabled = false
-                            it.alpha = 0f
                         }
 
-                        //                                binding.tvOther.invisible()
-                    }
-                }
-            }
+                    }}
+            )
     }
 
     private fun startDynamicPayment(name: String?, id: Int) {
