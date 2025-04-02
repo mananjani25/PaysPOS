@@ -229,6 +229,8 @@ class CreateTax : Fragment() {
 
         binding.header.txtSave.setOnClickListener {
             observeShowProgress(true)
+            binding.header.txtSave.isEnabled = false
+            binding.header.imgBack.isEnabled = false
             val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
             if (this::taxData.isInitialized) {
