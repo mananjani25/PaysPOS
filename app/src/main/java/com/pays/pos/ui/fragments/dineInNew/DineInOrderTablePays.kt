@@ -4052,6 +4052,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun updateOrderCall(isFromReorder: Boolean) {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
+        cartList?.note = getOrderDetailsResponse?.note.toString()
         cartList?.listOfItemRemoved = listOfMoveItemIds
         prefProvider.setValueboolean(DINE_IN_UPDATE, true)
         // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
