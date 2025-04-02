@@ -1003,7 +1003,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     val totalPaid =dineInTableAdapter.getList().count { it.isHeader == 0 && it.isPaid }
 
-                    dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+                    dashboardViewModel.currentCartItems.filter {!it.isPaid && !it.isDestroy}.forEach { cartItem ->
                         val item = cartItem.price
                         dashboardViewModel.addItemToCartItems(cartItem)
                     }
@@ -4085,10 +4085,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             putInt("itemQuantity", item.itemQuantity)
         }
         clickedPosition = position
-        findNavController().navigate(
-            R.id.action_dineInOrderTable_to_addItemToWastageDialog,
-            bundle
-        )
+        try {
+            findNavController().navigate(
+                R.id.action_dineInOrderTable_to_addItemToWastageDialog,
+                bundle
+            )
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // Handle wastage item quantity and send data to server

@@ -77,9 +77,11 @@ import com.pays.payments.design.TransactionType
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.PAX
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.logger.MessageEvent
@@ -251,6 +253,33 @@ class CheckoutDineInFragmentNew : Fragment,
 
                 if(result == "Clear Table") {
 
+                    paymentType = "Cash"
+                    val cartModel = CartModel().apply {
+                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                        employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
+                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                        orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, -1)
+                        orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                        orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
+                        serviceCharge = arrayListOf()
+
+                    }
+
+                    cartList = cartModel
+
+                    viewModel.totalPrice = 0.0
+                    viewModel.wholetotalPrice = 0.0
+                    MethodUtils.setPriceTextView(
+                        binding.tvCash0,
+                        0.0
+                    )
+
+                  //  binding.tvCash0.performClick()
+
+
+
+
                     //clear table with cash 0.0 Payment
                     restrictTvCashClicks()
                     custom_paymentAmount = 0.0
@@ -260,6 +289,16 @@ class CheckoutDineInFragmentNew : Fragment,
                     )
                     paymentAmount = 0.0
                     cashPaymentWithVariation()
+
+                    paymentviewModel.tableCleared.observe(viewLifecycleOwner) {
+                        if(it && dineInDataModel.isClearTable) {
+                            try {
+                                findNavController().navigate(R.id.action_paymentBoldPosFragment_to_dineInFragmentPays)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
 
                 } else
                     findNavController().popBackStack()
@@ -384,19 +423,29 @@ class CheckoutDineInFragmentNew : Fragment,
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-        dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
-            Log.e("Dine in","3 DATA ALREADY UPDATED $it")
-            getDataFromPref()
-            setupTabDesign()
-            paymentClick()
-            splitClick()
-            observeShowProgress()
-            observeData()
-            callback()
-            setUpManualCardFocusChanged()
-            observeQueueCreate()
-            initDynamicPayment()
+        if(!dineInDataModel.isClearTable) {
+            dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+                Log.e("Dine in", "3 DATA ALREADY UPDATED $it")
+                getDataFromPref()
+                setupTabDesign()
+                paymentClick()
+                splitClick()
+                observeShowProgress()
+                observeData()
+                callback()
+                setUpManualCardFocusChanged()
+                observeQueueCreate()
+                initDynamicPayment()
 
+            }
+        }else {
+            viewModel.totalPrice = 0.0
+            viewModel.wholetotalPrice = 0.0
+            MethodUtils.setPriceTextView(
+                binding.tvCash0,
+                0.0
+            )
+            custom_paymentAmount = 0.0
         }
 
     }
@@ -1481,12 +1530,14 @@ class CheckoutDineInFragmentNew : Fragment,
 
                         prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
 
-                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
-                            findNavController().navigate(
-                                R.id.action_paymentBoldPosFragment_to_orderComplete,
-                                bundle
-                            )
-                        }
+                        try {
+                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                findNavController().navigate(
+                                    R.id.action_paymentBoldPosFragment_to_orderComplete,
+                                    bundle
+                                )
+                            }
+                        }catch (e: Exception) {}
                     }
                 }
 
