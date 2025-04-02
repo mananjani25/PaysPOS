@@ -29,7 +29,7 @@
                 android:id="@+id/recyclerViewItemsList"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.20"
+                android:layout_weight="0.18"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="5"
@@ -48,7 +48,7 @@
                 android:id="@+id/frameLayout"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.80"
+                android:layout_weight="0.82"
                 android:orientation="vertical" />
         </LinearLayout>
 

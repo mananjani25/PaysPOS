@@ -174,6 +174,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         })
 
+        if(prefProvider.getValue(ORDER_TYPE,TAKEOUT) == DINE_IN)
+            binding.txtAddCustomer.gone()
+
         return binding.root
     }
 

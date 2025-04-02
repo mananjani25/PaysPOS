@@ -357,10 +357,12 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         bundle.putBoolean("EOD", true)
                         bundle.putInt("type", 2)
                         bundle.putString("email", it.data?.email)
-                        findNavController().navigate(
-                            R.id.action_reports_to_sendReceiptFragment,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.reportEODFragment) {
+                            findNavController().navigate(
+                                R.id.action_reports_to_sendReceiptFragment,
+                                bundle
+                            )
+                        }
                     }
                 }
         } else {
@@ -977,7 +979,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
 
                                         printCenter(
-                                            "TOTAL CREDIT PAYMENT",
+                                            "TOTAL CREDIT PAYMENTS",
                                             fontSize = FONT_SIZE_4X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -2190,7 +2192,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                builder.addText("TOTAL CREDIT PAYMENT")
+                builder.addText("TOTAL CREDIT PAYMENTS")
                 builder.addFeedLine(2)
 
                 builder.addTextStyle(
@@ -3071,7 +3073,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
             if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
 
-                PrintSunmiUtils.addLable("TOTAL CREDIT PAYMENT")
+                PrintSunmiUtils.addLable("TOTAL CREDIT PAYMENTS")
 
 
                 eodReportData?.totalCreditPaymentDetails?.forEach {
@@ -3725,7 +3727,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
             if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
 
-                PrintSunmiUtils.headerText("TOTAL CREDIT PAYMENT")
+                PrintSunmiUtils.headerText("TOTAL CREDIT PAYMENTS")
 
 
                 eodReportData?.totalCreditPaymentDetails?.forEach {

@@ -451,7 +451,7 @@ final object LPrint {
                                     },
                                     getModifierItemPriceToShow(
                                         modifierObj.price,
-                                        modifierObj.itemQuantity
+                                        item.itemQuantity
                                     ),
                                     48
                                 )
@@ -618,11 +618,7 @@ final object LPrint {
 
                                 lineBreak()
                                 printText(
-                                    "  " + if (modifierObj.modifier_quantity == 1) {
-                                        "   "
-                                    } else {
-                                        "" + modifierObj.modifier_quantity + "x "
-                                    } + modifierObj.name.uppercase()
+                                    "  " + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
                                 )
 
 

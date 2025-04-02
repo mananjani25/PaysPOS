@@ -16,6 +16,7 @@ import com.pays.pos.ui.adapter.AllOrdersTabsAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,7 @@ class AllOrdersFragment : Fragment() {
     private lateinit var binding: FragmentAllOrdersBinding
 
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModelPayment by activityViewModels<PaymentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -108,6 +110,7 @@ class AllOrdersFragment : Fragment() {
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
             try {
+                viewModelPayment.orderId = null
                 findNavController().navigate(R.id.action_allOrder_to_menuposbold)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -116,6 +119,7 @@ class AllOrdersFragment : Fragment() {
         binding.commonToolbar.txtHome.setOnClickListener {
             try {
                 dashboardViewModel.fromAllOrderFragment = true
+                viewModelPayment.orderId = null
                 requireActivity().onBackPressed()
                // findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
             } catch (e: Exception) {

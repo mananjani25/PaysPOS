@@ -26,6 +26,9 @@ interface PrinterDao {
     @Query("select * from TbKitchenPrint")
     suspend fun getKitchenPrinterList() : List<PrinterResponse.Data.KitchenReceiptPrinters>
 
+    @Query("select * from TbCustomerPrint")
+    suspend fun getCustomerPrinterList() : List<PrinterResponse.Data.CustomerReceiptPrinters>
+
     @Query("DELETE FROM TbCustomerPrint where TbCustomerPrint.id  = :id")
     suspend fun deleteCustomerPrinterById(id: Int)
 
@@ -56,6 +59,31 @@ interface PrinterDao {
     @Update
     suspend fun updateCustomerPrinter(customerPrinter:PrinterResponse.Data.CustomerReceiptPrinters)
 
+    //Printer room database update
+
+    @Query("SELECT id FROM TbCustomerPrint")
+    suspend fun getCustomerPrinterIds(): List<Int>
+
+    @Query("SELECT id FROM TbKitchenPrint")
+    suspend fun getKitchenPrinterIds(): List<Int>
+
+    @Query("DELETE FROM TbCustomerPrint WHERE id IN (:ids)")
+    suspend fun deleteCustomerPrintersByIds(ids: List<Int>)
+
+    @Query("DELETE FROM TbKitchenPrint WHERE id IN (:ids)")
+    suspend fun deleteKitchenPrintersByIds(ids: List<Int>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCustomerPrinters(printers: List<PrinterResponse.Data.CustomerReceiptPrinters>)
+
+    @Update
+    suspend fun updateCustomerPrinters(printers: List<PrinterResponse.Data.CustomerReceiptPrinters>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertKitchenPrinters(printers: List<PrinterResponse.Data.KitchenReceiptPrinters>)
+
+    @Update
+    suspend fun updateKitchenPrinters(printers: List<PrinterResponse.Data.KitchenReceiptPrinters>)
 
 
 }

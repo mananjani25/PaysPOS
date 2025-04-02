@@ -143,7 +143,10 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 import androidx.lifecycle.Observer
+import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
 import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
+import kotlin.math.abs
+import kotlin.math.min
 
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -1143,6 +1146,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
 
+                    if(MethodUtils.roundOffAmountDouble(toFinalAmt) <=0.0)
+                        bundle.putBoolean(CLEAR_TABLE_DINE_IN,true)
+                    else bundle.putBoolean(CLEAR_TABLE_DINE_IN,false)
 
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
                 bundle.putDouble(
@@ -1235,7 +1241,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 }
                 } else {
-                    AlertUtils.showCustomAlert(requireContext(),"Please fire all items to continue")
+
+                    val totalItem = dineInTableAdapter.getList().count { it.isHeader == 1 && it.item?.isDeleted == false && it.item?.isDestroy == false }
+
+                    if(totalItem == 0) {
+                        AlertUtils.showCustomAlert(requireContext(),"Add items to the cart before proceeding.")
+                    }else
+                    AlertUtils.showCustomAlert(requireContext(),"Please fire all items to continue.")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -1277,6 +1289,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.txtEditOrder.setOnClickListener {
             val list = dineInTableAdapter.getList()
             var newList: ArrayList<DineInModel> = arrayListOf()
+
+            //set whole table / 0th postiopn header selected by default
+            dashboardViewModel.currentSelectedHeaderDineIn = 0
 
             dashboardViewModel.currentDestination = DINE_IN_UPDATE
 
@@ -1886,7 +1901,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 //binding.maskLayout?.gone()
                 ProgressUtils.dismissProgressDialog()
                 if (it.toString() != "null") {
-                    AlertUtils.showCustomAlert(requireContext(), it)
+                   // AlertUtils.showCustomAlert(requireContext(), it)
+                    AlertUtils.showAlertDineIn(requireContext(), it)
                 }
                 try {
                     dineInTableAdapter.notifyDataSetChanged()
@@ -3146,8 +3162,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                 val price =
                                                                     (it.price * it.quantity) - it.discountAmount
 
-                                                                it.orderItemModifiers.forEach {
-                                                                    modifierPrice += (it.price * it.quantity)
+                                                                it.orderItemModifiers.forEach { mod ->
+                                                                    modifierPrice += (mod.price * it.quantity)
                                                                 }
 
                                                                 val totalPrice =
@@ -4088,7 +4104,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             val wastageNote: String = bundle.getString("wastageNote", "")
             if (clickedPosition != -1 && dineInTableAdapter.getList()[clickedPosition].item != null) {
-                prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+                // This is commented due to after sending any item to wastage api , this line force to print ***updated*** label on prints
+               // prefProvider.setValueboolean(DINE_IN_UPDATE, true)
                 val wastageRequest = WastageItemRequest.WastageItem(
                     orderId = orderId ?: -1,
                     tableNo = getOrderDetailsResponse?.floorPlanTable?.tableNumber,
@@ -4229,9 +4246,17 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                          adapter.getItem(viewHolder.layoutPosition).id
                      )*/
                     updateAdapterData()
+                    recyclerView.post {
+                        dineInTableAdapter.notifyItemMoved(dragFrom, dragTo)
+                        dineInTableAdapter.notifyItemRangeChanged(min(dragFrom, dragTo), abs(dragTo - dragFrom) + 1)
+                    }
                 }
 
-                dineInTableAdapter.notifyDataSetChanged()
+                try {
+                    dineInTableAdapter.notifyDataSetChanged()
+                }catch (e: Exception){
+                    e.printStackTrace()
+                }
             }
         })
 
@@ -6469,18 +6494,25 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 val guestCount = dineInTableAdapter.getList().size - 1
 
-                                listGuestItem.forEach {
-                                    guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
+                                val allItems = listWTitems + listGuestItem
+
+                                allItems.forEach {
+
+
+                                    var itemSubTotal = 0.0
+                                    var itemTaxes = 0.0
+
+                                    itemSubTotal += (it.price * it.itemQuantity) - it.discountPrice
 
                                     it.modifiers.forEach { mod ->
-                                        guestSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
+                                        itemSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
                                     }
 
 
                                     it.taxes?.forEach { tax ->
                                         if (tax.isActive) {
                                             LogUtil.logE(TAG, "getTaxP  ${Gson().toJson(tax)}")
-                                            guestTaxes += if (tax.taxType == "Percentage") {
+                                            itemTaxes += if (tax.taxType == "Percentage") {
 
                                                 var modifierPrice = 0.0
                                                 val price =
@@ -6510,13 +6542,33 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     }
                                     guestDiscount += it.discountPrice
 
+                                    guestSubTotal += if(it.guestIndexForDineIn == 0)
+                                        itemSubTotal/totalGuestCount
+                                    else
+                                        itemSubTotal
+
+                                    guestTaxes += if(it.guestIndexForDineIn == 0)
+                                        itemTaxes/totalGuestCount
+                                    else
+                                        itemTaxes
+
+                                    guestTaxes = MethodUtils.getTwoDecimal(guestTaxes)
+
                                 }
 
                                 guestDiscount += MethodUtils.roundOffAmountDouble(
-                                    globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
-                                        1
-                                    ) ?: 1)
+                                    globalOrderDiscount / totalGuestCount
                                 )
+
+
+                                val finalGuestDiscount = 0.0
+                                /***
+                                 * Fetch discount percentage from subtotal and discount given
+                                 */
+                                val orderDiscountPrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+                                val discountSelectedValue = (getOrderDetailsResponse?.totalDiscount?.div(orderDiscountPrice) ?: 1.0) * 100
+
+                                val discountPriceForGuest = guestSubTotal * discountSelectedValue/100
 
                                 serviceChargeList.forEach {
                                     if (it.isEnabled) {
@@ -6755,10 +6807,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                                                48
 //                                            ).toString()
 
+
+
                                             val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-                                                "-$" + MethodUtils.roundOffAmountString(divideDiscount),
+                                                (if(divideDiscount <= 0.0) "$" else "-$") + MethodUtils.roundOffAmountString(discountPriceForGuest),
                                                 48
                                             ).toString()
 
@@ -6775,7 +6829,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalGuest),
+                                        "$" + MethodUtils.roundOffAmountString(guestSubTotal),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -6865,7 +6919,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     var totalAmt =
                                         MethodUtils.roundOffAmountDouble(
-                                            guestSubTotal + guestTaxes + guestServiceCharge + dineInTableAdapter.getList()
+                                            guestSubTotal + guestTaxes + serviceChargeGuest + dineInTableAdapter.getList()
                                                 .get(0).guestDividedAmt
                                         )
 
@@ -10180,11 +10234,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 for (j in 0 until obj.modifiers.size) {
                                     val modifierObj = obj.modifiers.get(j)
                                     appendText(
-                                        "  " + if (modifierObj.modifier_quantity == 1) {
-                                            "   "
-                                        } else {
-                                            "" + modifierObj.modifier_quantity + "x "
-                                        } + modifierObj.name.uppercase()
+                                        "  " + "" + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
                                     )
                                     lineFeed(1)
 
@@ -10412,7 +10462,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         data,
                         type,
                         item,
-                        listItemWithGuest
+                        listItemWithGuest,
+                        updateFireItemsForPrinterQueue
                     )
                 } catch (e: Exception) {
 
@@ -11306,6 +11357,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print Serivce charge
                                      */
 
+                                    var serviceChargesFinal = 0.0
+
                                     if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
                                             SERVICECHARGE_DINEIN_ORDER,
                                             false
@@ -11315,12 +11368,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
                                         val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
 
+                                        val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
 
-                                        var serviceChargesFinal = 0.0
+
                                         serviceChargesList.forEach {
                                             if(it.min_guest_count!=null && it.max_guest_count!=null)
                                                 if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
-                                            serviceChargesFinal += ((getOrderDetailsResponse?.subTotal?:0.0) * it.percentage) / 100
+                                            serviceChargesFinal += ((/*getOrderDetailsResponse?.subTotal?:0.0*/currentSubtotal) * it.percentage) / 100
                                         }
 
                                         val serviceChargeToPrint =
@@ -11368,7 +11422,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      */
 
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt )
+                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + finalTaxAmt )
 
 
                                     val totalAmountToPrint =
@@ -12488,7 +12542,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Left)
-                                            .actionPrintText(employee)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(if (employee.length > 12) employee.take(21) + ".." else employee)
                                     )
                                     actionFeedLine(1)
                                 }
@@ -12496,6 +12553,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             orderTime
                                         )
@@ -12516,6 +12576,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 actionFeedLine(1)
 
+
+                                val firedItems = mutableListOf<Int>()
 
                                 listItemWithGuest.forEach {
 
@@ -12591,11 +12653,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                     )
                                                                 )
                                                                 .actionPrintText(
-                                                                    "  " + if (modifierObj.modifier_quantity == 1) {
-                                                                        "   "
-                                                                    } else {
-                                                                        "" + modifierObj.modifier_quantity + "x "
-                                                                    } + modifierObj.name.uppercase()
+                                                                    "  " + "" + modifierObj.name.uppercase()
                                                                 )
                                                         )
 
@@ -12626,9 +12684,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 actionFeedLine(1)
 
 
-                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                                                    true
-                                                )
+                                                firedItems.add(obj.itemId)
+//                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+//                                                    true
+//                                                )
                                             }
                                         }
                                     }
@@ -12672,11 +12731,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 try {
 
-                                    val firedItems = addOrdersForKitchenDineInLandi(
-                                        item, customerReceiptPrinters.printerCategories.toCollection(
-                                            arrayListOf()
-                                        ), listItemWithGuest
-                                    )
+//                                    val firedItems = addOrdersForKitchenDineInTSPStar(
+//                                        item, customerReceiptPrinters.printerCategories.toCollection(
+//                                            arrayListOf()
+//                                        ), listItemWithGuest
+//                                    )
+
+
+                                    val firedItems = mutableListOf<String>()
+
+                                    listItemWithGuest.forEach { guest ->
+                                        guest.value.forEach { obj ->
+                                            customerReceiptPrinters.printerCategories.forEach {
+                                                if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
+
+                                                    firedItems.add(obj.orderItemId.toString())
+                                                }
+                                            }
+                                        }
+
+                                    }
+
 
                                     updateFireItemsForPrinterQueue?.apply {
 
@@ -12704,6 +12779,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 }
 
                                                 dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+//                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+//                                                    true
+//                                                )
 
                                             }
                                         }

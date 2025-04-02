@@ -6,7 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -15,6 +19,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.remote.Constants
@@ -30,13 +35,12 @@ import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.callback.PaginationScrollListener
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -366,7 +370,7 @@ class Customer : Fragment(), ItemCallback {
         binding.layoutTool.txtTitle.text = "Customers"
 
         binding.layoutTool.imgDrawer.setOnSingleClickListener {
-            findNavController().navigate(R.id.action_customer_to_menuFragment2)
+            findNavController().navigate(R.id.menuFragment)
         }
         binding.layoutTool.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.customer) {

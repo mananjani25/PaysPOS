@@ -48,9 +48,9 @@ class TaxesList : Fragment(), ItemCallback {
 
         setUpRecyclerView()
         observeShowProgress()
-        observeData()
+//        observeData()
         viewModel.getTextList()
-//        getTaxListObserver()
+        getTaxListObserver()
         setupSnackbar()
         deleteTax()
         notifyAdapter()
@@ -97,7 +97,7 @@ class TaxesList : Fragment(), ItemCallback {
 //                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
-                        viewModel.setTaxData()
+                        viewModel.newTaxData()
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()

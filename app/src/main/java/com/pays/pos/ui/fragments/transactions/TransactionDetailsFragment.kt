@@ -8158,6 +8158,7 @@ class TransactionDetailsFragment : Fragment() {
                                      */
                                     if (customerSettingModel.showTipSuggestion) {
                                         lineBreak()
+                                        lineBreak()
                                         printBoldLeft("Additional Tips")
                                         lineBreak()
 
@@ -8254,7 +8255,7 @@ class TransactionDetailsFragment : Fragment() {
                                                 if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
 
                                                     val phoneNoFormatted =
-                                                        MethodUtils.getUSFormatNumber(
+                                                        MethodUtils.formatPhoneNumber(
                                                             paymentDetailsResponse.data.order.customer.phones.get(
                                                                 paymentDetailsResponse.data.order.customer.phones.size - 1
                                                             ).phoneNumber

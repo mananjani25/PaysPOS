@@ -9,10 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.ViewRefundItemBinding
 import com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel
-import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import java.text.NumberFormat
@@ -142,7 +140,13 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val nfone: NumberFormat = NumberFormat.getNumberInstance()
             nfone.maximumFractionDigits = 3
             val rounded1: String = nfone.format(orderDiscount)
-            orderDiscount = rounded1.toDouble()
+//            orderDiscount = rounded1.replace(",", "").toDouble()
+            if (rounded1.contains(',')) {
+                val result = rounded1.filter { it != ',' }
+                orderDiscount=result.toDouble()
+            }else {
+                orderDiscount = rounded1.toDouble()
+            }
             Log.d(
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
