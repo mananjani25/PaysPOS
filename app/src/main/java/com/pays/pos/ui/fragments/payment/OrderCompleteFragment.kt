@@ -16035,6 +16035,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         }
                                                     } catch (e: Exception) {
                                                     }
+                                                    lineBreak()
 
                                                     if (kitchenSettingModel.showCustomerAddress) {
                                                         if (receiptModel?.order?.orderType?.trim()
