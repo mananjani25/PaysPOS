@@ -229,8 +229,7 @@ class CreateTax : Fragment() {
 
         binding.header.txtSave.setOnClickListener {
             observeShowProgress(true)
-            binding.header.txtSave.isEnabled = false
-            binding.header.imgBack.isEnabled = false
+            activeButtons(false)
             val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
             if (this::taxData.isInitialized) {
@@ -328,7 +327,16 @@ class CreateTax : Fragment() {
             backPressManage()
             //findNavController().navigateUp()
         }
+        viewModel.activateButtons.observe(viewLifecycleOwner) {
+            activeButtons(it)
+        }
 
+    }
+
+
+    private fun activeButtons(value: Boolean){
+        binding.header.txtSave.isEnabled = value
+        binding.header.imgBack.isEnabled = value
     }
 
     private fun backPressManage() {
@@ -442,6 +450,7 @@ class CreateTax : Fragment() {
                                         message=""
 
                                         backPressManage()
+
                                     }catch (e:Exception){
                                     //   dashViewModel._showProgress.value = Event(false)
 

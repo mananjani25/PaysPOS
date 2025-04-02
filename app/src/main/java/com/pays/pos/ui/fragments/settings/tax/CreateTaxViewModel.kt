@@ -51,6 +51,14 @@ class CreateTaxViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _activateButtons = MutableLiveData<Boolean>()
+    val activateButtons: LiveData<Boolean> get() = _activateButtons
+
+
+    fun setActiveButtons(isActive: Boolean) {
+        _activateButtons.value = isActive
+    }
+
     private var taxId: Int = -1
     private var itemPricingViewModel: String = ""
 
@@ -245,6 +253,7 @@ class CreateTaxViewModel @Inject constructor(
                                 }
                             } else {
                                 _snackbarText.value = Event(resource.message)
+                                setActiveButtons(true)
                             }
                         }
                         _showProgress.value = Event(false)
@@ -252,6 +261,7 @@ class CreateTaxViewModel @Inject constructor(
 
                     Status.ERROR -> {
                         _snackbarText.value = Event(resource.message)
+                        setActiveButtons(true)
                         _showProgress.value = Event(false)
                     }
 
