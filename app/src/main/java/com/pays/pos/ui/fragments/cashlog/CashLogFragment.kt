@@ -29,7 +29,9 @@ import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -94,7 +96,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         binding.imgDrawer.setOnClickListener {
             try {
-                findNavController().navigate(R.id.action_cashlogfragment_to_menuFragment)
+                findNavController().navigate(R.id.menuFragment)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

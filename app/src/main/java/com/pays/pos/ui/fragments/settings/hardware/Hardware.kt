@@ -1,19 +1,15 @@
 package com.pays.pos.ui.fragments.settings.hardware
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
-import com.pays.pos.data.model.HardwareModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentHardwareBinding
 import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.adapter.HardwareListAdapter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -53,7 +49,10 @@ class Hardware : Fragment() {
     private fun onClick() {
 
         binding.header.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+            if (findNavController().currentDestination?.id == R.id.hardware) {
+                findNavController().navigate(R.id.menuFragment)
+            }
+//            findNavController().navigateUp()
         }
         binding.header.txtSave.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.hardware) {

@@ -6095,68 +6095,69 @@ class AllOrdersListingFragment(
                                                                                 content = printedName.toString()
                                                                             )
                                                                     )
+                                                                }
+                                                            }
+                                                        }
+                                                    }
 
-                                                                    try {
-                                                                        if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                                    try {
+                                                        if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                                                0
+                                                            ) != null
+                                                        ) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(
+                                                                        Alignment.Left
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                                                                 0
                                                                             ) != null
                                                                         ) {
-                                                                            add(
-                                                                                PrinterBuilder()
-                                                                                    .styleAlignment(
-                                                                                        Alignment.Left
-                                                                                    )
-                                                                                    .actionPrintText(
-                                                                                        content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                                                                                0
-                                                                                            ) != null
-                                                                                        ) {
 
-                                                                                            var phoneNumber =
-                                                                                                orderData.customer?.phones?.get(
-                                                                                                    0
-                                                                                                )?.phoneNumber.toString()
-                                                                                            if (phoneNumber.length != 10) {
-                                                                                                // Handle invalid input (must be 10 digits)
-                                                                                                "Invalid phone number"
-                                                                                            }
+                                                                            var phoneNumber =
+                                                                                orderData.customer?.phones?.get(
+                                                                                    0
+                                                                                )?.phoneNumber.toString()
+                                                                            if (phoneNumber.length != 10) {
+                                                                                // Handle invalid input (must be 10 digits)
+                                                                                "Invalid phone number"
+                                                                            }
 
-                                                                                            val areaCode = phoneNumber.substring(0, 3)
-                                                                                            val firstPart = phoneNumber.substring(3, 6)
-                                                                                            val secondPart = phoneNumber.substring(6)
+                                                                            val areaCode = phoneNumber.substring(0, 3)
+                                                                            val firstPart = phoneNumber.substring(3, 6)
+                                                                            val secondPart = phoneNumber.substring(6)
 
-                                                                                            "($areaCode)$firstPart-$secondPart"
+                                                                            "($areaCode)$firstPart-$secondPart"
 
-                                                                                        } else ""
-                                                                                    )
-                                                                            )
-                                                                        }
-                                                                    } catch (e: Exception) {
+                                                                        } else ""
+                                                                    )
+                                                            )
+                                                        }
+                                                    } catch (e: Exception) {
 
-                                                                    }
+                                                    }
 
-                                                                    if (kitchenSettingModel.showCustomerAddress && orderData.customer?.addresses?.get(
-                                                                            0
-                                                                        ) != null
-                                                                    ) {
-                                                                        var address = orderData.customer.addresses.get(0).fullAddress
+                                                    try {
+                                                        if (kitchenSettingModel.showCustomerAddress && orderData.customer?.addresses?.get(
+                                                                0
+                                                            ) != null
+                                                        ) {
+                                                            var address = orderData.customer.addresses.get(0).fullAddress
 
-                                                                        add(
-                                                                            PrinterBuilder()
-                                                                                .styleAlignment(
-                                                                                    Alignment.Left
-                                                                                )
-                                                                                .actionPrintText(
-                                                                                    content = address
-                                                                                )
-                                                                        )
-
-                                                                    }
-
-                                                                }
-                                                            }
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(
+                                                                        Alignment.Left
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        content = address
+                                                                    )
+                                                            )
 
                                                         }
+                                                    } catch (e: Exception) {
                                                     }
 
                                                     actionFeedLine(1)
@@ -6392,23 +6393,27 @@ class AllOrdersListingFragment(
 
                                 }
 
-                                if (kitchenSettingModel.showCustomerAddress && orderData.customer?.addresses?.get(
-                                        0
-                                    ) != null
-                                ) {
-                                    val address = orderData.customer.addresses.get(0).fullAddress
+                                try {
+                                    if (kitchenSettingModel.showCustomerAddress && orderData.customer?.addresses?.get(
+                                            0
+                                        ) != null
+                                    ) {
+                                        val address = orderData.customer.addresses.get(0).fullAddress
 
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .styleMagnification(
-                                                MagnificationParameter(2, 2)
-                                            )
-                                            .actionPrintText(
-                                                content = address
-                                            )
-                                    )
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Left)
+                                                .styleMagnification(
+                                                    MagnificationParameter(2, 2)
+                                                )
+                                                .actionPrintText(
+                                                    content = address
+                                                )
+                                        )
+                                    }
+                                } catch (e: Exception) {
                                 }
+
 
                                 printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                             }

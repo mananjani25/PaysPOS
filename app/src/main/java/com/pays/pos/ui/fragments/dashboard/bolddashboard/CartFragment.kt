@@ -1077,6 +1077,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
+        if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
+            binding.labelCashSurcharge.visibility = View.GONE
+            binding.txtNoncashAdj.visibility = View.GONE
+        } else {
+            binding.labelCashSurcharge.visibility = View.VISIBLE
+            binding.txtNoncashAdj.visibility = View.VISIBLE
+        }
+
         if (!isFromPayment) {
             var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
             totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
@@ -1086,12 +1094,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtLoyaltyPoints.visible()
                 binding.txtlabelloyaltyPoints.visible()
             } else {
-                binding.checkloylaty.gone()
-                binding.checkloylaty.isChecked =false
-                binding.txtLoyaltyAmount.gone()
-                binding.txtLoyaltyPoints.gone()
-                binding.txtlabelloyaltyPoints.gone()
+              binding.checkloylaty.gone()
+              binding.checkloylaty.isChecked =false
+              binding.txtLoyaltyAmount.gone()
+              binding.txtLoyaltyPoints.gone()
+              binding.txtlabelloyaltyPoints.gone()
             }
+
         }
 
         uiSave()
@@ -4036,6 +4045,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE
+        binding.checkloylaty.isChecked = false
         displayCustomer()
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)

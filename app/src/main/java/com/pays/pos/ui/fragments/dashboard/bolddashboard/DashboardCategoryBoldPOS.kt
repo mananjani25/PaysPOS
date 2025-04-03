@@ -5174,6 +5174,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             if (item.isItemEdited) {
                                                 isOrderUpdate = true
                                                 break
+                                            } else {
+                                                val currentItemIds = mutableListOf<Int>()
+                                                val oldItemIds = mutableListOf<Int>()
+                                                val cartItemIds = mutableListOf<Int>()
+                                                val oldCartItemIds = mutableListOf<Int>()
+
+                                                createOrderResponse.data.order.orderItems.forEach {
+                                                    currentItemIds.add(it.itemId)
+                                                    cartItemIds.add(it.id)
+                                                }
+
+                                                oldDataModel.forEach {
+                                                    oldItemIds.add(it.itemId)
+                                                    oldCartItemIds.add(it.id)
+                                                }
+
+                                                if(currentItemIds.toList() != oldItemIds.toList() || cartItemIds.toList() != oldCartItemIds.toList()){
+                                                    isOrderUpdate = true
+                                                    break
+                                                }
                                             }
                                         }
                                     }
