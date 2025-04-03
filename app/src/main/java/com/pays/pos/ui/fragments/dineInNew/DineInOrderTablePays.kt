@@ -1270,8 +1270,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 deleteCart()
                 clearCustomer()
             }
-            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
-                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+
+            try {
+
+                if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
 //            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
