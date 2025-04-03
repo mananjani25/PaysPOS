@@ -1286,8 +1286,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(ORDER_TYPE_NAME, "")
             dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
-            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
-                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+
+            try {
+                if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
 //            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }

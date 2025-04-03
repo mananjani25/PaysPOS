@@ -3780,6 +3780,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
              * */
             try {
                 viewModel.dineInHeaderPosition = 0
+                viewModel.currentSelectedHeaderDineIn = 0
+                viewModel.dineInSelectedItemHeaderPos = 0
             } catch (e: Exception) {
                 e.printStackTrace()
             }
