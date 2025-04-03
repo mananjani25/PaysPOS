@@ -22,6 +22,7 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -426,21 +427,24 @@ class CheckoutDineInFragmentNew : Fragment,
 
         initDynamicPayment()
 
+        getDataFromPref()
         if(!dineInDataModel.isClearTable) {
-            dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
-                Log.e("Dine in", "3 DATA ALREADY UPDATED $it")
-                getDataFromPref()
-                setupTabDesign()
-                paymentClick()
-                splitClick()
-                observeShowProgress()
-                observeData()
-                callback()
-                setUpManualCardFocusChanged()
-                observeQueueCreate()
+            dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner, object : Observer<Double> {
+                override fun onChanged(price: Double?) {
+                        Log.e("Dine in", "3 DATA ALREADY UPDATED $price")
 
+                        setupTabDesign()
+                        paymentClick()
+                        splitClick()
+                        observeShowProgress()
+                        observeData()
+                        callback()
+                        setUpManualCardFocusChanged()
+                        observeQueueCreate()
+                    }
 
-            }
+            })
+
         }else {
             viewModel.totalPrice = 0.0
             viewModel.wholetotalPrice = 0.0
