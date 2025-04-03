@@ -7779,7 +7779,11 @@ class TransactionDetailsFragment : Fragment() {
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
                                         try {
 
-                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            if(Build.DISPLAY.contains("RL")) {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                            } else {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            }
 
                                             landiPrinter.startPrint(object : OnPrintListener {
                                                 override fun onSuccess() {

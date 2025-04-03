@@ -50,6 +50,7 @@ import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.pays.pos.data.remote.Constants.DINE_IN_DISCOUNT
@@ -76,7 +77,6 @@ import com.pays.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
-import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
@@ -97,7 +97,6 @@ import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
-
 import com.sdksuite.omnidriver.OmniConnection
 import com.sdksuite.omnidriver.OmniDriver
 import com.sdksuite.omnidriver.aidl.printer.Align
@@ -141,10 +140,6 @@ import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
-
-import androidx.lifecycle.Observer
-import com.pays.pos.data.remote.Constants.CLEAR_TABLE_DINE_IN
-import com.pays.pos.utils.landi.LPrint.addOrdersForKitchenDineInLandi
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -6615,7 +6610,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     ) {
                                         try {
 
-                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            if(Build.DISPLAY.contains("RL")) {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                            } else {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            }
 
                                             landiPrinter.startPrint(object : OnPrintListener {
                                                 override fun onSuccess() {
@@ -11163,7 +11162,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     ) {
                                         try {
 
-                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            if(Build.DISPLAY.contains("RL")) {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                            } else {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            }
 
                                             landiPrinter.startPrint(object : OnPrintListener {
                                                 override fun onSuccess() {
