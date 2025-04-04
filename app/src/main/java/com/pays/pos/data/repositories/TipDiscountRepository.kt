@@ -102,5 +102,10 @@ class TipDiscountRepository @Inject constructor(
     suspend fun reOrderTip(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderTip(id, oldPos, newPos)
 
+    suspend fun allDiscountsList(): List<TbDiscount> {
+        return appDatabase.discountDao().allDiscountList()
+    }
+
+
 
 }
