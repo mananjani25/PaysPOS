@@ -998,7 +998,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     val totalPaid =dineInTableAdapter.getList().count { it.isHeader == 0 && it.isPaid }
 
-                    dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+                    dashboardViewModel.currentCartItems.filter {!it.isPaid && !it.isDestroy}.forEach { cartItem ->
                         val item = cartItem.price
                         dashboardViewModel.addItemToCartItems(cartItem)
                     }
@@ -1265,8 +1265,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 deleteCart()
                 clearCustomer()
             }
-            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
-                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+
+            try {
+
+                if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
 //            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
@@ -1275,8 +1281,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(ORDER_TYPE_NAME, "")
             dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
-            if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
-                findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+
+            try {
+                if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
 //            findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
@@ -1638,6 +1649,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
             // END RESET
             val request = dashboardViewModel.updateOrder(cartList!!, isAddGuest = true)
+            request.order.note = getOrderDetailsResponse?.note.toString()
             orderId?.let {
                 viewModel.updateOrder(it, request)
             }
@@ -4047,6 +4059,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun updateOrderCall(isFromReorder: Boolean) {
         cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
+        cartList?.note = getOrderDetailsResponse?.note.toString()
         cartList?.listOfItemRemoved = listOfMoveItemIds
         prefProvider.setValueboolean(DINE_IN_UPDATE, true)
         // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
@@ -4080,10 +4093,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             putInt("itemQuantity", item.itemQuantity)
         }
         clickedPosition = position
-        findNavController().navigate(
-            R.id.action_dineInOrderTable_to_addItemToWastageDialog,
-            bundle
-        )
+        try {
+            findNavController().navigate(
+                R.id.action_dineInOrderTable_to_addItemToWastageDialog,
+                bundle
+            )
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // Handle wastage item quantity and send data to server
