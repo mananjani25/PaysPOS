@@ -100,6 +100,7 @@ class TaxesList : Fragment(), ItemCallback {
                             setTaxData(taxList)
                         }
                         viewModel.newTaxData() /* Added by Rahul Pandit for PA1-I781*/
+
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()

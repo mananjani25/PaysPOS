@@ -98,6 +98,7 @@ class MenuFragment : DialogFragment() {
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
+            presentation.showSplashLayout()
         }
     }
 
@@ -278,9 +279,12 @@ class MenuFragment : DialogFragment() {
             clearManualCartItems()
         }
         binding.header.imgBack.setOnClickListener {
+            if (findNavController().currentDestination?.id == R.id.menuFragment) {
+                findNavController().navigate(R.id.action_menuFragment_to_dashboardCategoryBoldPOS)
+                
+                manageCustomerDisplay()
+            }
 //            findNavController().navigateUp()
-            findNavController().navigate(R.id.action_menuFragment_to_dashboardCategoryBoldPOS)
-            manageCustomerDisplay()
 
         }
         binding.linearInventory.setOnClickListener {

@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -30,9 +31,11 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment
 import com.pays.pos.ui.fragments.transactions.TransactionFragment
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -62,6 +65,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     companion object {
         fun newInstance() = AddTipsDialog()
+        //Added By Rahul Pandit to solve PA1-I792 *Start*
+        fun clearSavedTip(context: Context) {
+            val sharedPreferences = context.getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit().remove("selected_tip_id").apply()
+        }//Added By Rahul Pandit to solve PA1-I792 *End*
 
     }
 
@@ -260,6 +268,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         binding.llKeypad.tvClear.setOnClickListener {
             dashboardViewModel.customerGivenTip.value=false
             calculateValue("", true)
+            tipsListAdapter.clearSelectedItem()
+            clearSavedTip()
         }
         binding.llKeypad.tvDZero.setOnClickListener {
             calculateValue("00", false)
@@ -293,6 +303,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
             tipsListAdapter.clearSelectedItem()
             selectedListPos = -1
+            clearSavedTip()//Added By Rahul Pandit to solve PA1-I792
         }
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
@@ -318,6 +329,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                         result
                     )
                 }
+                saveSelectedTip(tipID?:0)//Added By Rahul Pandit to solve PA1-I792
 
                 findNavController().navigateUp()
             }else{
@@ -349,6 +361,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             }
 
             dashboardViewModel.tipRemovedObserver.value = true
+            clearSavedTip()//Added By Rahul Pandit to solve PA1-I792
             findNavController().navigateUp()
         }
     }
@@ -384,11 +397,28 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
             selectedListPos = pos
+            saveSelectedTip(model.id)//Added By Rahul Pandit to solve PA1-I792
         }else{
             binding.edtAmount.setText("0.00")
         }
 
     }
+
+    //Added By Rahul Pandit to solve PA1-I792 *Start*
+    private fun saveSelectedTip(tipId: Int) {
+        val sharedPreferences = requireContext().getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putInt("selected_tip_id", tipId)
+            .apply()
+    }
+    private fun clearSavedTip() {
+        val sharedPreferences = requireContext().getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().remove("selected_tip_id").apply()
+    }
+    //Added By Rahul Pandit to solve PA1-I792 *End*
+
+
+
 
     private fun calculateValue(number: String, delete: Boolean) {
         tipsListAdapter.clearSelectedItem()

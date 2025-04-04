@@ -940,6 +940,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         super.onViewCreated(view, savedInstanceState)
         prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
 
+        viewModel.dineInHeaderPosition = 0
+        viewModel.currentSelectedHeaderDineIn = 0
 
         initListeners()
         setCartAdapter()
@@ -1075,6 +1077,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
+        if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
+            binding.labelCashSurcharge.visibility = View.GONE
+            binding.txtNoncashAdj.visibility = View.GONE
+        } else {
+            binding.labelCashSurcharge.visibility = View.VISIBLE
+            binding.txtNoncashAdj.visibility = View.VISIBLE
+        }
+
         if (!isFromPayment) {
             var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
             totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
@@ -1084,12 +1094,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtLoyaltyPoints.visible()
                 binding.txtlabelloyaltyPoints.visible()
             } else {
-                binding.checkloylaty.gone()
-                binding.checkloylaty.isChecked =false
-                binding.txtLoyaltyAmount.gone()
-                binding.txtLoyaltyPoints.gone()
-                binding.txtlabelloyaltyPoints.gone()
+              binding.checkloylaty.gone()
+              binding.checkloylaty.isChecked =false
+              binding.txtLoyaltyAmount.gone()
+              binding.txtLoyaltyPoints.gone()
+              binding.txtlabelloyaltyPoints.gone()
             }
+
         }
 
         uiSave()
@@ -1253,6 +1264,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     private fun getDineInData() {
         if (updateBundle != null) {
+
+            viewModel.dineInHeaderPosition = 0
+            viewModel.dineInSelectedItemHeaderPos = 0
+
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
                 LogUtil.logE(TAG, "isFromDinein")
                 getDineInCartList()
@@ -1399,9 +1414,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.dineInHeaderPosition = 0
         viewModel.dineInSelectedItemHeaderPos = 0
         cartModelsList.get(0).orderType = Constants.DINE_IN
-        viewModel.newCartLogicModifier(
-            cartModelsList, null, Constants.ADD, false, dineInList = dineInList
-        )
+
+        try {
+            viewModel.newCartLogicModifier(
+                cartModelsList, null, Constants.ADD, false, dineInList = dineInList
+            )
+
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
@@ -3157,7 +3178,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             prefProvider,
                             requireContext()
                         )
-                    } else {
+
+                        viewModel.customerCashPrice.value = total
+
+                    } else
+                    {
                         val total =
                             viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
 
@@ -3353,7 +3378,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
         } else {
-            cartModelsList = arrayListOf()
+
+            if(prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                cartModelsList = arrayListOf()
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
             taxClickable = false
@@ -3553,9 +3580,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "cartList" to cartModelsList,
                     "listOfCustomersID" to listOfCustomersID
                 )
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+                    )
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                }
             } else
                 AlertUtils.showCustomAlert(
                     requireContext(),
@@ -4012,10 +4043,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE
+        binding.checkloylaty.isChecked = false
         displayCustomer()
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         prefProvider.setValueboolean(LOYALTY_ADDED, false)
+        binding.checkloylaty.isChecked = false
+        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+        viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
+        setupLoyalytyPoints()
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()

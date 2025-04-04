@@ -230,7 +230,13 @@ class DineInFragmentPays : Fragment() {
             dashBoardCategoryViewModel.duplicateCurrentCartItem.clear()
 
             try {
-                findNavController().popBackStack()
+                if (findNavController()?.currentDestination?.id == R.id.dineInFragmentPays) {
+                    findNavController().navigate(
+                        R.id.action_dineInFragmentPays_to_dashboardCategoryBoldPOS
+
+                    )
+                } else findNavController().popBackStack()
+
             }catch (e:Exception){}
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {

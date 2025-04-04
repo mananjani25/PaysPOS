@@ -206,7 +206,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="0.7"
                 android:gravity="start"
                 android:text="@string/tv_order_id"
                 android:textAllCaps="true"
@@ -217,7 +217,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.9"
+                android:layout_weight="1"
                 android:gravity="start"
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
@@ -289,7 +289,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.1"
                 android:gravity="start"
                 android:text="@string/tv_type"
                 android:visibility="gone"
@@ -301,7 +301,7 @@
                 android:id="@+id/lnrStationSort"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="1"
                 android:gravity="start|center_horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView

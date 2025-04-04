@@ -3535,11 +3535,9 @@ fun addOrdersForKitchenDineIn(
 
 
                             PrintSunmiUtils.orderTime(
-                                "  " + if (modifierObj.modifier_quantity == 1) {
-                                    "   "
-                                } else {
+                                "  " +
                                     "" + modifierObj.modifier_quantity + "x "
-                                } + modifierObj.name.uppercase()
+                                 + modifierObj.name.uppercase()
                             )
 
 

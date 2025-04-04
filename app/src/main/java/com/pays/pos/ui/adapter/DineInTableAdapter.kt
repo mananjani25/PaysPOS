@@ -277,27 +277,28 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var totalServiceCharge = 0.0
 
 
-            if (serviceChargeList.isNotEmpty() == true) {
-                var isApplied = false
-                serviceChargeList.forEach {
-                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+            try {
+                if (serviceChargeList.isNotEmpty() == true) {
+                    var isApplied = false
+                    serviceChargeList.forEach {
+                        if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
 
-                        val currentGuestCount = getList().count { it.isHeader==0 }
+                            val currentGuestCount = getList().count { it.isHeader == 0 }
 
-                        if (isInRange(
-                                it.min_guest_count!!,
-                                it.max_guest_count!!,
-                                currentGuestCount //list[0].eligibleGuestsForDivision
-                            )
-                        ) {
-                            isApplied = true
-                            totalServiceCharge += ((guestSubTotal) * it.percentage) / 100
-                            return@forEach
+                            if (isInRange(
+                                    it.min_guest_count!!,
+                                    it.max_guest_count!!,
+                                    currentGuestCount //list[0].eligibleGuestsForDivision
+                                )
+                            ) {
+                                isApplied = true
+                                totalServiceCharge += ((guestSubTotal) * it.percentage) / 100
+                                return@forEach
 
+                            }
                         }
-                    }
 
-                }
+                    }
 //                if (!isApplied) {
 //                    serviceChargeList.forEach { service ->
 //                        if (service.id == checkMaxGuestCountId()) {
@@ -308,8 +309,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 //                }
 
 
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
             }
-
 
             var finalAmt =
                 guestSubTotal - totalGuestDiscount + totalServiceCharge + totalTaxAmt + list[0].wholeTableSurTax

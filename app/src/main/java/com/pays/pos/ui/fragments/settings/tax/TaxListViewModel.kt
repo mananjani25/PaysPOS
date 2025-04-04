@@ -48,7 +48,6 @@ class TaxListViewModel @Inject constructor(
         taxList.value = getTaxList.value?.data!!
     }
 
-    /* Added by Rahul Pandit for PA1-I781*/
     fun newTaxData() {
         viewModelScope.launch {
             val response = taxServiceChargeRepository.getTaxesList()
@@ -57,8 +56,6 @@ class TaxListViewModel @Inject constructor(
             }
         }
     }
-    /* Added by Rahul Pandit for PA1-I781*/
-
 
     fun getTextList() {
         _showProgress.value = Event(true)
