@@ -8610,7 +8610,7 @@ class AllOrdersListingFragment(
 
 
 
-                if (receiptModel?.totalDiscount != null) {
+            if (receiptModel?.totalDiscount != null) {
 
                 val str1 = padLine(
                     "Total Discount",
@@ -8986,12 +8986,28 @@ class AllOrdersListingFragment(
 
                 PrintSunmiUtils.additionalTipsInner()
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                } else {
+                    PrintSunmiUtils.addHorizontalInner()
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
                 if (tipsList.isNotEmpty()) {
-                    addTipsListInner(
-                        tipsList,
-                        receiptModel.totalAmount.toDouble(),
-                        customerSettingModel.fonts
-                    )
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        addTipsListInnerNew(
+                            tipsList,
+                            receiptModel.totalAmount.toDouble(),
+                            customerSettingModel.fonts
+                        )
+                    } else {
+                        addTipsListInner(
+                            tipsList,
+                            receiptModel.totalAmount.toDouble(),
+                            customerSettingModel.fonts
+                        )
+                    }
 
                 }
             }
