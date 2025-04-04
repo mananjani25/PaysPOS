@@ -146,6 +146,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         binding.llKeypad.txt20.setOnClickListener {
             rate = binding.llKeypad.txt20.text.toString().trim()
                 .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
+            resetDialogTipsList()//Added by Rahul Pandit to solve PA1-I870
             var price = 0.0
             price = if (isFromTransaction) {
                 MethodUtils.percentageCalculation(
@@ -166,6 +167,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             override fun onClick(p0: View?) {
                 rate = binding.llKeypad.txt30.text.toString().trim()
                     .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
+                resetDialogTipsList()//Added by Rahul Pandit to solve PA1-I870
 
                 var price = 0.0
                 price = if (isFromTransaction) {
