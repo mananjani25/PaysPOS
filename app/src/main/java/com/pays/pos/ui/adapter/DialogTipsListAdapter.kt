@@ -1,6 +1,7 @@
 package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,10 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
     inner class MyViewHolder(private val binding: ViewDialogTipsListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: GetTipReponse.Data, position: Int) {
-            if (selectedPosition == position && model.isCheckedInAdapter) {
+            //Added By Rahul Pandit to solve PA1-I792
+            val sharedPreferences = binding.root.context.getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+            val savedTipId = sharedPreferences.getInt("selected_tip_id", -1)//Added By Rahul Pandit to solve PA1-I792
+            if ((selectedPosition == position || model.id == savedTipId) && model.isCheckedInAdapter) {
                 binding.linearParent.background =
                     binding.root.context.getDrawable(R.drawable.button_selected)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.white))
