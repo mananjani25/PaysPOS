@@ -41,6 +41,7 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.databinding.FragmentPaymentBoldPosBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.dialog.AddTipsDialog
 import com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
@@ -351,6 +352,7 @@ class PaymentBoldPosFragment : Fragment() {
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnSingleClickListener {
             onBackPress()
+            AddTipsDialog.clearSavedTip(requireContext())//Added By Rahul Pandit to solve PA1-I792
         }
 
         listeners()
