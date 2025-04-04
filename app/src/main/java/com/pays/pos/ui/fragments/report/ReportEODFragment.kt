@@ -588,7 +588,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 //                                        ?.let { printLogoLandiInner(it) }
                                     try {
 
-                                        landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                        if(Build.DISPLAY.contains("RL")) {
+                                            landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                        } else {
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                        }
 
                                         landiPrinter.startPrint(object : OnPrintListener {
                                             override fun onSuccess() {
