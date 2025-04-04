@@ -123,11 +123,13 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
             override fun afterTextChanged(s: Editable) {
 
-                if (s.isNotEmpty() && s.length > 2 && !s.toString().endsWith(" ")) {
-                    getSearchItemsFromDB(s.toString().trim())
-                } else {
-                    itemsObserver()
-                }
+                getSearchItemsFromDB(s.toString().trim())
+//
+//                if (s.isNotEmpty() && s.length > 2 && !s.toString().endsWith(" ")) {
+//                    getSearchItemsFromDB(s.toString().trim())
+//                } else {
+//                    itemsObserver()
+//                }
 
 
             }
