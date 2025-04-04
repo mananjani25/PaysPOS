@@ -19818,6 +19818,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         }
 
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+
 
 //                    var totalfamount = 0.0
 //
@@ -20007,7 +20009,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
                                 ?.toInt() != 39
                         ) {
-                            PrintSunmiUtils.boldTextNew(str5)
+                            PrintSunmiUtils.boldTextDineInNew(str5)
                         } else {
                             PrintSunmiUtils.boldText(str5)
                         }
@@ -20032,7 +20034,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             )
                                 ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                         ) {
-                            PrintSunmiUtils.boldTextNew(str6)
+                            PrintSunmiUtils.boldTextDineInNew(str6)
                         } else {
                             PrintSunmiUtils.boldText(str6)
                         }
@@ -20054,7 +20056,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     1
                                 )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                             ) {
-                                PrintSunmiUtils.boldTextNew(str7)
+                                PrintSunmiUtils.boldTextDineInNew(str7)
                             } else {
                                 PrintSunmiUtils.boldText(str7)
                             }
@@ -20076,7 +20078,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     1
                                 )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                             ) {
-                                PrintSunmiUtils.boldTextNew(str7)
+                                PrintSunmiUtils.boldTextDineInNew(str7)
                             } else {
                                 PrintSunmiUtils.boldText(str7)
                             }
