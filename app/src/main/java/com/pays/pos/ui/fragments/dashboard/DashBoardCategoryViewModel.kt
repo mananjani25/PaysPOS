@@ -8234,7 +8234,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                tipDiscountRepository.deleteDiscountsFromDb()
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.settingData.data.notes)
-//                                tipDiscountRepository.deleteDiscountsFromDb()
+                                if(it.settingData.data.discounts.size != tipDiscountRepository.allDiscountList().value?.data?.size) {
+                                    tipDiscountRepository.deleteDiscountsFromDb()
+                                }
                                 tipDiscountRepository.addDiscount(it.settingData.data.discounts)
 
                                 /* serviceChargesList.clear()
