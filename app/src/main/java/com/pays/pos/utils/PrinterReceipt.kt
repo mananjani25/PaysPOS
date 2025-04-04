@@ -7106,7 +7106,7 @@ fun addOrderItemsTransactionInnerLandi(
 
                 val modifier = padLineCustomerItem(
                     part1,
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                    getModifierItemPriceToShow(modifierObj.price, obj.quantity),
                     if (font == Constants.LARGE) 23 else 48
                 )
                 lprint.printLeft(modifier.toString())
