@@ -4085,6 +4085,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
+                ProgressUtils.showProgressDialog(requireActivity())
 
                 if (viewModel.currentCartItems.isNotEmpty())
                     binding.relPreoceedToFire.gone()
