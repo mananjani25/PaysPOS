@@ -98,15 +98,24 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/llinear_floorplan"
             android:layout_above="@+id/Footer"
-            android:layout_marginTop="@dimen/_10sdp">
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fillViewport="true"
+            >
 
-            <FrameLayout
-                android:id="@+id/flFloorPlan"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="@dimen/_20sdp">
+                android:fillViewport="true">
+                <FrameLayout
+                    android:id="@+id/flFloorPlan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="1000dp"
+                    android:minHeight="1000dp"
+                    android:layout_marginHorizontal="@dimen/_20sdp">
 
-            </FrameLayout>
+                </FrameLayout>
+            </HorizontalScrollView>
 
         </androidx.core.widget.NestedScrollView>
 
