@@ -472,10 +472,21 @@ class EmployeeTipSummary : Fragment() {
             bundle.putString(EMAIL, "")
             bundle.putString(START_DATE, viewModel.startDate.value)
             bundle.putString(END_DATE, viewModel.endDate.value)
-            findNavController().navigate(
-                R.id.action_reports_to_sendReceiptFragment,
-                bundle
-            )
+//            findNavController().navigate(
+//                R.id.action_reports_to_sendReceiptFragment,
+//                bundle
+//            )
+            // Before, there was no if condition (the above commented code has no if condition) when navigating to the dialog fragment to send the mail,
+            // so there was a chance of the app's crashing while navigation.
+            // The current fragment (ETS Fragment) is a child fragment opened in the parent (Report) fragment,
+            // which encompasses 2 more child fragments. Therefore, findNavController will only return the parent fragment,
+            // hence the if condition needed here  check for the parent Id ( R.id.reports )
+            if (findNavController().currentDestination?.id == R.id.reports) {
+                findNavController().navigate(
+                    R.id.action_reports_to_sendReceiptFragment,
+                    bundle
+                )
+            }
 
         }
     }

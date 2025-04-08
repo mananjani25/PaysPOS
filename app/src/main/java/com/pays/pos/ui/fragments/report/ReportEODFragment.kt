@@ -357,7 +357,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         bundle.putBoolean("EOD", true)
                         bundle.putInt("type", 2)
                         bundle.putString("email", it.data?.email)
-                        if (findNavController().currentDestination?.id == R.id.reportEODFragment) {
+                        // Before the condition was ->  if(findNavController().currentDestination?.id == reportEODFragment).
+                        // But it didn't work because, the current fragment (EOD Fragment) is a child fragment opened in the parent Report fragment,
+                        // which encompasses 2 more child fragments. Therefore, findNavController will only return the parent fragment.
+                        // Hence the if condition needed to be changed the RHS Id to  -> R.id.reports
+                        if (findNavController().currentDestination?.id == R.id.reports) {
                             findNavController().navigate(
                                 R.id.action_reports_to_sendReceiptFragment,
                                 bundle
