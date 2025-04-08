@@ -4085,13 +4085,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
+                var msgDisplayed = false
+
                 ProgressUtils.showProgressDialog(requireActivity())
 
                 if (viewModel.currentCartItems.isNotEmpty())
                     binding.relPreoceedToFire.gone()
-                else
+                else {
                     AlertUtils.showCustomAlert(requireContext(), "Please add at least one Item.")
-
+                    msgDisplayed = true
+                    ProgressUtils.dismissProgressDialog()
+                }
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
 
@@ -4113,12 +4117,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         itemCount = viewModel.currentCartItems.size
 
                         if (itemCount == 0) {
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                requireContext(),
-                                getString(R.string.please_add_Atleast_one_item_in_cart)
-                            ) { _, _ ->
-                                restrictButtonClick(true)
+                            if(!msgDisplayed) {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    getString(R.string.please_add_Atleast_one_item_in_cart)
+                                ) { _, _ ->
+                                    restrictButtonClick(true)
 
+                                }
                             }
                         } else {
                             Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")
