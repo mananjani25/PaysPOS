@@ -472,10 +472,24 @@ class EmployeeTipSummary : Fragment() {
             bundle.putString(EMAIL, "")
             bundle.putString(START_DATE, viewModel.startDate.value)
             bundle.putString(END_DATE, viewModel.endDate.value)
-            findNavController().navigate(
-                R.id.action_reports_to_sendReceiptFragment,
-                bundle
-            )
+//            findNavController().navigate(
+//                R.id.action_reports_to_sendReceiptFragment,
+//                bundle
+//            )
+            /*
+                 Initially, there was no check (no if-condition) before navigating to the dialog fragment for sending the mail,
+                 which could lead to a crash if navigation was attempted from the wrong fragment.
+                 The current fragment (ETS Fragment) is a child of the parent Report fragment,
+                 which also includes two other child fragments.
+                 Since findNavController() refers to the parent (Report) fragment,
+                 we added an if-condition to check whether the current destination is R.id.reports before navigating.
+            */
+            if (findNavController().currentDestination?.id == R.id.reports) {
+                findNavController().navigate(
+                    R.id.action_reports_to_sendReceiptFragment,
+                    bundle
+                )
+            }
 
         }
     }
