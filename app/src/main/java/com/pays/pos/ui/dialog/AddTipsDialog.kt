@@ -57,6 +57,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private var tipModel: GetTipReponse.Data? = null
     var selectedListPos: Int = -1
     var splitCount = 1
+    var isAmountWiseSplit = false
+    var amountWiseSplit = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -75,6 +77,16 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        dashboardViewModel.isAmountWiseSplit.value?.let {
+            if (it)
+                isAmountWiseSplit = true
+        }
+
+        dashboardViewModel.amountWiseSplit.value?.let {
+            if (it > 0.0)
+                amountWiseSplit = it
+        }
 
         if (arguments != null) {
             if (arguments?.getDouble("totalPrice") != null) totalPrice =
@@ -142,6 +154,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             } else {
                 MethodUtils.percentageCalculation(
+                    if (isAmountWiseSplit) amountWiseSplit else
                     prefProvider.getValue(
                         Constants.WHOLE_AMOUNT,
                         "0.0"
@@ -161,6 +174,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             } else {
                 MethodUtils.percentageCalculation(
+                    if (isAmountWiseSplit) amountWiseSplit else
                     prefProvider.getValue(
                         Constants.WHOLE_AMOUNT,
                         "0.0"
@@ -182,6 +196,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                     )
                 } else {
                     MethodUtils.percentageCalculation(
+                        if (isAmountWiseSplit) amountWiseSplit else
                         prefProvider.getValue(
                             Constants.WHOLE_AMOUNT,
                             "0.0"
@@ -392,7 +407,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 tipCalculation = (totalPrice * model.rate) / 100
             } else {
                 totalPrice =
-                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
+                    if (isAmountWiseSplit) {
+                        amountWiseSplit
+                    } else {
+                        prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
+                    }
                 tipCalculation = (totalPrice * model.rate) / 100
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))

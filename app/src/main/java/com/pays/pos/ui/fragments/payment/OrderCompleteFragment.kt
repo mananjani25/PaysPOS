@@ -211,6 +211,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isSpilt: Boolean = false
     private var isCustomCash: Boolean = false
     private var isSplitByAmount: Boolean = false
+    private var isAmountWiseSplit: Boolean = false
+    private var amountWiseSplit: Double = 0.0
     private var splitTotalAmount: Double = 0.0
     private var splitChange: Double = 0.0
     private var getDineInOrderDetails: GetOrderDetailsResponse.Data? = null
@@ -846,6 +848,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
             isCustomCash = requireArguments().getBoolean("isCustomCash")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
+            isAmountWiseSplit = requireArguments().getBoolean("isAmountWiseSplit")
+            amountWiseSplit = requireArguments().getDouble("amountWiseSplit")
             splitChange = requireArguments().getDouble("splitChange")
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
@@ -880,6 +884,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             isSplitByNo = requireArguments().getBoolean("isSplitByNo")
             isCustomCash = requireArguments().getBoolean("isCustomCash")
             isSplitByAmount = requireArguments().getBoolean("isSplitByAmount")
+            isAmountWiseSplit = requireArguments().getBoolean("isAmountWiseSplit")
+            amountWiseSplit = requireArguments().getDouble("amountWiseSplit")
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
 
@@ -985,6 +991,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.gone()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(0.0) + " Change"
+                        LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
+                    }
+                } else if (isAmountWiseSplit) {
+                    if (paidAmount > (amountWiseSplit+tipAmount)) {
+                        if (paymentType.equals("cash", true)) {
+                            changeAmtGlobal =
+                                MethodUtils.roundOffAmountDouble(paidAmount - (amountWiseSplit+tipAmount))
+                                    .toDouble()
+                        }
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(if ((paidAmount - (amountWiseSplit+tipAmount)) > 0) paidAmount - (amountWiseSplit+tipAmount) else 0.00) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountString(
+                                paidAmount
+                            ) + " payment successful"
+
+                        LogUtil.logE("Change 1", binding.txtChangeAmount.text.toString())
+
+                    } else {
+                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
+                        binding.txtChangeAmount.gone()
+                        binding.txtChangeAmount.text =
+                            MethodUtils.roundOffAmount(0.0) + " Change"
+                        binding.txtPaymentAmount.text =
+                            "" + MainApplication.getInstance()!!
+                                .getText(R.string.symbole) + MethodUtils.roundOffAmountString(
+                                paidAmount + tipAmount
+                            ) + " payment successful"
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     }
                 } else if (remainingAmount < paidAmount) {

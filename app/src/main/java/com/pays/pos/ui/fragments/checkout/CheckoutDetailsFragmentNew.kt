@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
@@ -124,6 +125,8 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.InternetUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.*
+import com.pays.pos.utils.MethodUtils.Companion.hideSoftKeyboard
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.TLVParser
@@ -205,8 +208,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var paymentId: Int = -1
     private var isPaymentScreen = true
     private var isSplitScreen = false
+    private var isAmountWiseSplit = false
 
     private var remainingAmount: Double = 0.0
+    private var amountWiseSplit: Double = 0.0
     var cashDiscountType = ""
     var paymentAmount = 0.0
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
@@ -289,6 +294,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         }
 
+        binding.enteredSplitAmount.addTextChangedListener(AmountTextWatcher(binding.enteredSplitAmount, false))
+
         dashboardViewModel.paymentInProgress.value = false
         dashboardViewModel.tipBeforeEnabled = true
 
@@ -345,6 +352,36 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         initProgressObserver()
         initClickListener()
         return binding.root
+    }
+
+    fun setUpAmountInput(editText: EditText, maxAmount: Double) {
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed here
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // No action needed here
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val enteredText = s.toString()
+
+                if (enteredText.isNotEmpty()) {
+                    try {
+                        val enteredAmount = enteredText.toDouble()
+                        if (enteredAmount > maxAmount) {
+                            // Set the maximum value if the input exceeds maxAmount
+                            editText.setText(maxAmount.toString())
+                            editText.setSelection(editText.text.length) // Move cursor to the end
+                        }
+                    } catch (e: NumberFormatException) {
+                        // Handle invalid input if necessary
+                        editText.setText("")
+                    }
+                }
+            }
+        })
     }
 
     private fun setPaymentErrorHandlerForCustomerIssue() {
@@ -576,7 +613,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
 
         }
+        binding.enteredSplitAmount.addTextChangedListener(AmountTextWatcher(binding.enteredSplitAmount, false, maxValue = WholetotalPrice))
 
+//        setUpAmountInput(binding.enteredSplitAmount, WholetotalPrice)
         observeForTipBeforeTransaction()
 
         Log.e("totalPriceChcek","totalPrice ${totalPrice}")
@@ -616,8 +655,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
                 prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
 
-                tipAmountCalculation(cashTip,cardTip)
-                loadPaymentLayout(cashTip,cardTip)
+                    tipAmountCalculation(cashTip,cardTip)
+                    loadPaymentLayout(cashTip,cardTip)
             }
         }
     }
@@ -973,8 +1012,33 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             dashboardViewModel.removeMainCart.value = true
             dashboardViewModel.splitChanged.value = isSelectedCount
             dashboardViewModel.setSplitCount(isSelectedCount)
+            dashboardViewModel.isAmountWiseSplit.value = false
+            isAmountWiseSplit = false
             loadPaymentLayout()
             tipAmountCalculation()
+        }
+        binding.linearNextAmountSplit.setOnSingleClickListener {
+            hideSoftKeyboard(requireActivity())
+            if (binding.enteredSplitAmount.text.toString().isNotEmpty() && binding.enteredSplitAmount.text.toString().replace("$", "").toDouble() > 0.00) {
+                dashboardViewModel.amountWiseSplit.value = binding.enteredSplitAmount.text.toString().replace("$", "").toDouble()
+                if (dashboardViewModel.amountWiseSplit.value != WholetotalPrice) {
+                    dashboardViewModel.isAmountWiseSplit.value = true
+                    isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!
+                    dashboardViewModel.amountWiseSplit.value?.let {
+                        amountWiseSplit = it
+                    }
+                }
+                PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+                loadPaymentLayout()
+                tipAmountCalculation()
+
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please enter amount greater than zero to split."
+                ) { _, _ ->
+                }
+            }
         }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -1135,8 +1199,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val bundle = Bundle()
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
+            bundle.putBoolean("amountWiseSplit", false)
             dashboardViewModel.wholetotalPrice = WholetotalPrice
-            findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
+            findNavController().navigate(R.id.action_splitFragment_to_splitdialog, bundle)
         }
     }
 
@@ -1246,7 +1311,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                          //to resolve tip before transaction issue
 
-//                        if(isSelectedCount > 1)
+//                        if(isSelectedCount > 1 || isAmountWiseSplit)
 //                        remainingValue += surchargeOnTip
 
 
@@ -1315,6 +1380,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putInt("splitValue", isSelectedCount)
                         bundle.putBoolean("isSplitByAmount", false)
+                        bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                        bundle.putDouble("amountWiseSplit", amountWiseSplit)
                         bundle.putString("paymentType", "Card")
                         bundle.putParcelable("cartList", cartList)
                         bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -1411,6 +1478,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putInt("splitValue", isSelectedCount)
                         bundle.putBoolean("isSplitByAmount", false)
+                        bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                        bundle.putDouble("amountWiseSplit", amountWiseSplit)
                         bundle.putString("paymentType", paymentType)
                         bundle.putParcelable("cartList", cartList)
                         bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -1651,6 +1720,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                            bundle.putDouble("amountWiseSplit", amountWiseSplit)
                             bundle.putString("paymentType", "Cash")
                             bundle.putParcelable("cartList", cartList)
                             bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -1775,6 +1846,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                            bundle.putDouble("amountWiseSplit", amountWiseSplit)
                             bundle.putString("paymentType", "Card")
                             bundle.putParcelable("cartList", cartList)
                             bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -1971,6 +2044,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                            bundle.putDouble("amountWiseSplit", amountWiseSplit)
                             bundle.putString("paymentType", "External")
                             bundle.putParcelable("cartList", cartList)
                             bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -2222,6 +2297,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                            bundle.putDouble("amountWiseSplit", amountWiseSplit)
                             bundle.putString("paymentType", "Cash")
                             bundle.putParcelable("cartList", cartList)
                             bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -2349,6 +2426,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                            bundle.putDouble("amountWiseSplit", amountWiseSplit)
                             bundle.putString("paymentType", "Card")
                             bundle.putParcelable("cartList", cartList)
                             bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -2544,6 +2623,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             bundle.putParcelable("giftCardReceiptData", it.data)
                             bundle.putInt("splitValue", isSelectedCount)
                             bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+                            bundle.putDouble("amountWiseSplit", amountWiseSplit)
                             bundle.putString("paymentType", Constants.EXTERNAL_PAYMENT)
                             bundle.putParcelable("cartList", cartList)
                             bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
@@ -2656,6 +2737,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     "remainingAmount",
                     remainingValue
                 )
+            } else if (isAmountWiseSplit && paymentType.toLowerCase() == "cash") {
+                var splitChange = 0.0
+                splitChange = custom_paymentAmount - (paymentAmount + tipAmount)
+                bundle.putDouble(
+                    "splitChange", String.format("%.2f", splitChange).toDouble()
+                )
+                remainingValue = wholePrice - paymentAmount
+
+                bundle.putDouble(
+                    "remainingAmount",
+                    remainingValue
+                )
             } else {
                 if (custom_paymentAmount >= wholePrice) {
                     remainingValue =
@@ -2723,7 +2816,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _10"))
 
         } else {
-            if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
+
+            if (custom_paymentAmount != 0.0 && (isSelectedCount != 1 || (isAmountWiseSplit && remainingValue > 0.0))) {
                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
                 bundle.putBoolean("isSpilt", true)
                 bundle.putBoolean("isSplitByNo", true)
@@ -2798,6 +2892,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         bundle.putInt("orderID", it.data.order.id ?: 0)
         bundle.putParcelable("receiptData", it.data)
         bundle.putInt("splitValue", isSelectedCount)
+        bundle.putBoolean("isAmountWiseSplit", isAmountWiseSplit)
+        bundle.putDouble("amountWiseSplit", amountWiseSplit)
         bundle.putBoolean("isSplitByAmount", false)
         bundle.putString("paymentType", "Cash")
         bundle.putParcelable("cartList", cartList)
@@ -2897,7 +2993,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make cash payment for placing order
     private fun cashPaymentWithVariation(
     ) {
-        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
+
+        paymentAmount = String.format("%.2f", if (isAmountWiseSplit) amountWiseSplit else (WholetotalPrice / isSelectedCount)).toDouble()
         EventBus.getDefault().post(
             MessageEvent(
                 "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() paymentAmount-> ${
@@ -2935,7 +3033,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         }
-        subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+        subTotalPrice = String.format("%.2f",  if (isAmountWiseSplit) {subTotalPrice * amountWiseSplitShare} else {subTotalPrice / isSelectedCount}).toDouble()
 
         EventBus.getDefault().post(
             MessageEvent(
@@ -2946,14 +3044,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         )
 
         totalServiceCharge =
-            String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-        totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-        totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+            String.format("%.2f", if (isAmountWiseSplit) {totalServiceCharge * amountWiseSplitShare} else { totalServiceCharge / isSelectedCount}).toDouble()
+        totalTax = String.format("%.2f", if (isAmountWiseSplit) {totalTax * amountWiseSplitShare} else { totalTax / isSelectedCount}).toDouble()
+        totalDiscount = String.format("%.2f", if (isAmountWiseSplit) {totalDiscount * amountWiseSplitShare} else { totalDiscount / isSelectedCount}).toDouble()
         cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
         } else {
             MethodUtils.getLatestCashDiscountOrSurCharge(
-                WholetotalPrice,
+                if (isAmountWiseSplit) amountWiseSplit else (WholetotalPrice / isSelectedCount) ,
                 prefProvider,
                 requireContext()
             ) / isSelectedCount
@@ -2976,7 +3074,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         dynamicPaymentName: String = "",
         dynamicPaymentId: Int = -1
     ) {
-        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
+
+        paymentAmount = String.format(
+            "%.2f", if (isAmountWiseSplit) {
+                amountWiseSplit
+            } else {
+                WholetotalPrice / isSelectedCount
+            }
+        ).toDouble()
         EventBus.getDefault().post(
             MessageEvent(
                 "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() paymentAmount-> ${
@@ -3014,7 +3120,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         }
-        subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+        subTotalPrice = String.format("%.2f", if (isAmountWiseSplit) {subTotalPrice * amountWiseSplitShare} else {subTotalPrice / isSelectedCount}).toDouble()
 
         EventBus.getDefault().post(
             MessageEvent(
@@ -3025,14 +3131,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         )
 
         totalServiceCharge =
-            String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-        totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-        totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+            String.format("%.2f", if (isAmountWiseSplit) {totalServiceCharge * amountWiseSplitShare} else { totalServiceCharge / isSelectedCount}).toDouble()
+        totalTax = String.format("%.2f", if (isAmountWiseSplit) {totalTax * amountWiseSplitShare} else { totalTax / isSelectedCount}).toDouble()
+        totalDiscount = String.format("%.2f", if (isAmountWiseSplit) {totalDiscount * amountWiseSplitShare} else { totalDiscount / isSelectedCount}).toDouble()
         cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
         } else {
             MethodUtils.getLatestCashDiscountOrSurCharge(
-                WholetotalPrice,
+                if (isAmountWiseSplit) {WholetotalPrice * amountWiseSplitShare} else {WholetotalPrice},
                 prefProvider,
                 requireContext()
             ) / isSelectedCount
@@ -3071,7 +3177,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     // To purchase gift card with cash payment
     private fun redeemGiftCard() {
-        subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+        val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
+
+        subTotalPrice = String.format("%.2f", if (isAmountWiseSplit) {subTotalPrice * amountWiseSplitShare } else { subTotalPrice / isSelectedCount}).toDouble()
 
         EventBus.getDefault().post(
             MessageEvent(
@@ -3082,9 +3190,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         )
 
         totalServiceCharge =
-            String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-        totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-        totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+            String.format("%.2f",if (isAmountWiseSplit) {totalServiceCharge * amountWiseSplitShare } else { totalServiceCharge / isSelectedCount}).toDouble()
+        totalTax = String.format("%.2f", if (isAmountWiseSplit) {totalTax * amountWiseSplitShare } else { totalTax / isSelectedCount}).toDouble()
+        totalDiscount = String.format("%.2f", if (isAmountWiseSplit) {totalDiscount * amountWiseSplitShare } else { totalDiscount / isSelectedCount}).toDouble()
         makeCashPayment()
     }
 
@@ -3127,11 +3235,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
+                val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
 
                 restrictTvCashClicks()
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
-                subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+                subTotalPrice = String.format("%.2f",if (isAmountWiseSplit) {subTotalPrice * amountWiseSplitShare } else { subTotalPrice / isSelectedCount}).toDouble()
 
                 EventBus.getDefault().post(
                     MessageEvent(
@@ -3146,12 +3255,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
                 )
                 totalServiceCharge =
-                    String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-                totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-                totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                    String.format("%.2f",if (isAmountWiseSplit) {totalServiceCharge * amountWiseSplitShare } else { totalServiceCharge / isSelectedCount}).toDouble()
+                totalTax = String.format("%.2f", if (isAmountWiseSplit) {totalTax * amountWiseSplitShare } else { totalTax / isSelectedCount}).toDouble()
+                totalDiscount = String.format("%.2f",if (isAmountWiseSplit) {totalDiscount * amountWiseSplitShare } else { totalDiscount / isSelectedCount}).toDouble()
                 cashDiscountSurcharge =
                     MethodUtils.getLatestCashDiscountOrSurCharge(
-                        WholetotalPrice,
+                        if (isAmountWiseSplit) {amountWiseSplit} else {WholetotalPrice},
                         prefProvider,
                         requireContext()
                     ) / isSelectedCount
@@ -3165,7 +3274,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                            requireContext()
 //                        ) / isSelectedCount
 //                    }
-                paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+                paymentAmount = String.format("%.2f", if (isAmountWiseSplit) {amountWiseSplit} else { WholetotalPrice / isSelectedCount}).toDouble()
 
 
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -3866,9 +3975,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.txtCharge.setOnSingleClickListener {
 
+            val effectivePrice = if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice
+            val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
+
             MethodUtils.hideKeyboard(requireActivity())
 
-            subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+            subTotalPrice = String.format("%.2f", if (isAmountWiseSplit) { subTotalPrice * amountWiseSplit } else { subTotalPrice / isSelectedCount}).toDouble()
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -3879,19 +3991,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
 
             totalServiceCharge =
-                String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-            totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-            totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                String.format("%.2f", if (isAmountWiseSplit) { totalServiceCharge * amountWiseSplit } else { totalServiceCharge / isSelectedCount}).toDouble()
+            totalTax = String.format("%.2f", if (isAmountWiseSplit) { totalTax * amountWiseSplit } else {totalTax / isSelectedCount}).toDouble()
+            totalDiscount = String.format("%.2f", if (isAmountWiseSplit) { totalDiscount * amountWiseSplit } else {totalDiscount / isSelectedCount}).toDouble()
             cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
                 0.0
             } else {
                 MethodUtils.getLatestCashDiscountOrSurCharge(
-                    WholetotalPrice / isSelectedCount,
+                    effectivePrice / isSelectedCount,
                     prefProvider,
                     requireContext()
                 )
             }
-            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            paymentAmount = String.format("%.2f", effectivePrice / isSelectedCount).toDouble()
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -5146,7 +5258,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                           /*  custom_paymentAmount = 0.0
 
                             val actualTotalAmountWithTip =
-                                (WholetotalPrice / isSelectedCount) + tipAmount
+                                (if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice / isSelectedCount) + tipAmount
 
                             val giftCardBalanceAmount = it.data.amount
 
@@ -5160,7 +5272,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
                                     true
                                 )
-                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                val actualTotalAmount = (if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice / isSelectedCount)
                                 paymentAmount = actualTotalAmount
                                 paymentviewModel.totalPayAmount(paymentAmount)
                                 redeemGiftCard()
@@ -5950,10 +6062,37 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To set different cash payment options and total amount values
-    private fun setupPaymentScreen(isSelectCount: Int,cashTip:Double = 0.0,cardTip:Double=0.0) {
+    private fun setupPaymentScreen(
+        isSelectCount: Int,
+        cashTip: Double = 0.0,
+        cardTip: Double = 0.0,
+    ) {
+        // Extract reusable variables for cleaner code
+        val effectivePrice = if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice
+        val cashAmount = (getCalCashDiscWithAmount(effectivePrice, true) / isSelectCount) + cashTip
+        val cardAmount = (getCalCashDiscWithAmount(effectivePrice, false) / isSelectCount) + cardTip
+
+        // Log the total price for debugging
+        Log.e(TAG, "WholetotalPrice: $WholetotalPrice")
+
+        // Update cash payment options
         MethodUtils.getCashPaymentOptionList(
+            cashAmount,
+            binding.tvCash1,
+            binding.tvCash2,
+            binding.tvCash3
+        )
+
+        // Set price for cash views
+        MethodUtils.setPriceTextView(binding.tvCash, cashAmount)
+        MethodUtils.setPriceTextView(binding.tvCash0, cashAmount)
+
+        // Set price for card view
+        MethodUtils.setPriceTextView(binding.tvCard, cardAmount)
+
+        /*MethodUtils.getCashPaymentOptionList(
 //   Commented to solve BIS-4196         getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip,
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
@@ -5961,20 +6100,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip
 //     Commented to solve BIS-4196       getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount) + cardTip
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectCount) + cardTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
-        )
+        )*/
         if (this::presentation.isInitialized) {
             presentation.show()
             /*presentation.updateTotals(
@@ -6002,21 +6141,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     // To calculate tip added by user
     private fun tipAmountCalculation(cashTip:Double = 0.0,cardTip:Double=0.0) {
+        val effectivePrice = if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice
+
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+                getCalCashDiscWithAmount(effectivePrice, false) / isSelectedCount
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
@@ -6048,15 +6189,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip
+                (getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip
+                (getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + cardTip
+                (getCalCashDiscWithAmount(effectivePrice, false) / isSelectedCount) + cardTip
             )
 
             if (this::presentation.isInitialized) {
@@ -6079,15 +6220,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvtipcard?.text =
                 "(" + MethodUtils.roundOffAmount(cardTip) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip,
+                (getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount) + cashTip,
                 binding.tvCash1,
                 binding.tvCash2,
                 binding.tvCash3
             )
             MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
-                (getCalCashDiscWithAmount(
-                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
+                (getCalCashDiscWithAmount( if(isAmountWiseSplit) amountWiseSplit else prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 ) / isSelectedCount).toDouble() + cardTip
             )
             binding.tvAmount.text =
@@ -6457,9 +6597,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             PaymentBoldPosFragment.newInstance().addTipHideShow(true)
             binding.linearTab2.gone()
+            binding.linearTab3.gone()
         } else {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             binding.linearTab2.visible()
+            binding.linearTab3.visible()
         }
 
         binding.linearTab1.setOnSingleClickListener {
@@ -6467,6 +6609,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
                     PaymentBoldPosFragment.newInstance().addTipHideShow(false)
                 }
+
+                /*For amount wise split*/
+                dashboardViewModel.isAmountWiseSplit.value = false
+                dashboardViewModel.amountWiseSplit.value = 0.0
+
                 /*Solved BIS-4479*/
                 dashboardViewModel.isSelectCount = 1
                 /*Solved BIS-4479*/
@@ -6521,6 +6668,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                     dashboardViewModel.employeeGivenTip = false
 
+                    /*For amount wise split*/
+                    dashboardViewModel.isAmountWiseSplit.value = false
+                    dashboardViewModel.amountWiseSplit.value = 0.0
+
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
@@ -6574,8 +6725,54 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipsetupGlobal(tipAmount, isSelectedCount)
                 binding.tvFullAMounttxt.visibility = View.VISIBLE
                 binding.tvwaysplit?.invisible()
+
+                /*For amount wise split*/
+                dashboardViewModel.isAmountWiseSplit.value = false
+                dashboardViewModel.amountWiseSplit.value = 0.0
             }
 
+        }
+        binding.linearTab3.setOnSingleClickListener {
+            if (tipAmount != 0.0 && dashboardViewModel.tipTransactionAmount != 0.0) {
+                AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                    requireContext(),
+                    "If you are going to do split payment then existing tip will be removed."
+                ) { _, _ ->
+                    PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+                    tipAmount = 0.0
+                    dashboardViewModel.setTipAmount(0.0)
+                    dashboardViewModel.totalTipAmount = 0.0
+                    dashboardViewModel.customerGivenTip.value = false
+                    prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                    dashboardViewModel.employeeGivenTip = false
+
+                    /*Solved BIS-4479*/
+                    dashboardViewModel.isSelectCount = 1
+                    /*Solved BIS-4479*/
+
+                    isSelectedCount = 1
+                    tipsetupGlobal(tipAmount, isSelectedCount)
+
+                    if (this::presentation.isInitialized) {
+                        presentation.show()
+                        presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+//                        presentation.updateTotals(
+//                            binding.tvCash.text.toString(),
+//                            binding.tvCard.text.toString()
+//                        )
+                    }
+                    loadAmountSplitLayout()
+                }
+            } else {
+                PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+                /*Solved BIS-4479*/
+                dashboardViewModel.isSelectCount = 1
+                /*Solved BIS-4479*/
+
+                isSelectedCount = 1
+                tipsetupGlobal(tipAmount, isSelectedCount)
+                loadAmountSplitLayout()
+            }
         }
     }
 
@@ -6584,10 +6781,27 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.view2.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
         binding.tab1.setTextColor(resources.getColor(R.color.white))
         binding.view1.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        binding.tab3.setTextColor(resources.getColor(R.color.white))
+        binding.view3.setBackgroundColor(resources.getColor(R.color.backgroundColor))
         isSplitScreen = true
         isPaymentScreen = false
         binding.paymentLinearLayout.visibility = View.GONE
+        binding.splitAmountLayout.visibility = View.GONE
         binding.splitLinearLayout.visibility = View.VISIBLE
+    }
+
+    private fun loadAmountSplitLayout() {
+        binding.tab3.setTextColor(resources.getColor(R.color.txt_color_blue))
+        binding.view3.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
+        binding.tab2.setTextColor(resources.getColor(R.color.white))
+        binding.view2.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        binding.tab1.setTextColor(resources.getColor(R.color.white))
+        binding.view1.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        isSplitScreen = false
+        isPaymentScreen = false
+        binding.paymentLinearLayout.visibility = View.GONE
+        binding.splitLinearLayout.visibility = View.GONE
+        binding.splitAmountLayout.visibility = View.VISIBLE
     }
 
     private fun loadPaymentLayout(cashTip:Double = 0.0,cardTip:Double=0.0) {
@@ -6596,18 +6810,29 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.view1.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
         binding.tab2.setTextColor(resources.getColor(R.color.white))
         binding.view2.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        binding.tab3.setTextColor(resources.getColor(R.color.white))
+        binding.view3.setBackgroundColor(resources.getColor(R.color.backgroundColor))
         isPaymentScreen = true
         isSplitScreen = false
         binding.paymentLinearLayout.visibility = View.VISIBLE
+        binding.splitAmountLayout.visibility = View.GONE
         binding.splitLinearLayout.visibility = View.GONE
         cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
         } else {
-            MethodUtils.getLatestCashDiscountOrSurCharge(
-                WholetotalPrice / isSelectedCount,
-                prefProvider,
-                requireContext()
-            )
+            if (isAmountWiseSplit) {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    amountWiseSplit,
+                    prefProvider,
+                    requireContext()
+                )
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice / isSelectedCount,
+                    prefProvider,
+                    requireContext()
+                )
+            }
 
         }
 
@@ -8422,6 +8647,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }  _6"
                     )
                 )
+
+                if(isAmountWiseSplit ) {
+                    aa.completed_all_payments = WholetotalPrice - paymentAmount <= 0.0
+                }
+
                 paymentviewModel.splitByOrder(aa, false)
                 runOnUiThread(Runnable {
                     dismissProgressDialog()
@@ -9154,6 +9384,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         super.onDestroyView()
 
     }
+
 
     private var builder: Dialog? = null
 

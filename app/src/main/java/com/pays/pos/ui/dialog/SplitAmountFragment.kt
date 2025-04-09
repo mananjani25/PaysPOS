@@ -27,6 +27,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     private var isCustom: Boolean = false
     private var totalPrice: Double = 0.0
     private var splitValue: Int = 1
+//    private var isAmountWiseSplit: Boolean = false
     private lateinit var binding: DailogSplitAmountBinding
     var current = ""
 
@@ -48,6 +49,15 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
         setupInputFilter()
         return binding.root
     }
+
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        isAmountWiseSplit = requireArguments().getBoolean("amountWiseSplit", false)
+
+        if (isAmountWiseSplit) {
+            binding.splitDialogTextView.text = "Amount to split"
+        }
+    }*/
 
     private fun setupInputFilter() {
 

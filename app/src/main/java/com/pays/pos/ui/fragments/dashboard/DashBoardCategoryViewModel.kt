@@ -393,6 +393,15 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tipBeforeEnabled = false
     var tipRemovedObserver = MutableLiveData<Boolean>(false)
 
+    /**
+     * For amount wise split
+     **/
+    val isAmountWiseSplit = MutableLiveData<Boolean>(false)
+    /**
+     * For amount wise split
+     **/
+    val amountWiseSplit = MutableLiveData<Double>(0.0)
+
     var employeeGivenTip = false
     var totalTipAmount = 0.0
     var totalAmount = 0.0
