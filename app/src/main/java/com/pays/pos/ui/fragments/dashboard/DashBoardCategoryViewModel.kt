@@ -6666,6 +6666,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 model.Destroy = it.isDestroy
+                model.isPaid = it.isPaid
                 orderItemsAttributeList.add(model)
 
             }

@@ -250,6 +250,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     lateinit var venueUrlByteArray:ByteArray
 
+    /***
+     * Fetch discount percentage from subtotal and discount given
+     */
+    val orderCompletePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+    val orderDiscountPercentage = (getOrderDetailsResponse?.totalDiscount?.div(orderCompletePrice) ?: 1.0) * 100
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -591,7 +597,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         onClick()
         addItemToWastageResultListener()
-
     }
 
     private fun getData() {
@@ -1145,7 +1150,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
 
-                    if(MethodUtils.roundOffAmountDouble(toFinalAmt) <=0.0)
+                    if(MethodUtils.roundOffAmountDouble(subTotalAmount) <=0.0)
                         bundle.putBoolean(CLEAR_TABLE_DINE_IN,true)
                     else bundle.putBoolean(CLEAR_TABLE_DINE_IN,false)
 
@@ -4144,6 +4149,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 this.order.totalAmount = totalAmt
 
                 this.order.totalTaxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
+
+                this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
             }
         }
 
@@ -4378,6 +4385,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 (getOrderDetailsResponse?.subTotal ?: 0.0) + totalDiscountWO
             )
         )
+
         newList.get(0).orderTotalAmount = subTotalDInin
         totalGuestCount = eligibleGuestsForDivision
 
