@@ -14621,7 +14621,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 receiptModel?.order?.orderItems?.forEach{item ->
                                                     data.printerCategories.forEach { category ->
                                                         if (category.id == item.categoryId && category.printerEnable) {
-                                                            totalQuantity += item.quantity}}
+                                                            totalQuantity += item.quantity
+                                                        }
+                                                    }
                                                 }
 
                                                 receiptModel?.order?.orderItems?.forEach { item ->
