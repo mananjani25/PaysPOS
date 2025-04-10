@@ -6721,6 +6721,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderItemsAttribute.isFired = cartModel.isFired
             orderItemsAttribute.guestIndexForDineIn = item.guestIndexForDineIn
 
+            orderItemsAttribute.isFired = item.isFired
+
             item.dineInSort = if (item.dineInSort == 0) {
                 orderItemsAttributeList.size + 1
             } else {
@@ -6762,6 +6764,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 model.id = it.orderItemId
                 model.isDestroy = it.isDestroy
                 model.isEdited = it.isEdited
+                model.isFired = it.isFired
                 orderItemsAttributeList.add(model)
 
             }

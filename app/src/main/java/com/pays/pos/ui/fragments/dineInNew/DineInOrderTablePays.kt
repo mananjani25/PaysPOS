@@ -685,9 +685,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 var allItemsFired = false
 
-                list.forEach {
+                for(it in list) {
                     if (it.isHeader == 1) {
                         allItemsFired = it.item?.isFired ?: false
+                        if(!allItemsFired)
+                            break
                     }
                 }
 
