@@ -4507,8 +4507,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 target: RecyclerView.ViewHolder
             ): Boolean {
                 if (target.layoutPosition != 0 && dineInTableAdapter.getList()
-                        .get(viewHolder.layoutPosition).isHeader != 0 && dineInTableAdapter.getList()
-                        .get(viewHolder.layoutPosition).isFired == false
+                        .get(viewHolder.layoutPosition).isHeader != 0
                 ) {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
@@ -4533,8 +4532,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     return true
                 } else {
 
-                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0  && dineInTableAdapter.getList()
-                            .get(viewHolder.layoutPosition).isFired == false) {
+                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0 ) {
                         val oldPos = viewHolder.layoutPosition
                         val newPos = 1
 

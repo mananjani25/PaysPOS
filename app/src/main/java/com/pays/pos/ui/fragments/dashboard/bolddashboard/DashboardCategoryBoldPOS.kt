@@ -7476,7 +7476,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 try {
 
-                    if (navController.currentDestination?.id != R.id.dashboardCategoryBoldPOS) {
+                    if (navController.currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                         navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
                     }
                 }catch (e: Exception) {
