@@ -4506,55 +4506,69 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                if (target.layoutPosition != 0 && dineInTableAdapter.getList()
-                        .get(viewHolder.layoutPosition).isHeader != 0
-                ) {
-                    val oldPos = viewHolder.layoutPosition
-                    val newPos = target.layoutPosition
-
-                    if(newPos == 0){
-                        return false
-                    }
-
-                    if (dragFrom == -1) {
-                        dragFrom = oldPos
-                    }
-                    dragTo = newPos
 
 
-                    Log.e("Dragged FROM ","OLD POS = $oldPos, New POS = $newPos, Drag From = $dragFrom, Drag To = $dragTo")
+               if( dineInTableAdapter.getList()
+                    .get(viewHolder.layoutPosition).isHeader != 0 && dineInTableAdapter.getList()
+                       .get(viewHolder.layoutPosition).item?.isFired == false ) {
 
-                    dineInTableAdapter.onItemMove(
-                        viewHolder.layoutPosition,
-                        target.layoutPosition
-                    )
-                    dineInCartItemMoved = true
-                    return true
-                } else {
+                   if (target.layoutPosition != 0 && dineInTableAdapter.getList()
+                           .get(viewHolder.layoutPosition).isHeader != 0
+                   ) {
+                       val oldPos = viewHolder.layoutPosition
+                       val newPos = target.layoutPosition
 
-                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0 ) {
-                        val oldPos = viewHolder.layoutPosition
-                        val newPos = 1
+                       if (newPos == 0) {
+                           return false
+                       }
 
-
-                        if (dragFrom == -1) {
-                            dragFrom = oldPos
-                        }
-                        dragTo = newPos
-
-
-                        dineInTableAdapter.onItemMove(
-                            viewHolder.layoutPosition,
-                            newPos
-                        )
-                        dineInCartItemMoved = true
-                        return true
-                    }
+                       if (dragFrom == -1) {
+                           dragFrom = oldPos
+                       }
+                       dragTo = newPos
 
 
+                       Log.e(
+                           "Dragged FROM ",
+                           "OLD POS = $oldPos, New POS = $newPos, Drag From = $dragFrom, Drag To = $dragTo"
+                       )
+
+                       dineInTableAdapter.onItemMove(
+                           viewHolder.layoutPosition,
+                           target.layoutPosition
+                       )
+                       dineInCartItemMoved = true
+                       return true
+                   } else {
+
+                       if (dineInTableAdapter.getList()
+                               .get(viewHolder.layoutPosition).isHeader != 0
+                       ) {
+                           val oldPos = viewHolder.layoutPosition
+                           val newPos = 1
+
+
+                           if (dragFrom == -1) {
+                               dragFrom = oldPos
+                           }
+                           dragTo = newPos
+
+
+                           dineInTableAdapter.onItemMove(
+                               viewHolder.layoutPosition,
+                               newPos
+                           )
+                           dineInCartItemMoved = true
+                           return true
+                       }
+
+
+                       dineInCartItemMoved = false
+                       return false
+                   }
+               }else
                     dineInCartItemMoved = false
                     return false
-                }
 
 
 //                    val oldPos = viewHolder.layoutPosition
