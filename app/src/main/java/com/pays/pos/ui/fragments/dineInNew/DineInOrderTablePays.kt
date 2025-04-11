@@ -4093,73 +4093,77 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateOrderCall(isFromReorder: Boolean,isFromWastage: Boolean = false) {
-        cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
-        cartList?.note = getOrderDetailsResponse?.note.toString()
-        cartList?.listOfItemRemoved = listOfMoveItemIds
-        prefProvider.setValueboolean(DINE_IN_UPDATE, true)
-        // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
-        dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
-        dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
-        // END RESET
+        try {
+            cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
+            cartList?.note = getOrderDetailsResponse?.note.toString()
+            cartList?.listOfItemRemoved = listOfMoveItemIds
+            prefProvider.setValueboolean(DINE_IN_UPDATE, true)
+            // RESET Data after coming back from checkout screen by clicking on guest pay (to resolve calculation issue for guest division)
+            dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
+            dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
+            // END RESET
 
-        if(isFromWastage) {
-            cartList?.dineInList?.forEachIndexed { index ,it ->
+            if (isFromWastage) {
+                cartList?.dineInList?.forEachIndexed { index, it ->
 
-                it.isPaid = viewModel.guestItemsAfterWastageItem[index].isPaid
+                    it.isPaid = viewModel.guestItemsAfterWastageItem[index].isPaid
 
-            }
-        }
-
-        val orderRequestModel = dashboardViewModel.updateOrder(cartList!!,true)
-
-
-        //Remove moved items from list
-        orderRequestModel.order.orderItemsAttributes
-            .filter { it.itemId in listOfMoveItemIds }
-            .forEach { it.isDestroy = true }
-
-
-        if(isFromWastage) {
-            orderRequestModel.apply {
-
-                //new total amount
-                val subTotalAmount = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
-                this.order.subTotal = subTotalAmount
-
-
-                //new service charges
-                var serviceChargesFinal = 0.0
-
-                if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
-                        SERVICECHARGE_DINEIN_ORDER,
-                        false
-                    )
-                ) {
-
-                    val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
-                    val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
-
-                    val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
-
-
-                    serviceChargesList.forEach {
-                        if(it.min_guest_count!=null && it.max_guest_count!=null)
-                            if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
-                                serviceChargesFinal += ((/*getOrderDetailsResponse?.subTotal?:0.0*/currentSubtotal) * it.percentage) / 100
-                    }
                 }
-                this.order.totalServiceCharges = serviceChargesFinal
-
-                val totalAmt =
-                    MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + finalTaxAmt )
-
-                this.order.totalAmount = totalAmt
-
-                this.order.totalTaxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
-
-                this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
-
             }
+
+            val orderRequestModel = dashboardViewModel.updateOrder(cartList!!, true)
+
+
+            //Remove moved items from list
+            orderRequestModel.order.orderItemsAttributes
+                .filter { it.itemId in listOfMoveItemIds }
+                .forEach { it.isDestroy = true }
+
+
+            if (isFromWastage) {
+                orderRequestModel.apply {
+
+                    //new total amount
+                    val subTotalAmount =
+                        binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
+                    this.order.subTotal = subTotalAmount
+
+
+                    //new service charges
+                    var serviceChargesFinal = 0.0
+
+                    if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                            SERVICECHARGE_DINEIN_ORDER,
+                            false
+                        )
+                    ) {
+
+                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
+                        val serviceChargesList = getServiceChargeFromGuestCount(guestCount)
+
+                        val currentSubtotal =
+                            binding.txtTotalAmountNew.text.toString().replace("$", "").trim()
+                                .toDouble()
+
+
+                        serviceChargesList.forEach {
+                            if (it.min_guest_count != null && it.max_guest_count != null)
+                                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                                    serviceChargesFinal += ((/*getOrderDetailsResponse?.subTotal?:0.0*/currentSubtotal) * it.percentage) / 100
+                        }
+                    }
+                    this.order.totalServiceCharges = serviceChargesFinal
+
+                    val totalAmt =
+                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + finalTaxAmt)
+
+                    this.order.totalAmount = totalAmt
+
+                    this.order.totalTaxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
+
+                    this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
+
+                }
 
 //            orderRequestModel.order.guestsAttributes.forEachIndexed { index , guest ->
 //                val foundPaidStatus = viewModel.guestItemsAfterWastageItem.filter { guest.id == it.id }
@@ -4168,18 +4172,21 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                    guest.isPaid = foundPaidStatus.first().isPaid
 //            }
 //            viewModel.guestItemsAfterWastageItem = arrayListOf()
-        }
+            }
 
 
-        orderId?.let {
-            viewModel.updateOrder(
-                it,
-                orderRequestModel,
-                isFromReorder,
-                message = "removed"
-            )
+            orderId?.let {
+                viewModel.updateOrder(
+                    it,
+                    orderRequestModel,
+                    isFromReorder,
+                    message = "removed"
+                )
+            }
+            listOfMoveItemIds.clear()
+        }catch (e: Exception) {
+            e.printStackTrace()
         }
-        listOfMoveItemIds.clear()
     }
 
 

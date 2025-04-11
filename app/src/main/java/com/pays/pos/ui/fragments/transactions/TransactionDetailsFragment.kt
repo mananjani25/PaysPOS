@@ -1279,18 +1279,21 @@ class TransactionDetailsFragment : Fragment() {
 
                 ProgressUtils.dismissProgressDialog()
 
-                if (prefProvider.isManager() || prefProvider.isAdmin()) {
-                    findNavController().navigate(
-                        R.id.action_transactionDetailsFragment_to_issueRefundFragment,
-                        bundle
-                    )
-                } else {
-                    findNavController().navigate(
-                        R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
-                        bundle
-                    )
+                try {
+                    if (prefProvider.isManager() || prefProvider.isAdmin()) {
+                        findNavController().navigate(
+                            R.id.action_transactionDetailsFragment_to_issueRefundFragment,
+                            bundle
+                        )
+                    } else {
+                        findNavController().navigate(
+                            R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
+                            bundle
+                        )
+                    }
+                }catch (e: Exception) {
+                    e.printStackTrace()
                 }
-
             }
         }
     }
