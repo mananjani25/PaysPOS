@@ -3,24 +3,24 @@ package com.pays.pos.ui.fragments.team
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.entities.Employee
 import com.pays.pos.databinding.FragmentTeamListBinding
 import com.pays.pos.di.RolePermission
 import com.pays.pos.ui.adapter.TeamsAdapter
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.callback.CustomCallback
 import com.pays.pos.utils.callback.OperationCallback
 import com.pays.pos.utils.extensions.alert
@@ -30,7 +30,7 @@ import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -179,18 +179,20 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             requireActivity()
                         )
 
-                        //  initially show first employee selected
-                        selectedPos = adapter.getPeople()?.get(0)?.id!!
-                        adapter.setSelected(selectedPos)
+                        if (!adapter.getPeople().isNullOrEmpty()) {
+                            //  initially show first employee selected
+                            selectedPos = adapter.getPeople()?.get(0)?.id!!
+                            adapter.setSelected(selectedPos)
 
-                        if (selectedPos != -1)
-                            resource.data.forEach {
-                                if (it.id == selectedPos) {
-                                    loadTeamDetails(it)
-                                    return@forEach
+                            if (selectedPos != -1)
+                                resource.data.forEach {
+                                    if (it.id == selectedPos) {
+                                        loadTeamDetails(it)
+                                        return@forEach
+                                    }
+
                                 }
-
-                            }
+                        }
 
 
                         if (empObject != null) {
