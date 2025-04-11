@@ -4102,6 +4102,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
         // END RESET
 
+        if(isFromWastage) {
+            cartList?.dineInList?.forEachIndexed { index ,it ->
+
+                it.isPaid = viewModel.guestItemsAfterWastageItem[index].isPaid
+
+            }
+        }
 
         val orderRequestModel = dashboardViewModel.updateOrder(cartList!!,true)
 
@@ -4151,7 +4158,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 this.order.totalTaxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
 
                 this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
+
             }
+
+//            orderRequestModel.order.guestsAttributes.forEachIndexed { index , guest ->
+//                val foundPaidStatus = viewModel.guestItemsAfterWastageItem.filter { guest.id == it.id }
+//
+//                if(foundPaidStatus.isNotEmpty() == true)
+//                    guest.isPaid = foundPaidStatus.first().isPaid
+//            }
+//            viewModel.guestItemsAfterWastageItem = arrayListOf()
         }
 
 
@@ -4491,7 +4507,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 target: RecyclerView.ViewHolder
             ): Boolean {
                 if (target.layoutPosition != 0 && dineInTableAdapter.getList()
-                        .get(viewHolder.layoutPosition).isHeader != 0
+                        .get(viewHolder.layoutPosition).isHeader != 0 && dineInTableAdapter.getList()
+                        .get(viewHolder.layoutPosition).isFired == false
                 ) {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
@@ -4516,7 +4533,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     return true
                 } else {
 
-                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0) {
+                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0  && dineInTableAdapter.getList()
+                            .get(viewHolder.layoutPosition).isFired == false) {
                         val oldPos = viewHolder.layoutPosition
                         val newPos = 1
 
