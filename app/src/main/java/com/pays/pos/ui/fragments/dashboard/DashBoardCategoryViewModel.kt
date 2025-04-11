@@ -5431,10 +5431,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         val serviceChargesList = cartModel.serviceCharge
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                // Added by Rahul Pandit to Solve PA1-I882 START
                 if (prefProvider.getValue(ORDER_TYPE,"") == PHONE_ORDER){
                     totalServiceCharge = 0.0
                     return
                 }
+                // Added by Rahul Pandit to Solve PA1-I882 END
                 serviceChargesList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                         var serviceTotal = (subTotalPrice * it.percentage) / 100
