@@ -105,6 +105,7 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.data.remote.Constants.PAX_SERIAL_NO
 import com.pays.pos.data.remote.Constants.PAX_TERMINAL_ID
+import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.REPORT_END_TIME
 import com.pays.pos.data.remote.Constants.REPORT_START_TIME
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -5430,6 +5431,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         val serviceChargesList = cartModel.serviceCharge
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                if (prefProvider.getValue(ORDER_TYPE,"") == PHONE_ORDER){
+                    totalServiceCharge = 0.0
+                    return
+                }
                 serviceChargesList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                         var serviceTotal = (subTotalPrice * it.percentage) / 100
