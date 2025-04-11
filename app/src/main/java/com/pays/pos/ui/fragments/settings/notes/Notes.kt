@@ -120,14 +120,20 @@ class Notes : Fragment(), ItemCallback {
                 viewHolder: RecyclerView.ViewHolder
             ) {
 
+                val position = viewHolder.bindingAdapterPosition
+
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
                     LogUtil.logE("clearView", "$dragFrom :: $dragTo")
-                    reallyMoved(
-                        noteListadapter.getItem(dragFrom).sort,
-                        noteListadapter.getItem(dragTo).sort,
-                        noteListadapter.getItem(viewHolder.bindingAdapterPosition).id
-                    )
+                    if (position in 0 until noteListadapter.itemCount) {  // Ensure valid index
+                        reallyMoved(
+                            noteListadapter.getItem(dragFrom).sort,
+                            noteListadapter.getItem(dragTo).sort,
+                            noteListadapter.getItem(position).id
+                        )
+                    } else {
+                        LogUtil.logE("clearView", "Invalid position: $position")
+                    }
                 }
 
                 dragFrom = -1

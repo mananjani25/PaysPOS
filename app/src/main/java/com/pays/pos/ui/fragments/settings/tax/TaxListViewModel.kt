@@ -39,10 +39,23 @@ class TaxListViewModel @Inject constructor(
     val getTaxList = taxServiceChargeRepository.getTaxList()
 
     val taxList = MutableLiveData<List<TaxData>>()
+    /* Added by Rahul Pandit for PA1-I781*/
+    var shouldSyncData = true
+    /* Added by Rahul Pandit for PA1-I781*/
+
+
     fun setTaxData() {
         taxList.value = getTaxList.value?.data!!
     }
 
+    fun newTaxData() {
+        viewModelScope.launch {
+            val response = taxServiceChargeRepository.getTaxesList()
+            if (response.status == Status.SUCCESS && response.data != null) {
+                taxServiceChargeRepository.addAllTaxListDatabase(response.data.data)
+            }
+        }
+    }
 
     fun getTextList() {
         _showProgress.value = Event(true)

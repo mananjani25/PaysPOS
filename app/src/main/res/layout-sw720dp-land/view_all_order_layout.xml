@@ -29,7 +29,7 @@
                 android:id="@+id/orderIdLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="0.7"
                 android:padding="@dimen/_2sdp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
@@ -57,7 +57,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:layout_weight="0.9"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView

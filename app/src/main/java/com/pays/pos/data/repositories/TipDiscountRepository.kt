@@ -64,6 +64,10 @@ class TipDiscountRepository @Inject constructor(
         networkCall = { apiHelperNew.getDiscountsList() },
         saveCallResult = { appDatabase.discountDao().addAllDiscount(it.data) })
 
+    fun allDiscountList() = performGetOperationDatabase {
+        appDatabase.discountDao().allDiscount
+    }
+
     fun discountList() = performGetOperationDatabase {
         appDatabase.discountDao().allActiveDiscount
     }
@@ -97,6 +101,11 @@ class TipDiscountRepository @Inject constructor(
 
     suspend fun reOrderTip(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderTip(id, oldPos, newPos)
+
+    suspend fun allDiscountsList(): List<TbDiscount> {
+        return appDatabase.discountDao().allDiscountList()
+    }
+
 
 
 }

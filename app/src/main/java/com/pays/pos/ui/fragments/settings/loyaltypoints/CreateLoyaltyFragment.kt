@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.pays.pos.R
 import com.pays.pos.data.entities.LoyaltyProgramsModel
 import com.pays.pos.data.remote.Constants
@@ -20,7 +20,6 @@ import com.pays.pos.databinding.FragmentCreateLoyaltyBinding
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.liveSnackBar
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -45,6 +44,7 @@ class CreateLoyaltyFragment : Fragment() {
         initControls()
         initObservers()
         initListeners()
+        setupKeyboard()
         return binding.root
     }
 
@@ -230,6 +230,20 @@ class CreateLoyaltyFragment : Fragment() {
             }
         })
     }
+
+    private fun setupKeyboard() {
+        binding.editLoyaltyTarget.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+
+                binding.loyaltyBox?.postDelayed({
+                    binding.loyaltyBox!!.smoothScrollTo(0, binding.editLoyaltyTarget.top+1)
+                }, 200)
+            }
+        }
+
+    }
+
+
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)

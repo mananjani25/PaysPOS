@@ -7779,7 +7779,11 @@ class TransactionDetailsFragment : Fragment() {
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
                                         try {
 
-                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            if(Build.DISPLAY.contains("RL")) {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                            } else {
+                                                landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                            }
 
                                             landiPrinter.startPrint(object : OnPrintListener {
                                                 override fun onSuccess() {
@@ -8158,6 +8162,7 @@ class TransactionDetailsFragment : Fragment() {
                                      */
                                     if (customerSettingModel.showTipSuggestion) {
                                         lineBreak()
+                                        lineBreak()
                                         printBoldLeft("Additional Tips")
                                         lineBreak()
 
@@ -8254,7 +8259,7 @@ class TransactionDetailsFragment : Fragment() {
                                                 if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
 
                                                     val phoneNoFormatted =
-                                                        MethodUtils.getUSFormatNumber(
+                                                        MethodUtils.formatPhoneNumber(
                                                             paymentDetailsResponse.data.order.customer.phones.get(
                                                                 paymentDetailsResponse.data.order.customer.phones.size - 1
                                                             ).phoneNumber

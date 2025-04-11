@@ -35,6 +35,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.IMAGE_DIALOG_TITTLE
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -140,6 +141,7 @@ class CreateCategory : Fragment() {
         }
         val bundle = Bundle()
         bundle.putString("imgUrl", profileImg)
+        bundle.putString(IMAGE_DIALOG_TITTLE, getString(R.string.update_category_image))
         findNavController().navigate(R.id.action_createCategory_to_itemEditTitleDialog, bundle)
     }
 

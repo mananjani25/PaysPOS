@@ -37,6 +37,8 @@ class TaxesList : Fragment(), ItemCallback {
     private lateinit var taxListadapter: TaxListAdapter
     private lateinit var taxObject: TaxData
     private val TAG = "TaxesList"
+    private var shouldSyncData = true
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +50,9 @@ class TaxesList : Fragment(), ItemCallback {
 
         setUpRecyclerView()
         observeShowProgress()
-        observeData()
+//        observeData()    /* Added by Rahul Pandit for PA1-I781*/
         viewModel.getTextList()
-//        getTaxListObserver()
+        getTaxListObserver()  /* Added by Rahul Pandit for PA1-I781*/
         setupSnackbar()
         deleteTax()
         notifyAdapter()
@@ -97,7 +99,8 @@ class TaxesList : Fragment(), ItemCallback {
 //                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
-                        viewModel.setTaxData()
+                        viewModel.newTaxData() /* Added by Rahul Pandit for PA1-I781*/
+
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -122,7 +125,7 @@ class TaxesList : Fragment(), ItemCallback {
                 DashboardCategoryBoldPOS.syncDataCallback?.syncTaxes()
                 /*Added by Rahul to solve the Tax issue - END*/
 
-                taxListadapter.notifyDataSetChanged()
+                taxListadapter.notifyItemChanged(position)
             }
         }
     }
@@ -181,6 +184,16 @@ class TaxesList : Fragment(), ItemCallback {
     override fun onItemClickListener(view: View?, pos: Int) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+
+        /* Added by Rahul Pandit for PA1-I781*/
+        binding.rvTaxList.suppressLayout(true)
+        popupMenu?.setOnDismissListener{
+            binding.rvTaxList.suppressLayout(false)
+            viewModel.shouldSyncData = true
+            viewModel.newTaxData()
+        }
+        /* Added by Rahul Pandit for PA1-I781*/
+
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {

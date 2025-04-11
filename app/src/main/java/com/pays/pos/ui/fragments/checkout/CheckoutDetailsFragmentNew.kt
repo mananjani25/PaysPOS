@@ -115,7 +115,6 @@ import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.ui.fragments.magtekPro.MTParser
 import com.pays.pos.ui.fragments.magtekPro.SessionManager
 import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
-import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment.Companion
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
@@ -1357,8 +1356,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         remainingValue = wholePrice - paymentAmount
 
-                        if (remainingValue <= 0.0) {
+                        if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
                             remainingValue = 0.0
+                        } else{
+                            remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
                         }
                         bundle.putDouble(
                             "remainingAmount",

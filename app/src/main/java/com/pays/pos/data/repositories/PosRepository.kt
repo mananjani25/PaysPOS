@@ -77,6 +77,49 @@ class PosRepository @Inject constructor(
     fun getPrinters() = performGetOperation(
         databaseQuery = { appDatabase.printerDao().customerPrintList },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
+        saveCallResult = { response ->
+
+            // Get printer data from server
+            val serverCustomerPrinters = response.data.customerReceiptPrinters ?: emptyList()
+            val serverKitchenPrinters = response.data.kitchenReceiptPrinters ?: emptyList()
+
+            // Fetch only IDs from local database (faster)
+            val localCustomerPrinterIds = appDatabase.printerDao().getCustomerPrinterIds()
+            val localKitchenPrinterIds = appDatabase.printerDao().getKitchenPrinterIds()
+
+            // DELETE printers not present in the server response
+            val customerIdsToDelete = localCustomerPrinterIds.filter { it !in serverCustomerPrinters.map { p -> p.id } }
+            if (customerIdsToDelete.isNotEmpty()) {
+                appDatabase.printerDao().deleteCustomerPrintersByIds(customerIdsToDelete)
+            }
+
+            val kitchenIdsToDelete = localKitchenPrinterIds.filter { it !in serverKitchenPrinters.map { p -> p.id } }
+            if (kitchenIdsToDelete.isNotEmpty()) {
+                appDatabase.printerDao().deleteKitchenPrintersByIds(kitchenIdsToDelete)
+            }
+
+            // INSERT & UPDATE customer printers
+            val existingCustomerPrinters = appDatabase.printerDao().getCustomerPrinterList()
+            val printersToInsert = serverCustomerPrinters.filter { it.id !in existingCustomerPrinters.map { p -> p.id } }
+            val printersToUpdate = serverCustomerPrinters.filter { it.id in existingCustomerPrinters.map { p -> p.id } }
+
+            appDatabase.printerDao().insertCustomerPrinters(printersToInsert)
+            appDatabase.printerDao().updateCustomerPrinters(printersToUpdate)
+
+            // INSERT & UPDATE kitchen printers
+            val existingKitchenPrinters = appDatabase.printerDao().getKitchenPrinterList()
+            val kitchenPrintersToInsert = serverKitchenPrinters.filter { it.id !in existingKitchenPrinters.map { p -> p.id } }
+            val kitchenPrintersToUpdate = serverKitchenPrinters.filter { it.id in existingKitchenPrinters.map { p -> p.id } }
+
+            appDatabase.printerDao().insertKitchenPrinters(kitchenPrintersToInsert)
+            appDatabase.printerDao().updateKitchenPrinters(kitchenPrintersToUpdate)
+        }
+    )
+
+
+    /*fun getPrinters() = performGetOperation(
+        databaseQuery = { appDatabase.printerDao().customerPrintList },
+        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {
                 appDatabase.printerDao().deleteCustomerPrinters()
@@ -95,13 +138,21 @@ class PosRepository @Inject constructor(
             }
         }
 
-    )
+    )*/
 
     fun getCancelOrderListDatabse() =
         performGetOperationDatabase(databaseQuery = { appDatabase.cancelOrderReasonDao().allCancelOrderReasons })
 
     suspend fun addCancelOrderReasonFromDb(cancelOrderReason: List<VenueDetailsResponse.Data.CancelOrderReason>) {
         appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
+    }
+
+    suspend fun deleteCancelOrderReasonDatabase(id : Int){
+        appDatabase.cancelOrderReasonDao().deleteRoleById(id)
+    }
+
+    suspend fun allCancelOrderReasons(): List<VenueDetailsResponse.Data.CancelOrderReason> {
+        return appDatabase.cancelOrderReasonDao().allCancelOrderReasonList()
     }
 
     fun getKitchenPrinters() =
@@ -114,6 +165,13 @@ class PosRepository @Inject constructor(
 
     suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
         appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
+    }
+    suspend fun deleteWastageReasonDB(id : Int) {
+        appDatabase.wastageReasonsDao().deleteWastageReasonById(id)
+    }
+
+    suspend fun allWastageReasons(): List<VenueDetailsResponse.Data.WastageReason> {
+        return appDatabase.wastageReasonsDao().allWastageReasonList()
     }
 
     fun getWastageReasonsListFromDb() =
@@ -417,7 +475,11 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = { appDatabase.eodReportSettings().eodSettingsData })
 
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
-        appDatabase.notesDao().addAllNotesSuspend(data)
+        appDatabase.notesDao().addAllNotes(data)
+
+    suspend fun allNoteList(): List<NoteResponse.Data> {
+        return appDatabase.notesDao().allNotesList()
+    }
 
     suspend fun deleteKitchenReceiptSettingsFromDb() {
         appDatabase.kitchenSettingsDao().delete()

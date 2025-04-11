@@ -504,6 +504,9 @@ object Constants {
 
     const val LINE_BREAK_TAB = "\n \t"
 
+    //Dialog Title
+    const val IMAGE_DIALOG_TITTLE = "dialog_title"
+
     //PAX
     const val TRANSACTION_SUCCESSED = 100 //transaction success
     const val TRANSACTION_FAILURE = 101 //transaction failure
@@ -797,6 +800,7 @@ object Constants {
     const val TOTAL_DISCOUNT_DINEIN = "totalDiscount_dinein"
     const val SERVICE_CHARGE_DINEIN = "servicecharge_dinein"
     const val TOTAL_PRICE_DINEIN = "totalprice_dinein"
+    const val CLEAR_TABLE_DINE_IN = "clear_table_dine_in"
     const val LAYOUT_ORIENTATION = "layout_orientation"
     const val DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT = "dine_in_sub_total_amount_before_payment"
     const val DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST = "dine_in_sub_total_amount_before_payment_gues"

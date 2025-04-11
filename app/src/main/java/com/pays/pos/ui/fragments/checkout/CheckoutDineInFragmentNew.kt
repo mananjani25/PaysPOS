@@ -22,6 +22,7 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -74,12 +75,15 @@ import com.pays.payments.design.Dejavoo
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
 import com.pays.payments.design.TransactionType
+import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.PAX
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.logger.MessageEvent
@@ -246,41 +250,103 @@ class CheckoutDineInFragmentNew : Fragment,
         binding.lifecycleOwner = this
         navigateOnPaymentSuccess()
 
-        val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+        if(dineInDataModel.isClearTable) {
+            AlertUtils.showCustomAlertClearTableDineIn(requireContext()){ result ->
 
-        if (device == 0) {
-            magtekModule.setupInit()
-            magtekModule.setCallback(this)
+                if(result == "Clear Table") {
+
+                    paymentType = "Cash"
+                    val cartModel = CartModel().apply {
+                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                        employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
+                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                        orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, -1)
+                        orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                        orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
+                        serviceCharge = arrayListOf()
+
+                    }
+
+                    cartList = cartModel
+
+                    viewModel.totalPrice = 0.0
+                    viewModel.wholetotalPrice = 0.0
+                    MethodUtils.setPriceTextView(
+                        binding.tvCash0,
+                        0.0
+                    )
+
+                  //  binding.tvCash0.performClick()
+
+
+
+
+                    //clear table with cash 0.0 Payment
+                    restrictTvCashClicks()
+                    custom_paymentAmount = 0.0
+                    prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
+                    paymentviewModel.totalPayAmount(
+                        0.0
+                    )
+                    paymentAmount = 0.0
+                    cashPaymentWithVariation()
+
+                    paymentviewModel.tableCleared.observe(viewLifecycleOwner) {
+                        if(it && dineInDataModel.isClearTable) {
+                            try {
+                                findNavController().navigate(R.id.action_paymentBoldPosFragment_to_dineInFragmentPays)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+
+                } else
+                    findNavController().popBackStack()
+
+            }
         } else {
-            mSessionManager.setDineInFragment(this)
 
-        }
 
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplayDineIn(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                dineInViewModel
-            )
-        }
-        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
-            binding.llManualCardEntry.visibility = View.GONE
-        }
+            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
-            /* For now the gift card button is hidden, when required the below code will be uncommented*/
-            binding.tvOther.visible()
+            if (device == 0) {
+                magtekModule.setupInit()
+                magtekModule.setCallback(this)
+            } else {
+                mSessionManager.setDineInFragment(this)
+
+            }
+
+            getCustomerDisplay(requireContext())?.let { display ->
+                presentation = CustomDisplayDineIn(
+                    display,
+                    requireContext(),
+                    viewLifecycleOwner,
+                    dashboardViewModel,
+                    passcodeViewModel,
+                    dineInViewModel
+                )
+            }
+            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                binding.llManualCardEntry.visibility = View.GONE
+            }
+
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
+                /* For now the gift card button is hidden, when required the below code will be uncommented*/
+                binding.tvOther.visible()
 //            binding.lnrGiftCard.visible()
-        } else {
-            binding.tvOther.gone()
-            binding.lnrGiftCard.gone()
-        }
+            } else {
+                binding.tvOther.gone()
+                binding.lnrGiftCard.gone()
+            }
 
-        initPOSLink()
-        getMerchantDataObserver()
+
+            initPOSLink()
+
+            getMerchantDataObserver()
+        }
 
         return binding.root
     }
@@ -359,19 +425,34 @@ class CheckoutDineInFragmentNew : Fragment,
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-        dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
-            Log.e("Dine in","3 DATA ALREADY UPDATED $it")
-            getDataFromPref()
-            setupTabDesign()
-            paymentClick()
-            splitClick()
-            observeShowProgress()
-            observeData()
-            callback()
-            setUpManualCardFocusChanged()
-            observeQueueCreate()
-            initDynamicPayment()
+        initDynamicPayment()
 
+        getDataFromPref()
+        if(!dineInDataModel.isClearTable) {
+            dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner, object : Observer<Double> {
+                override fun onChanged(price: Double?) {
+                        Log.e("Dine in", "3 DATA ALREADY UPDATED $price")
+
+                        setupTabDesign()
+                        paymentClick()
+                        splitClick()
+                        observeShowProgress()
+                        observeData()
+                        callback()
+                        setUpManualCardFocusChanged()
+                        observeQueueCreate()
+                    }
+
+            })
+
+        }else {
+            viewModel.totalPrice = 0.0
+            viewModel.wholetotalPrice = 0.0
+            MethodUtils.setPriceTextView(
+                binding.tvCash0,
+                0.0
+            )
+            custom_paymentAmount = 0.0
         }
 
     }
@@ -380,57 +461,61 @@ class CheckoutDineInFragmentNew : Fragment,
     private fun initDynamicPayment() {
         dashboardViewModel.getDynamicPaymentRecords(true, prefProvider.getLocationId()).asLiveData()
             .observe(
-                viewLifecycleOwner
-            ) { list ->
-                Log.d("DynamicLiveData: ", "Called")
-                list?.let { dynamicList ->
-                    if (dynamicList.isNotEmpty()) {
-                        binding.tvOther.visible()
-                        var layoutInflater = requireContext().getSystemService(
-                            Context.LAYOUT_INFLATER_SERVICE
-                        ) as LayoutInflater
-                        layoutInflater = LayoutInflater.from(requireContext())
-                        binding.llDynamicLink.removeAllViews()
-                        /* Render the dynamic button here with the help of loop */
-                        dynamicList.forEach {
-                            val itemDynamicButton =
-                                layoutInflater.inflate(R.layout.item_button, null, false)
-                            itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
-                                .setPadding(
-                                    resources.getDimensionPixelSize(R.dimen._20sdp),
-                                    resources.getDimensionPixelSize(R.dimen._10sdp),
-                                    resources.getDimensionPixelSize(R.dimen._20sdp),
-                                    resources.getDimensionPixelSize(R.dimen._10sdp)
-                                )
-                            itemDynamicButton.id = it.id
-                            itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
-                                it.name
+                viewLifecycleOwner,
+                object : androidx.lifecycle.Observer<List<TbDynamicPaymentRecords>> {
+                    override fun onChanged(list: List<TbDynamicPaymentRecords>?) {
+                        Log.d("DynamicLiveData: ", "Called")
+                        list?.let { dynamicList ->
+                            if (dynamicList.isNotEmpty()) {
+                                binding.tvOther.visible()
+                                var layoutInflater = requireContext().getSystemService(
+                                    Context.LAYOUT_INFLATER_SERVICE
+                                ) as LayoutInflater
+                                layoutInflater = LayoutInflater.from(requireContext())
+                                binding.llDynamicLink.removeAllViews()
+                                /* Render the dynamic button here with the help of loop */
+                                dynamicList.forEach {
+                                    val itemDynamicButton =
+                                        layoutInflater.inflate(R.layout.item_button, null, false)
+                                    itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
+                                        .setPadding(
+                                            resources.getDimensionPixelSize(R.dimen._20sdp),
+                                            resources.getDimensionPixelSize(R.dimen._10sdp),
+                                            resources.getDimensionPixelSize(R.dimen._20sdp),
+                                            resources.getDimensionPixelSize(R.dimen._10sdp)
+                                        )
+                                    itemDynamicButton.id = it.id
+                                    itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
+                                        it.name
 
-                            itemDynamicButton.setOnSingleClickListener { view ->
-                                view.isEnabled = false
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    view.isEnabled = true
-                                }, 5000)
-                                    startDynamicPayment(it.name, it.id)
+                                    itemDynamicButton.setOnSingleClickListener { view ->
+                                        view.isEnabled = false
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            view.isEnabled = true
+                                        }, 10000)
+                                        startDynamicPayment(it.name, it.id)
+                                    }
+
+                                    binding.llDynamicLink.addView(itemDynamicButton)
+                                }
+                            } else {
+                                binding.llDynamicLink.children.forEach {
+                                    it.isActivated = false
+                                    it.isClickable = false
+                                    it.isEnabled = false
+                                    it.alpha = 0f
+                                }
+
+                                //                                binding.tvOther.invisible()
                             }
-
-                            binding.llDynamicLink.addView(itemDynamicButton)
-                        }
-                    } else {
-                        binding.llDynamicLink.children.forEach {
-                            it.isActivated = false
-                            it.isClickable = false
-                            it.isEnabled = false
-                            it.alpha = 0f
                         }
 
-                        //                                binding.tvOther.invisible()
-                    }
-                }
-            }
+                    }}
+            )
     }
 
     private fun startDynamicPayment(name: String?, id: Int) {
+        paymentType = "External"
         val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
             .replace(")", "").trim().toDouble()
         val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
@@ -1455,12 +1540,14 @@ class CheckoutDineInFragmentNew : Fragment,
 
                         prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
 
-                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
-                            findNavController().navigate(
-                                R.id.action_paymentBoldPosFragment_to_orderComplete,
-                                bundle
-                            )
-                        }
+                        try {
+                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                findNavController().navigate(
+                                    R.id.action_paymentBoldPosFragment_to_orderComplete,
+                                    bundle
+                                )
+                            }
+                        }catch (e: Exception) {}
                     }
                 }
 
@@ -2208,6 +2295,7 @@ class CheckoutDineInFragmentNew : Fragment,
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
+            paymentType = "External"
             val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                 .replace(")", "").trim().toDouble()
             val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
@@ -3101,6 +3189,8 @@ class CheckoutDineInFragmentNew : Fragment,
             tvCash1.isEnabled = false
             tvCash2.isEnabled = false
             tvCash3.isEnabled = false
+            llDynamicLink.invisible()
+            lnrGiftCard.invisible()
         }
 
         Handler().postDelayed({
@@ -3109,6 +3199,8 @@ class CheckoutDineInFragmentNew : Fragment,
                 tvCash1.isEnabled = true
                 tvCash2.isEnabled = true
                 tvCash3.isEnabled = true
+                llDynamicLink.visible()
+                lnrGiftCard.visible()
             }
         }, 5000)
 

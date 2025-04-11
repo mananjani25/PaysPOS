@@ -225,9 +225,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     companion object {
-        private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
+        public lateinit var binding: FragmentDashboardCategoryBoldPosBinding
         var syncDataCallback: SyncDataCallback? = null
-        fun newInstance() = DashboardCategoryBoldPOS()
+        fun newInstance() : DashboardCategoryBoldPOS {
+            val frag = DashboardCategoryBoldPOS()
+            return frag
+        }
     }
 
     fun keypadShow(b: Boolean) {
@@ -1418,6 +1421,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
+                binding.layoutHeader.edtSearch.setText("")
+
             }
 
         }
@@ -1935,6 +1940,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                         if (foundItem == null) {
                                             CoroutineScope(Dispatchers.IO).launch {
+                                                item.guestIndexForDineIn = viewModel.currentSelectedHeaderDineIn
                                                 viewModel.addItemToCartItems(item)
 
                                                 viewModel.cartModel.let {
@@ -2666,6 +2672,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         super.onPause()
+        binding.layoutHeader.edtSearch.setText("")
+
     }
 
     private fun initKitchenPrinter(
@@ -5173,6 +5181,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             if (item.isItemEdited) {
                                                 isOrderUpdate = true
                                                 break
+                                            } else {
+                                                val currentItemIds = mutableListOf<Int>()
+                                                val oldItemIds = mutableListOf<Int>()
+                                                val cartItemIds = mutableListOf<Int>()
+                                                val oldCartItemIds = mutableListOf<Int>()
+
+                                                createOrderResponse.data.order.orderItems.forEach {
+                                                    currentItemIds.add(it.itemId)
+                                                    cartItemIds.add(it.id)
+                                                }
+
+                                                oldDataModel.forEach {
+                                                    oldItemIds.add(it.itemId)
+                                                    oldCartItemIds.add(it.id)
+                                                }
+
+                                                if(currentItemIds.toList() != oldItemIds.toList() || cartItemIds.toList() != oldCartItemIds.toList()){
+                                                    isOrderUpdate = true
+                                                    break
+                                                }
                                             }
                                         }
                                     }
@@ -7444,8 +7472,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                if (navController.currentDestination?.id != R.id.dashboardCategoryBoldPOS) {
-                    navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+
+
+                try {
+
+                    if (navController.currentDestination?.id != R.id.dashboardCategoryBoldPOS) {
+                        navController.navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
+                    }
+                }catch (e: Exception) {
+                    e.printStackTrace()
+
                 }
             }
         }

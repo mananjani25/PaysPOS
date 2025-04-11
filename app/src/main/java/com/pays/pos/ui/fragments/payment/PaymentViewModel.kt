@@ -120,6 +120,8 @@ open class PaymentViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
     val data: LiveData<Event<CreateOrderResponse?>> = _data
 
+    val tableCleared = MutableLiveData<Boolean>()
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -283,7 +285,7 @@ open class PaymentViewModel @Inject constructor(
                                 } else {
                                     //Added by Dharmesh Basapati to avoid crash due to empty payments array
                                     if (response.data.order.payments.isNotEmpty()) {
-                                        if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                        if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != "DineIn" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
 
                                             if (response.data.order.payments[0].payableType != "GiftCardRedeem") {
                                                 cashLogApi(createOrderResponse, "in")
@@ -312,6 +314,9 @@ open class PaymentViewModel @Inject constructor(
                                         else {
                                             _showProgress.postValue(Event(false))
                                             _data.value = Event(createOrderResponse)
+
+                                            tableCleared.value = true
+
                                             EventBus.getDefault().post(
                                                 MessageEvent(
                                                     "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_253 createOrderResponse -> ${
@@ -321,13 +326,13 @@ open class PaymentViewModel @Inject constructor(
                                             )
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
                                         }
-                                    }else if(createOrderResponse.data.order.orderType == "DineIn") {
+                                    }else if(createOrderResponse.data.order.orderType == "DineIn" || createOrderResponse.data.order.orderType == "Dine In") {
                                         _data.value = Event(createOrderResponse)
                                         _showProgress.postValue(Event(false))
 
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER) {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != "DineIn" && createOrderResponse.data.order.orderType != PHONE_ORDER) {
                                         _queueStartTakeOut.value = Event(createOrderResponse)
                                         LogUtil.logE("QueueCheck", "QueueStart")
                                     }

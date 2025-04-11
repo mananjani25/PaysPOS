@@ -357,10 +357,19 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         bundle.putBoolean("EOD", true)
                         bundle.putInt("type", 2)
                         bundle.putString("email", it.data?.email)
-                        findNavController().navigate(
-                            R.id.action_reports_to_sendReceiptFragment,
-                            bundle
-                        )
+                        /*
+                             Previously, the condition was: if(findNavController().currentDestination?.id == R.id.reportEODFragment)
+                             However, this didn't work because the current fragment (EOD Fragment) is a child of the parent Report fragment,
+                             which also contains two other child fragments.
+                             Since findNavController() returns the parent fragment (i.e., the Report fragment),
+                             the condition had to be changed to check against the parent fragment’s ID: R.id.reports
+                        */
+                        if (findNavController().currentDestination?.id == R.id.reports) {
+                            findNavController().navigate(
+                                R.id.action_reports_to_sendReceiptFragment,
+                                bundle
+                            )
+                        }
                     }
                 }
         } else {
@@ -586,7 +595,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 //                                        ?.let { printLogoLandiInner(it) }
                                     try {
 
-                                        landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                        if(Build.DISPLAY.contains("RL")) {
+                                            landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                        } else {
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                        }
 
                                         landiPrinter.startPrint(object : OnPrintListener {
                                             override fun onSuccess() {
@@ -977,7 +990,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
 
                                         printCenter(
-                                            "TOTAL CREDIT PAYMENT",
+                                            "TOTAL CREDIT PAYMENTS",
                                             fontSize = FONT_SIZE_4X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -2190,7 +2203,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                builder.addText("TOTAL CREDIT PAYMENT")
+                builder.addText("TOTAL CREDIT PAYMENTS")
                 builder.addFeedLine(2)
 
                 builder.addTextStyle(
@@ -3071,7 +3084,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
             if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
 
-                PrintSunmiUtils.addLable("TOTAL CREDIT PAYMENT")
+                PrintSunmiUtils.addLable("TOTAL CREDIT PAYMENTS")
 
 
                 eodReportData?.totalCreditPaymentDetails?.forEach {
@@ -3725,7 +3738,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
             if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
 
-                PrintSunmiUtils.headerText("TOTAL CREDIT PAYMENT")
+                PrintSunmiUtils.headerText("TOTAL CREDIT PAYMENTS")
 
 
                 eodReportData?.totalCreditPaymentDetails?.forEach {

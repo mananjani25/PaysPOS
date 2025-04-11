@@ -103,6 +103,7 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -875,6 +876,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                 binding.orderTypeDisplay.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(p0: View?) {
+                        DashboardCategoryBoldPOS.binding.layoutHeader.edtSearch.setText("")
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                             findNavController().navigate(
                                 R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
@@ -940,6 +942,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         super.onViewCreated(view, savedInstanceState)
         prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
 
+        viewModel.dineInHeaderPosition = 0
+        viewModel.currentSelectedHeaderDineIn = 0
 
         initListeners()
         setCartAdapter()
@@ -1075,6 +1079,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
+        if (prefProvider.getValue(OPTION_TYPE, "CashDiscount").isNullOrEmpty()) {
+            binding.labelCashSurcharge.visibility = View.GONE
+            binding.txtNoncashAdj.visibility = View.GONE
+        } else {
+            binding.labelCashSurcharge.visibility = View.VISIBLE
+            binding.txtNoncashAdj.visibility = View.VISIBLE
+        }
+
         if (!isFromPayment) {
             var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
             totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
@@ -1084,12 +1096,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtLoyaltyPoints.visible()
                 binding.txtlabelloyaltyPoints.visible()
             } else {
-                binding.checkloylaty.gone()
-                binding.checkloylaty.isChecked =false
-                binding.txtLoyaltyAmount.gone()
-                binding.txtLoyaltyPoints.gone()
-                binding.txtlabelloyaltyPoints.gone()
+              binding.checkloylaty.gone()
+              binding.checkloylaty.isChecked =false
+              binding.txtLoyaltyAmount.gone()
+              binding.txtLoyaltyPoints.gone()
+              binding.txtlabelloyaltyPoints.gone()
             }
+
         }
 
         uiSave()
@@ -1253,6 +1266,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     private fun getDineInData() {
         if (updateBundle != null) {
+
+            viewModel.dineInHeaderPosition = 0
+            viewModel.dineInSelectedItemHeaderPos = 0
+
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
                 LogUtil.logE(TAG, "isFromDinein")
                 getDineInCartList()
@@ -1399,9 +1416,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.dineInHeaderPosition = 0
         viewModel.dineInSelectedItemHeaderPos = 0
         cartModelsList.get(0).orderType = Constants.DINE_IN
-        viewModel.newCartLogicModifier(
-            cartModelsList, null, Constants.ADD, false, dineInList = dineInList
-        )
+
+        try {
+            viewModel.newCartLogicModifier(
+                cartModelsList, null, Constants.ADD, false, dineInList = dineInList
+            )
+
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
@@ -3157,7 +3180,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             prefProvider,
                             requireContext()
                         )
-                    } else {
+
+                        viewModel.customerCashPrice.value = total
+
+                    } else
+                    {
                         val total =
                             viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
 
@@ -3353,7 +3380,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
         } else {
-            cartModelsList = arrayListOf()
+
+            if(prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                cartModelsList = arrayListOf()
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
             taxClickable = false
@@ -3553,9 +3582,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "cartList" to cartModelsList,
                     "listOfCustomersID" to listOfCustomersID
                 )
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+                    )
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                }
             } else
                 AlertUtils.showCustomAlert(
                     requireContext(),
@@ -3758,6 +3791,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
              * */
             try {
                 viewModel.dineInHeaderPosition = 0
+                viewModel.currentSelectedHeaderDineIn = 0
+                viewModel.dineInSelectedItemHeaderPos = 0
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -4012,10 +4047,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE
+        binding.checkloylaty.isChecked = false
         displayCustomer()
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         prefProvider.setValueboolean(LOYALTY_ADDED, false)
+        binding.checkloylaty.isChecked = false
+        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+        viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
+        setupLoyalytyPoints()
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onDisplayChanged()
@@ -4045,12 +4085,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
+                var msgDisplayed = false
+
+                ProgressUtils.showProgressDialog(requireActivity())
 
                 if (viewModel.currentCartItems.isNotEmpty())
                     binding.relPreoceedToFire.gone()
-                else
+                else {
                     AlertUtils.showCustomAlert(requireContext(), "Please add at least one Item.")
-
+                    msgDisplayed = true
+                    ProgressUtils.dismissProgressDialog()
+                }
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
 
@@ -4072,12 +4117,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         itemCount = viewModel.currentCartItems.size
 
                         if (itemCount == 0) {
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                requireContext(),
-                                getString(R.string.please_add_Atleast_one_item_in_cart)
-                            ) { _, _ ->
-                                restrictButtonClick(true)
+                            if(!msgDisplayed) {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    getString(R.string.please_add_Atleast_one_item_in_cart)
+                                ) { _, _ ->
+                                    restrictButtonClick(true)
 
+                                }
                             }
                         } else {
                             Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")

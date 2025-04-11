@@ -56,7 +56,7 @@ class CashLogAdapter(val context: Context?, val prefProvider: PrefProvider) :
             )
 
 
-            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false) && !item.reason.contains("Gift card")) {
                 binding.txtOrderId.text = item.custom_order_id.toString()
             } else {
                 binding.txtOrderId.text = item.orderId.toString()

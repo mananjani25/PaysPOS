@@ -440,18 +440,19 @@ final object LPrint {
 
                             val modifiersToPrint =
                                 padLineCustomerItem(
-                                    if (modifierObj.modifier_quantity == 1) {
-                                        "     " + getItemNameToShow(
-                                            modifierObj.name
-                                        )
-                                    } else {
-                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(
-                                            modifierObj.name
-                                        )
-                                    },
+//                                    if (modifierObj.modifier_quantity == 1) {
+//                                        "     " + getItemNameToShow(
+//                                            modifierObj.name
+//                                        )
+//                                    } else {
+//                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(
+//                                            modifierObj.name
+//                                        )
+//                                    },
+                                    "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name),
                                     getModifierItemPriceToShow(
                                         modifierObj.price,
-                                        modifierObj.itemQuantity
+                                        item.itemQuantity
                                     ),
                                     48
                                 )
@@ -618,11 +619,7 @@ final object LPrint {
 
                                 lineBreak()
                                 printText(
-                                    "  " + if (modifierObj.modifier_quantity == 1) {
-                                        "   "
-                                    } else {
-                                        "" + modifierObj.modifier_quantity + "x "
-                                    } + modifierObj.name.uppercase()
+                                    "  " + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
                                 )
 
 
