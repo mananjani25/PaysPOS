@@ -4106,8 +4106,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (isFromWastage) {
                 cartList?.dineInList?.forEachIndexed { index, it ->
 
-                    it.isPaid = viewModel.guestItemsAfterWastageItem[index].isPaid
-
+                    try {
+                        it.isPaid = viewModel.guestItemsAfterWastageItem[index].isPaid
+                    }catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
 
@@ -4161,7 +4164,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     this.order.totalTaxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
 
-                    this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
+//                    if(getOrderDetailsResponse?.totalDiscount ?:0.0 !=0.0)
+//                    this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
 
                 }
 

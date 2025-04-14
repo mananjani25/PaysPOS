@@ -4088,6 +4088,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 var msgDisplayed = false
 
                 ProgressUtils.showProgressDialog(requireActivity())
+                Handler().postDelayed( {
+                    ProgressUtils.dismissProgressDialog()
+                },10000)
 
                 if (viewModel.currentCartItems.isNotEmpty())
                     binding.relPreoceedToFire.gone()
