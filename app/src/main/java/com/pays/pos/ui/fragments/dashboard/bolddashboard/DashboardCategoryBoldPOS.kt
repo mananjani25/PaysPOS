@@ -1200,6 +1200,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         if (dineInList.size >= position && position != 0) {
 
+                            try {
+                                cartList[0].note = viewModel.cartModel?.note ?: ""
+                            }catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+
 
                             dineInList.get(position).customer = result
 
