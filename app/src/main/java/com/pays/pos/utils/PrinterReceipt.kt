@@ -5912,6 +5912,11 @@ fun addWholeTbItemToGuestInnerLandi(
     if (obj.modifiers.isNotEmpty()) {
 
         obj.modifiers.forEach {
+
+            var modPrice = (it.price * obj.itemQuantity * it.modifier_quantity)
+            if(isUnpaid)
+                modPrice /= guestCount
+
             lPrint.printLeft(
                 padLineCustomerItem(
 //                    if (it.modifier_quantity == 1) {
@@ -5920,7 +5925,7 @@ fun addWholeTbItemToGuestInnerLandi(
 //                        "   " + it.modifier_quantity + "x " + it.name
 //                    },
                     "   " + it.modifier_quantity + "x " + it.name,
-                    "" + MethodUtils.roundOffAmount((it.price * obj.itemQuantity * it.modifier_quantity)),
+                    "" + MethodUtils.roundOffAmount(modPrice),
                     48
                 ).toString()
             )
