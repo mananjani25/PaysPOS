@@ -719,6 +719,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.ivWastage.visibility = View.VISIBLE
             }
 
+
+            val ifAnyGuestPaid = list.count { it.isPaid }
+
+            if(ifAnyGuestPaid > 0) {
+                binding.ivWastage.visibility = View.GONE
+            }
+
             //item
             if (model.item?.isPaid == true || model.item?.isFired == true) {
                 binding.checkedForFire?.visibility = View.GONE
