@@ -10617,19 +10617,23 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }")
 
 
-            listItemWithGuest.forEach {
-                lineFeed(1)
-                appendText("------------------------")
-                lineFeed(1)
+            listItemWithGuest.forEach { guest ->
 
-                appendText(it.key.substringBefore("name:"))
-                lineFeed(1)
-                appendText("------------------------")
-                lineFeed(1)
 
-                it.value.forEach {obj->
+
+                guest.value.forEach {obj->
                     data.printerCategories.forEach {
                         if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+
+                            lineFeed(1)
+                            appendText("------------------------")
+                            lineFeed(1)
+
+                            appendText(guest.key.substringBefore("name:"))
+                            lineFeed(1)
+                            appendText("------------------------")
+                            lineFeed(1)
+
                             appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
                             lineFeed(1)
 
