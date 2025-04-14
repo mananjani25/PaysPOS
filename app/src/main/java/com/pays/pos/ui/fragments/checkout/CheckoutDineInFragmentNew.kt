@@ -3133,6 +3133,9 @@ class CheckoutDineInFragmentNew : Fragment,
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
+                    dashboardViewModel.customerGivenTip.value = false
+                    prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                    dashboardViewModel.employeeGivenTip = false
 
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -3154,6 +3157,8 @@ class CheckoutDineInFragmentNew : Fragment,
                     tipsetupGlobal(tipAmount, isSelectedCount)
                     binding.tvFullAMounttxt.visibility = View.VISIBLE
                     binding.tvwaysplit?.visibility = View.INVISIBLE
+
+                    getDataFromPref()
                 }
             } else {
                 loadSplitLayout()
