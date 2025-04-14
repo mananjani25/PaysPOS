@@ -4164,8 +4164,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     this.order.totalTaxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
 
-//                    if(getOrderDetailsResponse?.totalDiscount ?:0.0 !=0.0)
-//                    this.order.totalDiscount = this.order.subTotal * orderDiscountPercentage / 100
+                    this.order.totalDiscount = getOrderDetailsResponse?.totalDiscount ?:0.0
+
+                    val finalTotalSubtotalWithoutDiscount =
+                        ( getOrderDetailsResponse?.subTotal?:0.0 ) + this.order.totalDiscount
+
+                    val discountSelectedValue = (getOrderDetailsResponse?.totalDiscount?.div(finalTotalSubtotalWithoutDiscount)?:0.0) * 100
+                    if(discountSelectedValue != 0.0) {
+
+                        this.order.totalDiscount =
+                            this.order.subTotal * discountSelectedValue / 100
+
+                        this.order.subTotal = this.order.subTotal - this.order.totalDiscount
+                    }
 
                 }
 
