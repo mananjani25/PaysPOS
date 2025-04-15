@@ -7436,7 +7436,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                                     if (customerSettingModel.showTipSuggestion) {
-
+                                        lineBreak()
                                         printBoldLeft("Additional Tips")
                                         lineBreak()
 
