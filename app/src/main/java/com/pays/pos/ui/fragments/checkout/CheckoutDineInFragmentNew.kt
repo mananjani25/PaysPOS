@@ -26,26 +26,72 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.magtek.mobile.android.mtlib.IMTCardData
+import com.magtek.mobile.android.mtlib.MTConnectionState
+import com.magtek.mobile.android.mtusdk.ConnectionState
+import com.magtek.mobile.android.mtusdk.ConnectionStateBuilder
+import com.magtek.mobile.android.mtusdk.CoreAPI
+import com.magtek.mobile.android.mtusdk.DeviceType
+import com.magtek.mobile.android.mtusdk.EventType
+import com.magtek.mobile.android.mtusdk.IData
+import com.magtek.mobile.android.mtusdk.IDevice
+import com.magtek.mobile.android.mtusdk.IDeviceListCallback
+import com.magtek.mobile.android.mtusdk.Transaction
+import com.magtek.mobile.android.mtusdk.TransactionBuilder
+import com.magtek.mobile.android.mtusdk.TransactionStatus
+import com.magtek.mobile.android.mtusdk.TransactionStatusBuilder
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
+import com.pays.payments.design.Dejavoo
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.RedeemLoyaltyInfo
+import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.model.CheckOutDineInDataModel
-import com.pays.pos.data.model.requestModel.*
+import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.pays.pos.data.model.requestModel.DineInOrderPayment
+import com.pays.pos.data.model.requestModel.GuestPaymentRequest
+import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.pays.pos.data.model.requestModel.OrderRequestModel
+import com.pays.pos.data.model.requestModel.OrderServiceChargesAttribute
+import com.pays.pos.data.model.requestModel.PaymentAttributes
+import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
+import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
+import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.GuestPaymentAttributes
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.pays.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
+import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
+import com.pays.pos.data.remote.Constants.GIFT_CARD
+import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.OPTION_TYPE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
+import com.pays.pos.data.remote.Constants.PAX
 import com.pays.pos.data.remote.Constants.PRINT_DATA_DINE_IN
+import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
+import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.pays.pos.ui.fragments.eGiftCard.GiftCardViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.magtek.MagtekViewModel
@@ -54,48 +100,40 @@ import com.pays.pos.ui.fragments.magtekPro.MTParser
 import com.pays.pos.ui.fragments.magtekPro.SessionManager
 import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.CardValidator
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
+import com.pays.pos.utils.ProgressUtils.showProgressDialog
+import com.pays.pos.utils.TAG
+import com.pays.pos.utils.TLVParser
 import com.pays.pos.utils.callback.DeleteOptionCallback
 import com.pays.pos.utils.callback.magtekCallback
-import com.pays.pos.utils.extensions.*
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
+import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.magtek.mobile.android.mtlib.IMTCardData
-import com.magtek.mobile.android.mtlib.MTConnectionState
-import com.magtek.mobile.android.mtusdk.*
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
-import com.pays.payments.design.Dejavoo
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.pos.data.entities.TbDynamicPaymentRecords
-import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
-import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
-import com.pays.pos.data.remote.Constants.GIFT_CARD
-import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
-import com.pays.pos.data.remote.Constants.ORDER_TYPE
-import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
-import com.pays.pos.data.remote.Constants.PAX
-import com.pays.pos.data.remote.Constants.TAKEOUT
-import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
-import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
-import com.pays.pos.ui.fragments.eGiftCard.GiftCardViewModel
-import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.pays.pos.utils.MethodUtils.Companion.toPrecision
-import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
-import com.pays.pos.utils.ProgressUtils.showProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -106,7 +144,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.StringReader
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.roundToInt
@@ -1360,8 +1398,10 @@ class CheckoutDineInFragmentNew : Fragment,
                         } else {
                             wholePrice - paymentAmount
                         }
-                        if (remainingValue <= 0.0) {
+                        if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
                             remainingValue = 0.0
+                        } else {
+                            remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
                         }
 
 
@@ -1458,8 +1498,10 @@ class CheckoutDineInFragmentNew : Fragment,
 
                         remainingValue = wholePrice - paymentAmount
 
-                        if (remainingValue <= 0.0) {
+                        if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
                             remainingValue = 0.0
+                        } else {
+                            remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
                         }
                         bundle.putDouble(
                             "remainingAmount",
@@ -4228,8 +4270,10 @@ class CheckoutDineInFragmentNew : Fragment,
                 } else {
                     wholePrice - paymentAmount
                 }
-                if (remainingValue <= 0.0) {
+                if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
                     remainingValue = 0.0
+                } else {
+                    remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
                 }
 
                 bundle.putDouble(
