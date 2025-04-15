@@ -11753,7 +11753,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
+                                                "$" + MethodUtils.roundOffAmountString(getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -11767,7 +11767,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     }
 
                                     /**
-                                     * Print Serivce charge
+                                     * Print Service charge
                                      */
 
                                     var serviceChargesFinal = 0.0
@@ -11781,7 +11781,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
                                         val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
 
-                                        val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
+                                        val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble() - (getOrderDetailsResponse?.totalDiscount ?:0.0 )
 
 
                                         serviceChargesList.forEach {
@@ -11835,7 +11835,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      */
 
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + finalTaxAmt )
+                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) )
 
 
                                     val totalAmountToPrint =
