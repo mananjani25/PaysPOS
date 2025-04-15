@@ -11778,7 +11778,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     ) {
 
-                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
+                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 }
                                         val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
 
                                         val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble() - (getOrderDetailsResponse?.totalDiscount ?:0.0 )
