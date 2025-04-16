@@ -326,10 +326,9 @@ open class PaymentViewModel @Inject constructor(
                                                     )
                                                 )
 
-
-                                                tableCleared.value = true
-
                                             }
+
+                                            tableCleared.value = true
 
 
 
