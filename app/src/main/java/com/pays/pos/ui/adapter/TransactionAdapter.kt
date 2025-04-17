@@ -201,7 +201,8 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                     itemBinding.txtReceiptId.text = model.offlineId
                 }
             }else{
-                if(model.orderDetails.receiptId != null && model.orderDetails.receiptId.isNotEmpty()){
+//                if(model.orderDetails.receiptId != null && model.orderDetails.receiptId.isNotEmpty()){
+                if (model.orderDetails != null && !model.orderDetails.receiptId.isNullOrEmpty()) {
                     itemBinding.txtReceiptId.text = model.orderDetails.receiptId
                 }
             }
