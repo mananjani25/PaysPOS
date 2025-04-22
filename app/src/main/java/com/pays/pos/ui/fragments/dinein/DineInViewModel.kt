@@ -706,7 +706,7 @@ class DineInViewModel @Inject constructor(
                 }
 
                 model.orderItemTaxesAttributes = itemTaxList
-
+                model.isFired = it.isFired
 
 
                 orderItemsAttr.add(model)

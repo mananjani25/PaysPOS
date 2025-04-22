@@ -312,10 +312,25 @@ open class PaymentViewModel @Inject constructor(
                                             }
                                         }
                                         else {
+
                                             _showProgress.postValue(Event(false))
-                                            _data.value = Event(createOrderResponse)
+                                            if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                                cashLogApi(createOrderResponse, "in")
+                                            } else {
+                                                _data.value = Event(createOrderResponse)
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3075 createOrderResponse -> ${
+                                                            Gson().toJson(createOrderResponse)
+                                                        }"
+                                                    )
+                                                )
+
+                                            }
 
                                             tableCleared.value = true
+
+
 
                                             EventBus.getDefault().post(
                                                 MessageEvent(

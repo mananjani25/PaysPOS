@@ -60,7 +60,9 @@ class Hardware : Fragment() {
             }
         }
         binding.txtPrinter.setOnClickListener {
-            findNavController().navigate(R.id.action_hardware_to_printer)
+            if (findNavController().currentDestination?.id == R.id.hardware) {
+                findNavController().navigate(R.id.action_hardware_to_printer)
+            }
 
         }
         binding.txtScanGun.setOnClickListener {

@@ -31,11 +31,13 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.disconnectSocket
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.isClickable
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
@@ -332,6 +334,22 @@ class MenuFragment : DialogFragment() {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
                     enableTouch()
+                    binding.apply {
+                        linearReports.isEnabled = false
+                        linearCustomers.isEnabled = false
+                        linearTeam.isEnabled = false
+                        linearCashLog.isEnabled = false
+                        linearHardware.isEnabled = false
+                        linearInventory.isEnabled = false
+                        linearPrinterQueue.isEnabled = false
+                        linearTransactions.isEnabled = false
+                        linearSupport.isEnabled = false
+                        linearOrders.isEnabled = false
+                        header.txtSave.isEnabled = false
+                        header.llClockOut.isEnabled = false
+                        header.imgBack.isEnabled = false
+                    }
+
 
                     dashboardViewModel.apply {
                         clearCartModelBackup()
@@ -370,6 +388,23 @@ class MenuFragment : DialogFragment() {
                 }
 
             }
+            binding.apply {
+                linearReports.isEnabled = true
+                linearCustomers.isEnabled = true
+                linearTeam.isEnabled = true
+                linearCashLog.isEnabled = true
+                linearHardware.isEnabled = true
+                linearInventory.isEnabled = true
+                linearPrinterQueue.isEnabled = true
+                linearTransactions.isEnabled = true
+                linearSupport.isEnabled = true
+                linearOrders.isEnabled = true
+                header.txtSave.isEnabled = true
+                header.llClockOut.isEnabled = true
+                header.imgBack.isEnabled = true
+            }
+
+
 
             // closeDialog(dialog)
         }

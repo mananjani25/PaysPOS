@@ -14652,6 +14652,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_oneItemPerReceipt -> ${oneItemPerReceipt}"
                                                     )
                                                 )
+
+                                                var counter = 1
+                                                var totalQuantity = 0
+
+                                                receiptModel?.order?.orderItems?.forEach{item ->
+                                                    data.printerCategories.forEach { category ->
+                                                        if (category.id == item.categoryId && category.printerEnable) {
+                                                            totalQuantity += item.quantity
+                                                        }
+                                                    }
+                                                }
+
                                                 receiptModel?.order?.orderItems?.forEach { item ->
                                                     if (!item.isPrinted || item.isItemEdited || (orderTypeToCheckKiosk.equals(
                                                             "KioskOpenorder",
@@ -14668,6 +14680,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 for (singularity in 1..item.quantity) {
 
                                                                     if (printOrderIDInStickyPrinter) {
+
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleBold(true)
+                                                                                .styleMagnification(
+                                                                                    MagnificationParameter(
+                                                                                        2,
+                                                                                        2
+                                                                                    )
+                                                                                )
+                                                                                .actionPrintText(
+                                                                                    "${counter++}/$totalQuantity"
+                                                                                )
+                                                                        )
+                                                                        actionFeedLine(2)
                                                                         add(
                                                                             PrinterBuilder()
                                                                                 .styleBold(true)
@@ -16097,6 +16124,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         }
                                                     } catch (e: Exception) {
                                                     }
+                                                    lineBreak()
 
                                                     if (kitchenSettingModel.showCustomerAddress) {
                                                         if (receiptModel?.order?.orderType?.trim()

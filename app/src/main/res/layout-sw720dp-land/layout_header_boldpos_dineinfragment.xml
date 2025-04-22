@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
-                android:visibility="visible">
+                android:visibility="gone">
 
             <ImageView
                 android:layout_width="@dimen/_14sdp"
@@ -143,6 +143,7 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 android:drawablePadding="@dimen/_2sdp"
+                android:visibility="gone"
                 android:drawableTint="@color/white"
                 app:drawableLeftCompat="@drawable/merge_table" />
 

@@ -357,7 +357,14 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         bundle.putBoolean("EOD", true)
                         bundle.putInt("type", 2)
                         bundle.putString("email", it.data?.email)
-                        if (findNavController().currentDestination?.id == R.id.reportEODFragment) {
+                        /*
+                             Previously, the condition was: if(findNavController().currentDestination?.id == R.id.reportEODFragment)
+                             However, this didn't work because the current fragment (EOD Fragment) is a child of the parent Report fragment,
+                             which also contains two other child fragments.
+                             Since findNavController() returns the parent fragment (i.e., the Report fragment),
+                             the condition had to be changed to check against the parent fragment’s ID: R.id.reports
+                        */
+                        if (findNavController().currentDestination?.id == R.id.reports) {
                             findNavController().navigate(
                                 R.id.action_reports_to_sendReceiptFragment,
                                 bundle

@@ -67,6 +67,9 @@ class DineInOrderTableViewModelPays @Inject constructor(
     val _Basedata = MutableLiveData<Event<GetOrderDetailsResponse.Data?>>()
     val Basedata: LiveData<Event<GetOrderDetailsResponse.Data?>> = _Basedata
 
+    val wastageSuccess = MutableLiveData(false)
+    var guestItemsAfterWastageItem :List<CreateOrderResponse.Data.Order.GuestAttributes> = arrayListOf()
+
     private val _queueCreateSuccess = MutableLiveData<Event<Boolean>>()
     val queueCreateSuccess: LiveData<Event<Boolean>> = _queueCreateSuccess
 
@@ -230,7 +233,7 @@ class DineInOrderTableViewModelPays @Inject constructor(
         }
     }
 
-    fun apiCallOrderDetails(orderId: Int) {
+    fun apiCallOrderDetails(orderId: Int,isFromWastage:Boolean = false) {
         Log.d("###17MAR23", "apiCallOrderDetails: Called - Start")
         _showProgress.value = Event(true)
         viewModelScope.launch {
@@ -260,6 +263,8 @@ class DineInOrderTableViewModelPays @Inject constructor(
 
                                 }
                                 try {
+                                    wastageSuccess.value = isFromWastage
+
                                     _Basedata.value = Event(createTaxResponse.data)
                                 }catch (e:Exception){
 
@@ -708,6 +713,7 @@ class DineInOrderTableViewModelPays @Inject constructor(
                         if (response?.status == 200) {
                             response.let {
                                 _wastageItemsSuccess.value = Event(response.message)
+                                guestItemsAfterWastageItem = response.data.guestAttributes
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
