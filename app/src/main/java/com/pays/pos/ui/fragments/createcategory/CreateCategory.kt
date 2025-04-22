@@ -150,8 +150,12 @@ class CreateCategory : Fragment() {
             Constants.DIALOG_IMAGE_PATH
         )?.observe(viewLifecycleOwner) { result ->
             // Do something with the result.
-            LogUtil.logE("!_@_ image path", result)
-            viewProfile(result)
+//            LogUtil.logE("!_@_ image path", result)
+//            viewProfile(result)
+            result?.let {
+                LogUtil.logE("!_@_ image path", it)
+                viewProfile(it) 
+            }
         }
     }
 
