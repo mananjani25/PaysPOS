@@ -543,7 +543,13 @@ class TransactionDetailsFragment : Fragment() {
                                     object : DialogInterface.OnClickListener {
                                         override fun onClick(p0: DialogInterface?, p1: Int) {
                                             ProgressUtils.showProgressDialog(requireActivity())
-                                            checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse)
+                                            if (paymentDetailsResponse.data.ref_num.isNullOrEmpty()) {
+                                                startRefund()
+                                            } else {
+                                                checkIfDejavooTransactionEligibleForVoid(
+                                                    paymentDetailsResponse
+                                                )
+                                            }
                                             p0?.dismiss()
                                         }
                                     })
