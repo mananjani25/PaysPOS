@@ -644,16 +644,30 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         binding.txtFireAll.setOnClickListener {
 
-            binding.txtEditOrder.isEnabled = false
-            binding.txtAddguest.isEnabled = false
+            if(kitchenPrinterList.isNotEmpty()) {
+
+                binding.txtEditOrder.isEnabled = false
+                binding.txtAddguest.isEnabled = false
 
 
-            checkForAutoFire(false,fireAll = true)
+                checkForAutoFire(false, fireAll = true)
 
-            Handler().postDelayed({
-                binding.txtEditOrder.isEnabled = true
-                binding.txtAddguest.isEnabled = true
-            }, 2000)
+                Handler().postDelayed({
+                    binding.txtEditOrder.isEnabled = true
+                    binding.txtAddguest.isEnabled = true
+                }, 2000)
+            } else {
+                try {
+                    runOnUiThread {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "Please connect kitchen printer!"
+                        )
+                    }
+                }catch (e:Exception) {
+                    e.printStackTrace()
+                }
+            }
 
             /*val list = dineInTableAdapter.getList()
             val idsStr = java.lang.StringBuilder()
