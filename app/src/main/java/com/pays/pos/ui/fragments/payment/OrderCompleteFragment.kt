@@ -7792,6 +7792,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         Log.e("DINE IN CRASH", "${e.message.toString()}")
                                     }
 
+                                    try {
+                                        fetchSubTotalFromPreference -= order?.totalDiscount ?: 0.0
+                                    }catch (e: Exception){
+                                        e.printStackTrace()
+                                    }
+
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
                                         "$" + MethodUtils.roundOffAmountString(

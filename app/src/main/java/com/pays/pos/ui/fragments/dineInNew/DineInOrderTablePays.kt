@@ -11730,7 +11730,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin + totalDiscount),
+                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
