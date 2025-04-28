@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.dineInNew.adapter
 
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -59,6 +60,11 @@ class DineInFloorNameListAdapterPays(val viewModel: DineInViewModelPays) :
                 binding.llItemName.setBackgroundColor(binding.root.context.resources.getColor(R.color.bg_color))
                 binding.tvFloorName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
             }
+
+            val name = item.name
+            val textSizeInSp = if (name.length <= 25) 18f else 12f
+            binding.tvFloorName.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeInSp)
+
         }
 
         init {
@@ -67,9 +73,7 @@ class DineInFloorNameListAdapterPays(val viewModel: DineInViewModelPays) :
                 mpos = layoutPosition
                 showFloorPlan?.invoke(floorNameList[bindingAdapterPosition])
                 notifyDataSetChanged()
-
             }
-
         }
     }
     fun getSelectedPos():Int{
