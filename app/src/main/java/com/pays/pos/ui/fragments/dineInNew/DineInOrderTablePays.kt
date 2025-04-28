@@ -10657,6 +10657,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 lineFeed(1)
                             }
 
+                            lineFeed(1)
 
                         }
                     }

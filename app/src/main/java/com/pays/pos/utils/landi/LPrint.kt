@@ -631,6 +631,7 @@ final object LPrint {
                         }
 
                         lineBreak()
+                        lineBreak()
 
                         builder.add(obj.orderItemId.toString())
                     }
