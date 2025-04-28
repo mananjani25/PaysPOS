@@ -8552,7 +8552,7 @@ class AllOrdersListingFragment(
                         val printTime = padLine(
                             if (customerSettingModel.showPrintTime) {
 //                                "Print Time:${MethodUtils.formatted()}"
-                                "Print Time" + getCurrentTimeFromTimeZone(
+                                "Print Time:" + getCurrentTimeFromTimeZone(
                                     requireContext(),
                                     MethodUtils.formatted()
                                 )
