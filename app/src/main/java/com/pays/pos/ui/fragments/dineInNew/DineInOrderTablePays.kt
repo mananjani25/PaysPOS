@@ -11801,7 +11801,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     ) {
 
-                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 }
+                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
                                         val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
 
                                         val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble() - (getOrderDetailsResponse?.totalDiscount ?:0.0 )
@@ -11809,7 +11809,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         serviceChargesList.forEach {
                                             if(it.min_guest_count!=null && it.max_guest_count!=null)
-                                                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                                                if (it.max_guest_count >= guestCount  && it.min_guest_count <= guestCount )
                                             serviceChargesFinal += ((/*getOrderDetailsResponse?.subTotal?:0.0*/currentSubtotal) * it.percentage) / 100
                                         }
 

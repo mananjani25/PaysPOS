@@ -3040,18 +3040,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                     val guestCount = dineInCartAdapter.getList().count {
                         it.isHeader == 0
-                    }
+                    } - 1
 
 //                    viewModel.serviceChargesList =
 //                        ArrayList(viewModel.cartModel?.serviceCharge ?: arrayListOf())
 
-                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount - 1)
+                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount)
 
 
 
                     serviceChargesList.forEach {
                         if(it.min_guest_count!=null && it.max_guest_count!=null)
-                            if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                            if (it.max_guest_count >= guestCount  && it.min_guest_count <= guestCount)
                                 serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
                         }
                     }
