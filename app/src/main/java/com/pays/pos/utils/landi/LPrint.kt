@@ -468,8 +468,8 @@ final object LPrint {
 
 
                     if (item.note.isNotEmpty()) {
-                        lineBreak()
                         printLeft("   Note: " + item.note)
+                        lineBreak()
                         lineBreak()
                     }
 
