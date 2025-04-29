@@ -3512,11 +3512,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             Log.d(TAG, "onHeaderSelected: header position : $position")
             viewModel.dineInHeaderPosition = position
             viewModel.currentSelectedHeaderDineIn = position
-        } else
+        } else {
             AlertUtils.showCustomAlert(
                 requireContext(),
                 "Cannot change guest as already updating another item"
             )
+
+            dineInCartAdapter.setHeaderPosition(viewModel.dineInHeaderPosition)
+
+        }
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {
