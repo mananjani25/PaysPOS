@@ -1627,7 +1627,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
         var total_count = existing_count + count
-        if (total_count <= 15) {
+
+        var isTableMerged = getOrderDetailsResponse?.floorPlanTable?.merged_child_table_details != null
+
+        if (total_count <= 15 || (isTableMerged && total_count <= 30)) {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
             existinglist.addAll(cartList?.dineInList!!.toMutableList())
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
@@ -1635,7 +1638,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (existinglist.isNotEmpty()) {
                 // List of available counts from list to add new guest
                 var availableName: ArrayList<Int> = arrayListOf()
-                for (i in 1 until 16) {
+
+                val limit = if(isTableMerged) 31 else 16
+
+                for (i in 1 until limit) {
                     var filteredList: List<DineInModel> = arrayListOf()
                     filteredList = dineInTableAdapter.getList()
                         .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
@@ -1677,8 +1683,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel.updateOrder(it, request)
             }
         } else {
+
+            val count = if(isTableMerged) 30 else 15
+
             AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "You can't add more than 15 Guest in an order."
+                requireContext(), "You can't add more than $count Guest in an order."
             ) { _, _ ->
             }
         }
