@@ -8142,10 +8142,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         write(LPrint.DASHED_LINE_FEED)
 
 
+                                        var amount = 0.0
+
+                                        order?.payments?.last()?.let {
+                                            amount = MethodUtils.roundOffAmountDouble(
+                                                 it.amount + it.tips
+                                            )
+                                        }
+
                                         if (tipsList.isNotEmpty()) {
                                             val tipsToPrint = addTipsListInnerLandi(
                                                 tipsList,
-                                                totalAmt,
+                                                amount,
                                                 customerSettingModel.fonts
                                             )
 
@@ -11793,10 +11801,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                 if (tipsList.isNotEmpty()) {
                                                     val tipsToPrint =
-                                                        receiptModel?.order?.payments?.last()?.amount?.let {
+                                                        totalAmt?.let {
+
                                                             addTipsListInnerLandi(
                                                                 tipsList,
-                                                                it,
+                                                                MethodUtils.roundOffAmountDouble(
+                                                                    it
+                                                                ),
                                                                 customerSettingModel.fonts
                                                             )
                                                         }
