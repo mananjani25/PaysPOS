@@ -4863,7 +4863,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             val str6 = padLine(
                                                 "Paid Amount",
                                                 "$" + MethodUtils.roundOffAmountString(
-                                                    paidAmount + tipAmount
+                                                    paidAmount
                                                 ),
                                                 48
                                             ).toString()
