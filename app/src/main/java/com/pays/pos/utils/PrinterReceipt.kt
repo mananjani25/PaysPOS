@@ -2694,10 +2694,10 @@ fun addTipsListInnerLandi(
             obj.rate,
             totalAmt
         ) + " Total $" + MethodUtils.roundOffAmountString(
-            (totalAmt + calculateTipAmt(
+            (totalAmt /*+ calculateTipAmt(
                 obj.rate,
                 totalAmt
-            ))
+            )*/)
         ) + ")"
 
         val str = padLine(
