@@ -2729,7 +2729,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         var serviceChargesFinal = 0.0
         serviceChargesList.forEach {
             if(it.min_guest_count!=null && it.max_guest_count!=null)
-                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                if (it.max_guest_count >= guestCount  && it.min_guest_count <= guestCount )
             serviceChargesFinal += ((subTotalGuest) * it.percentage) / 100
         }
 
