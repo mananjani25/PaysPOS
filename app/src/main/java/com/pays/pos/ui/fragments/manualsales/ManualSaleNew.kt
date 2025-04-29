@@ -2478,7 +2478,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
             viewModel.manualSaleCartLogicNew(cartItemsList, model, Constants.UPDATE)
-            viewModel.boldPosNeedToRefresh = true
+            if(prefProvider.getValue(ORDER_TYPE,TAKEOUT)!=DINE_IN)
+                viewModel.boldPosNeedToRefresh = true
         }
 
         llPlus.setOnClickListener {
