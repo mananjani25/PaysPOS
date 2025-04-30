@@ -389,6 +389,11 @@ class PaymentBoldPosFragment : Fragment() {
             prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
 
 
+
+            if(prefProvider.getValue(ORDER_TYPE,TAKEOUT)==DINE_IN){
+                viewModel.dineInTableNeedToBeRestart.value = true
+            }
+
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER || prefProvider.getValue(
                     ORDER_TYPE, TAKEOUT) == KIOSK_OPEN_ORDER) {
                 val navController = findNavController()

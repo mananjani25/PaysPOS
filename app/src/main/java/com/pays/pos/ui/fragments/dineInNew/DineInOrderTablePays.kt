@@ -262,6 +262,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         savedInstanceState: Bundle?
     ): View? {
 
+        dashboardViewModel.dineInTableNeedToBeRestart.observe(viewLifecycleOwner) {
+            if(it){
+                dashboardViewModel.dineInTableNeedToBeRestart.value = false
+                Log.e("Fragment Restarted", "Restarted")
+
+                val navController = findNavController()
+                val currentBackStackEntry = navController.currentBackStackEntry
+                val args = currentBackStackEntry?.arguments
+                val destinationId = currentBackStackEntry?.destination?.id
+
+                if (destinationId != null) {
+                    navController.popBackStack(destinationId, true)
+                    navController.navigate(destinationId, args)
+                }
+
+            }
+        }
+
         dashboardViewModel.currentDestination = DINE_IN
 
         binding = DataBindingUtil.inflate(

@@ -422,6 +422,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     val fragmentNeedToBeUpdated = MutableLiveData<Boolean>(false)
 
     /**
+     * Field used to resolve multiple issues related dine in table
+     */
+    val dineInTableNeedToBeRestart = MutableLiveData<Boolean>(false)
+
+
+    /**
      * This field used to resolve BIS-3473 issue - when we add same item with different modifier then its doesn't reflect in cart
      */
     val doesItemContainsModifiers = MutableLiveData<Boolean>()
