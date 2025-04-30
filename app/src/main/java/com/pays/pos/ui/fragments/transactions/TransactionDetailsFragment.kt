@@ -7956,7 +7956,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-                                    if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in" && order.payable_type == "Guest") {
+                                    if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in"/* && order.payable_type == "Guest" || order.payable_type == "Order"*/) {
 
                                         val totalAmount = order.order.sub_total.let {
                                             MethodUtils.roundOffAmountString(
