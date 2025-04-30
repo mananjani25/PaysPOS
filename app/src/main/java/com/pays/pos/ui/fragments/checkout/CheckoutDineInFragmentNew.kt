@@ -4393,6 +4393,13 @@ class CheckoutDineInFragmentNew : Fragment,
                             "splitChange", String.format("%.2f", splitChange).toDouble()
                         )
                         remainingValue = wholePrice - (custom_paymentAmount - splitChange)
+
+                        if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                            remainingValue = 0.0
+                        } else {
+                            remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                        }
+
                         bundle.putDouble(
                             "remainingAmount",
                             remainingValue
@@ -4401,6 +4408,13 @@ class CheckoutDineInFragmentNew : Fragment,
                         if (custom_paymentAmount >= wholePrice) {
                             remainingValue =
                                 custom_paymentAmount - wholePrice
+
+                            if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                                remainingValue = 0.0
+                            } else {
+                                remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                            }
+
                             bundle.putDouble(
                                 "remainingAmount",
                                 remainingValue
@@ -4408,6 +4422,13 @@ class CheckoutDineInFragmentNew : Fragment,
                         } else {
                             remainingValue =
                                 wholePrice - custom_paymentAmount
+
+                            if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                                remainingValue = 0.0
+                            } else {
+                                remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                            }
+
                             bundle.putDouble(
                                 "remainingAmount",
                                 remainingValue
@@ -4420,10 +4441,15 @@ class CheckoutDineInFragmentNew : Fragment,
                         Constants.WHOLE_AMOUNT,
                         String.format("%.2f", remainingValue).toString()
                     )
-                } else
-                {
+                } else {
 
                     remainingValue = wholePrice - paymentAmount
+
+                    if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                        remainingValue = 0.0
+                    } else {
+                        remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                    }
 
                     bundle.putDouble(
                         "remainingAmount",
