@@ -5491,78 +5491,80 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
-        if (this::presentation.isInitialized) {
-            presentation.show()
-            presentation.onLogOutOrClockOutWithApiService(apiService)
-        }
+        try {
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.onLogOutOrClockOutWithApiService(apiService)
+            }
 
-        val model = orderTypeAdapter?.getItem(pos)
+            val model = orderTypeAdapter?.getItem(pos)
 
 
-        model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
-        model?.name?.let { prefProvider.setValue(ORDER_TYPE_NAME, it) }
+            model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
+            model?.name?.let { prefProvider.setValue(ORDER_TYPE_NAME, it) }
 
-        model?.id?.let {
-            CoroutineScope(Dispatchers.IO).async {
-                try {
-                    var orderTypeBackup = OrderTypeBackup()
-                    orderTypeBackup.orderType = it
-                    orderTypeBackup.employeeId = prefProvider.employeeId()
-                    orderTypeBackup.orderTypeName = model.name
-                    viewModel.insertOrderTypeBackup(orderTypeBackup)
-                } catch (e: Exception) {
+            model?.id?.let {
+                CoroutineScope(Dispatchers.IO).async {
+                    try {
+                        var orderTypeBackup = OrderTypeBackup()
+                        orderTypeBackup.orderType = it
+                        orderTypeBackup.employeeId = prefProvider.employeeId()
+                        orderTypeBackup.orderTypeName = model.name
+                        viewModel.insertOrderTypeBackup(orderTypeBackup)
+                    } catch (e: Exception) {
+                    }
                 }
             }
-        }
 
-        Log.e(TAG, "checkOrderType  ${model?.orderType}")
+            Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
-        try {
-            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
+            //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+            try {
+                if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
+                    prefProvider.setValue(DELIVERY_TYPE, "")
+                } else {
+                    prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+                }
+            } catch (e: Exception) {
                 prefProvider.setValue(DELIVERY_TYPE, "")
-            } else {
-                prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
             }
-        } catch (e: Exception) {
-            prefProvider.setValue(DELIVERY_TYPE, "")
-        }
 
-        prefProvider.setValue(Constants.REDIRECT_FROM, "")
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
-        if (model?.orderType == DINE_IN) {
-            Log.e(TAG, "InsideDine inNew")
-            checkOrderType()
-            dineInCallback?.onDineInClickListener()
-        } else if (model?.orderType == PHONE_ORDER) {
+            if (model?.orderType == DINE_IN) {
+                Log.e(TAG, "InsideDine inNew")
+                checkOrderType()
+                dineInCallback?.onDineInClickListener()
+            } else if (model?.orderType == PHONE_ORDER) {
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
-            )
-            model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
+                )
+                model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
 
-        } else {
-            Log.e(TAG, "InsideDine inNoDine")
-            model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
+            } else {
+                Log.e(TAG, "InsideDine inNoDine")
+                model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
 
+                viewModelPayment.preAuthData = null
+                checkOrderType()
+
+                addObserver()
+
+                DashboardCategoryBoldPOS.newInstance().keypadShow(true)
+                increaseOnGoingOrderCounter()
+            }
+
+            //CLEAR PREAUTH DATA
+            prefProvider.setValue(PRE_AUTH_DETAILS, "")
+    //        viewModel.apply {
+    //            paymentAttributes = null
+    //            authPaymentResponse = null
+    //            allOrderResponse = null
+    //        }
+    //
             viewModelPayment.preAuthData = null
-            checkOrderType()
-
-            addObserver()
-
-            DashboardCategoryBoldPOS.newInstance().keypadShow(true)
-            increaseOnGoingOrderCounter()
-        }
-
-        //CLEAR PREAUTH DATA
-        prefProvider.setValue(PRE_AUTH_DETAILS, "")
-//        viewModel.apply {
-//            paymentAttributes = null
-//            authPaymentResponse = null
-//            allOrderResponse = null
-//        }
-//
-        viewModelPayment.preAuthData = null
+        }catch(e:Exception){}
     }
 
     // PRE AUTHORISE CARD
