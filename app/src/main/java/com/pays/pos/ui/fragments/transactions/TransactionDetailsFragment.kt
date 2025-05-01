@@ -7934,7 +7934,24 @@ class TransactionDetailsFragment : Fragment() {
 
                                     if (paymentDetailsResponse?.data.order.total_discount != null) {
 
-                                        val discountToPrint =
+                                        val discountToPrint = if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in") {
+
+                                            padLine(
+                                                "Total Discount",
+
+                                                if (paymentDetailsResponse.data.total_discount == 0.0) {
+//                            "-$" + MethodUtils.roundOffAmountString(0.00)
+                                                    "$" + MethodUtils.roundOffAmountString(0.00)
+                                                } else {
+                                                    paymentDetailsResponse.data.total_discount.let {
+                                                        "-$" + MethodUtils.roundOffAmountString(it)
+                                                    }
+                                                },
+                                                48
+                                            ).toString()
+                                        }
+                                        else {
+
                                             padLine(
                                                 "Total Discount",
 
@@ -7949,6 +7966,7 @@ class TransactionDetailsFragment : Fragment() {
                                                 48
                                             ).toString()
 
+                                        }
                                         printLeft(discountToPrint)
                                         lineBreak()
                                     }
@@ -7962,7 +7980,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-                                    if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in" && order.payable_type == "Guest") {
+                                    if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in"/* && order.payable_type == "Guest" || order.payable_type == "Order"*/) {
 
                                         val totalAmount = order.order.sub_total.let {
                                             MethodUtils.roundOffAmountString(

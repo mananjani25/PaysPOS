@@ -262,6 +262,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         savedInstanceState: Bundle?
     ): View? {
 
+        dashboardViewModel.dineInTableNeedToBeRestart.observe(viewLifecycleOwner) {
+            if(it){
+                dashboardViewModel.dineInTableNeedToBeRestart.value = false
+                Log.e("Fragment Restarted", "Restarted")
+
+                val navController = findNavController()
+                val currentBackStackEntry = navController.currentBackStackEntry
+                val args = currentBackStackEntry?.arguments
+                val destinationId = currentBackStackEntry?.destination?.id
+
+                if (destinationId != null) {
+                    navController.popBackStack(destinationId, true)
+                    navController.navigate(destinationId, args)
+                }
+
+            }
+        }
+
         dashboardViewModel.currentDestination = DINE_IN
 
         binding = DataBindingUtil.inflate(
@@ -644,16 +662,30 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         binding.txtFireAll.setOnClickListener {
 
-            binding.txtEditOrder.isEnabled = false
-            binding.txtAddguest.isEnabled = false
+            if(kitchenPrinterList.isNotEmpty()) {
+
+                binding.txtEditOrder.isEnabled = false
+                binding.txtAddguest.isEnabled = false
 
 
-            checkForAutoFire(false,fireAll = true)
+                checkForAutoFire(false, fireAll = true)
 
-            Handler().postDelayed({
-                binding.txtEditOrder.isEnabled = true
-                binding.txtAddguest.isEnabled = true
-            }, 2000)
+                Handler().postDelayed({
+                    binding.txtEditOrder.isEnabled = true
+                    binding.txtAddguest.isEnabled = true
+                }, 2000)
+            } else {
+                try {
+                    runOnUiThread {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "Please connect kitchen printer!"
+                        )
+                    }
+                }catch (e:Exception) {
+                    e.printStackTrace()
+                }
+            }
 
             /*val list = dineInTableAdapter.getList()
             val idsStr = java.lang.StringBuilder()
@@ -1613,7 +1645,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
         var total_count = existing_count + count
-        if (total_count <= 15) {
+
+        var isTableMerged = getOrderDetailsResponse?.floorPlanTable?.merged_child_table_details != null
+
+        if (total_count <= 15 || (isTableMerged && total_count <= 30)) {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
             existinglist.addAll(cartList?.dineInList!!.toMutableList())
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
@@ -1621,7 +1656,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (existinglist.isNotEmpty()) {
                 // List of available counts from list to add new guest
                 var availableName: ArrayList<Int> = arrayListOf()
-                for (i in 1 until 16) {
+
+                val limit = if(isTableMerged) 31 else 16
+
+                for (i in 1 until limit) {
                     var filteredList: List<DineInModel> = arrayListOf()
                     filteredList = dineInTableAdapter.getList()
                         .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
@@ -1663,8 +1701,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel.updateOrder(it, request)
             }
         } else {
+
+            val count = if(isTableMerged) 30 else 15
+
             AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "You can't add more than 15 Guest in an order."
+                requireContext(), "You can't add more than $count Guest in an order."
             ) { _, _ ->
             }
         }
@@ -2706,7 +2747,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         var serviceChargesFinal = 0.0
         serviceChargesList.forEach {
             if(it.min_guest_count!=null && it.max_guest_count!=null)
-                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                if (it.max_guest_count >= guestCount  && it.min_guest_count <= guestCount )
             serviceChargesFinal += ((subTotalGuest) * it.percentage) / 100
         }
 
@@ -7446,7 +7487,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (tipsList.isNotEmpty()) {
                                             val tipsToPrint = addTipsListInnerLandi(
                                                 tipsList,
-                                                totalAmt,
+                                                total,
                                                 customerSettingModel.fonts
                                             )
 
@@ -10657,6 +10698,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 lineFeed(1)
                             }
 
+                            lineFeed(1)
 
                         }
                     }
@@ -11730,7 +11772,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin + totalDiscount),
+                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -11777,7 +11819,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     ) {
 
-                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 }
+                                        val guestCount = dineInTableAdapter.getList().count { it.isHeader == 0 } - 1
                                         val serviceChargesList = getServiceChargeFromGuestCount( guestCount)
 
                                         val currentSubtotal = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble() - (getOrderDetailsResponse?.totalDiscount ?:0.0 )
@@ -11785,7 +11827,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         serviceChargesList.forEach {
                                             if(it.min_guest_count!=null && it.max_guest_count!=null)
-                                                if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                                                if (it.max_guest_count >= guestCount  && it.min_guest_count <= guestCount )
                                             serviceChargesFinal += ((/*getOrderDetailsResponse?.subTotal?:0.0*/currentSubtotal) * it.percentage) / 100
                                         }
 
