@@ -456,24 +456,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (foundGiftCard==null) {
                     Handler().postDelayed({
-                        presentation.showWouldYouLikeToAddTipScreen(
-                            tipListViewModel,
-                            transactionViewModel,
-                            finalPaidAmount, paymentIdForCustomerDisplay,
-                            paymentType == "Card",
-                            paymentViewModel = paymentViewModel,
-                            magRequestUtils = magtekRequestUtils,
-                            apiModule1 = apiModule1,
-                            true,
-                            totalPayableAmount,
-                            prefProvider.getValueInt(
-                                Constants.SERVER_ORDER_ID, 0
-                            ),
-                            prefProvider.getValueInt(
-                                Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                        if (isAdded && activity != null) {
+                            presentation.showWouldYouLikeToAddTipScreen(
+                                tipListViewModel,
+                                transactionViewModel,
+                                finalPaidAmount, paymentIdForCustomerDisplay,
+                                paymentType == "Card",
+                                paymentViewModel = paymentViewModel,
+                                magRequestUtils = magtekRequestUtils,
+                                apiModule1 = apiModule1,
+                                true,
+                                totalPayableAmount,
+                                prefProvider.getValueInt(Constants.SERVER_ORDER_ID, 0),
+                                prefProvider.getValueInt(Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0)
                             )
-                        )
-                    },5000)
+                        }
+                    }, 5000)
+
                 } else {
                     Handler().postDelayed({
                         presentation.showThankYou(finalPaidAmount)
@@ -21952,6 +21951,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             super.onDestroy()
             //Added to resolve tip before related issue where tip list on custom display gets half of actual tip amount
             dashboardViewModel.splitChanged.value = 1
+            Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
         }
 
         fun deleteCache(context: Context) {
