@@ -120,12 +120,12 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
 import com.pays.pos.utils.CardValidator
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.InternetUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.hideSoftKeyboard
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
@@ -6601,7 +6601,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             binding.linearTab2.visible()
-            binding.linearTab3.visible()
+            binding.linearTab3.gone()
         }
 
         binding.linearTab1.setOnSingleClickListener {
