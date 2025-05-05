@@ -664,16 +664,32 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if(kitchenPrinterList.isNotEmpty()) {
 
-                binding.txtEditOrder.isEnabled = false
-                binding.txtAddguest.isEnabled = false
+
+                val activatedPrinters = kitchenPrinterList.count { it.kitchenStatus == true }
+
+                if(activatedPrinters > 0) {
+                    binding.txtEditOrder.isEnabled = false
+                    binding.txtAddguest.isEnabled = false
 
 
-                checkForAutoFire(false, fireAll = true)
+                    checkForAutoFire(false, fireAll = true)
 
-                Handler().postDelayed({
-                    binding.txtEditOrder.isEnabled = true
-                    binding.txtAddguest.isEnabled = true
-                }, 2000)
+                    Handler().postDelayed({
+                        binding.txtEditOrder.isEnabled = true
+                        binding.txtAddguest.isEnabled = true
+                    }, 2000)
+                } else {
+                    try {
+                        runOnUiThread {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect kitchen printer!"
+                            )
+                        }
+                    }catch (e:Exception) {
+                        e.printStackTrace()
+                    }
+                }
             } else {
                 try {
                     runOnUiThread {
