@@ -455,24 +455,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 if (foundGiftCard==null) {
-                presentation.showWouldYouLikeToAddTipScreen(
-                    tipListViewModel,
-                    transactionViewModel,
-                    finalPaidAmount, paymentIdForCustomerDisplay,
-                    paymentType == "Card",
-                    paymentViewModel = paymentViewModel,
-                    magRequestUtils = magtekRequestUtils,
-                    apiModule1 = apiModule1,
-                    true,
-                    totalPayableAmount,
-                    prefProvider.getValueInt(
-                        Constants.SERVER_ORDER_ID, 0
-                    ),
-                    prefProvider.getValueInt(
-                        Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
-                    )
-                )
-                }else{
+                    Handler().postDelayed({
+                        presentation.showWouldYouLikeToAddTipScreen(
+                            tipListViewModel,
+                            transactionViewModel,
+                            finalPaidAmount, paymentIdForCustomerDisplay,
+                            paymentType == "Card",
+                            paymentViewModel = paymentViewModel,
+                            magRequestUtils = magtekRequestUtils,
+                            apiModule1 = apiModule1,
+                            true,
+                            totalPayableAmount,
+                            prefProvider.getValueInt(
+                                Constants.SERVER_ORDER_ID, 0
+                            ),
+                            prefProvider.getValueInt(
+                                Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                            )
+                        )
+                    },5000)
+                } else {
                     Handler().postDelayed({
                         presentation.showThankYou(finalPaidAmount)
                     }, 200)
