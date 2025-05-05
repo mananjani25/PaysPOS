@@ -784,6 +784,7 @@ class KioskService : Service(), StatusChangeEventListener {
                 oneItemPerReceipt =
                     if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
             }
+
             CoroutineScope(Dispatchers.Main).launch {
                 try {
                     delay(6000)
@@ -798,12 +799,40 @@ class KioskService : Service(), StatusChangeEventListener {
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
+
+
+                            var counter = 1
+                            var totalQuantity = 0
+
+                            orderData?.data?.orderItems?.forEach{item ->
+                                data.printerCategories.forEach { category ->
+                                    if (category.id == item.categoryId && category.printerEnable) {
+                                        totalQuantity += item.quantity!!
+                                    }
+                                }
+                            }
+
                             orderData.data?.orderItems?.forEach { item ->
                                 data.printerCategories.forEach { category ->
                                     if (category.id == item.categoryId && category.printerEnable) {
                                         for (singularity in 1..item.quantity!!) {
 
                                             if (printOrderIDInStickyPrinter) {
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(
+                                                                2,
+                                                                2
+                                                            )
+                                                        )
+                                                        .actionPrintText(
+                                                            "${counter++}/$totalQuantity"
+                                                        )
+                                                )
+                                                actionFeedLine(2)
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
