@@ -2316,7 +2316,7 @@ class TransactionDetailsFragment : Fragment() {
                             var totalPrice = orderItem.price * orderItem.quantity
                             totalPrice -= orderItem.discountAmount
                             orderItem.orderItemModifiers.forEach { orderItemModifier ->
-                                totalPrice += if (orderItemModifier.modifier_quantity != null) {
+                                totalPrice += if (orderItemModifier.modifier_quantity != null && orderItemModifier.modifier_quantity > 0) {
                                     (orderItemModifier.price * orderItemModifier.modifier_quantity) * orderItem.quantity
                                 } else {
                                     orderItemModifier.price * orderItemModifier.quantity
