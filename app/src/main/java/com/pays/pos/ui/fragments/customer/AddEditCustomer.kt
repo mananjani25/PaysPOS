@@ -1092,6 +1092,23 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                                     "false"
                                 )
                             )
+                        else if(binding.edtStreet.text.toString().isNullOrEmpty()){
+                            listAddress.add(
+                                CreateCustomerRequestModel.Customer.Addresses(
+                                    null,
+                                    "",
+                                    binding.edtSuite.text.toString(),
+                                    binding.edtCity.text.toString(),
+                                    binding.edtState.text.toString(),
+                                    binding.edtAddress.selectedItem.toString(),
+                                    binding.edtZip.text.toString(),
+                                    "Shipping",
+                                    0.0,
+                                    0.0,
+                                    "false"
+                                )
+                            )
+                        }
                         if (binding.edtStreetDel.text.toString().isNotEmpty())
                             listAddress.add(
                                 CreateCustomerRequestModel.Customer.Addresses(
@@ -1153,6 +1170,23 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                             "false"
                         )
                     )
+                else if(binding.edtStreet.text.toString().isNullOrEmpty()){
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            id1,
+                           "",
+                            binding.edtSuite.text.toString(),
+                            binding.edtCity.text.toString(),
+                            binding.edtState.text.toString(),
+                            binding.edtAddress.selectedItem.toString(),
+                            binding.edtZip.text.toString(),
+                            "Shipping",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
+                    )
+                }
                 if (binding.edtStreetDel.text.toString().isNotEmpty()) {
                     listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
