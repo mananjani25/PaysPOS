@@ -4957,7 +4957,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 if (tipsList.isNotEmpty()) {
                                                     val tipsToPrint = addTipsListInnerLandi(
                                                         tipsList,
-                                                        totalAmt,
+                                                        newPaidAmount,
                                                         customerSettingModel.fonts
                                                     )
 
