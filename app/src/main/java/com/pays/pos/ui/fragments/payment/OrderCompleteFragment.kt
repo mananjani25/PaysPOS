@@ -4809,7 +4809,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     ).toString()
 
                                                 printLeft(serviceChargeToPrint)
-                                                lineBreak()
                                             }
 
 
@@ -4821,6 +4820,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     "$" + MethodUtils.roundOffAmountString(tipAmount),
                                                     48
                                                 ).toString()
+                                                lineBreak()
                                                 printLeft(str8)
                                             }
 
@@ -4898,11 +4898,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             printBoldLeft(str5)
                                             lineBreak()
 
+                                            /***
+                                             * Print Paid Amount
+                                             */
+
+                                            val newPaidAmount = if (isCustomCash) {
+                                                paidAmount
+                                            } else {
+                                                paidAmount + tipAmount
+                                            }
 
                                             val str6 = padLine(
                                                 "Paid Amount",
                                                 "$" + MethodUtils.roundOffAmountString(
-                                                    paidAmount
+                                                    newPaidAmount
                                                 ),
                                                 48
                                             ).toString()
