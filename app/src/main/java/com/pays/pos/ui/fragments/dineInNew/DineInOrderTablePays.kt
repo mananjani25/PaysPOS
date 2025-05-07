@@ -2211,6 +2211,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             appliedServiceCharge.add(data)
         }
+
+            val paidGuest = dineInTableAdapter.getList().count { it.isHeader == 0 && it.isPaid==true}
+            totalGuestCount
+
+            if(paidGuest == totalGuestCount-1) {
+                if (MethodUtils.roundOffAmountDouble(subTotalGuest) <= 0.0)
+                    bundle.putBoolean(CLEAR_TABLE_DINE_IN, true)
+            }
+
+
         bundle.putParcelableArrayList(
             "serviceChargeAppliedList",
             appliedServiceCharge
