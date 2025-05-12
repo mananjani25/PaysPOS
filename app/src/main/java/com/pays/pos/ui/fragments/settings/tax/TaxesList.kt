@@ -197,7 +197,7 @@ class TaxesList : Fragment(), ItemCallback {
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
-                    taxObject = taxListadapter.getItem(pos)
+                    taxObject = taxListadapter.getItem(pos)!!
                     Log.e(TAG,"itemIdsSize:  ${taxObject.itemIds?.size}")
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
@@ -209,7 +209,7 @@ class TaxesList : Fragment(), ItemCallback {
 
                     alert(
                         getString(R.string.app_name),
-                        if (taxListadapter.getItem(pos).isActive) {
+                        if (taxListadapter.getItem(pos)?.isActive == true) {
                             getString(R.string.delete_active_tax_message)
                         }else{
                             getString(R.string.delete_tax_message)
@@ -217,8 +217,8 @@ class TaxesList : Fragment(), ItemCallback {
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
-                            taxObject = taxListadapter.getItem(pos)
-                            viewModel.delete(taxListadapter.getItem(pos).id)
+                            taxObject = taxListadapter.getItem(pos)!!
+                            viewModel.delete(taxListadapter.getItem(pos)!!.id)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
