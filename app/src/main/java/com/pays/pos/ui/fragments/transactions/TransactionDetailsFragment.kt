@@ -2322,7 +2322,11 @@ class TransactionDetailsFragment : Fragment() {
                             var totalPrice = orderItem.price * orderItem.quantity
                             totalPrice -= orderItem.discountAmount
                             orderItem.orderItemModifiers.forEach { orderItemModifier ->
-                                totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                                totalPrice += if (orderItemModifier.modifier_quantity != null && orderItemModifier.modifier_quantity > 0) {
+                                    (orderItemModifier.price * orderItemModifier.modifier_quantity) * orderItem.quantity
+                                } else {
+                                    orderItemModifier.price * orderItemModifier.quantity
+                                }
                             }
                             Log.d(TAG, "navigate: itemPrice : $totalPrice")
                             var totaltaxtemp = 0.0
