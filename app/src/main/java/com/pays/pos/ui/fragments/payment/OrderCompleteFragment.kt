@@ -1433,7 +1433,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         val date = Date()
         val random = Random()
         val timestamp = java.lang.String.format("%d", date.time / 1000)
-
+        // This is verified by Aman
+        this.kitchenReceiptPrinters = data
         val body = java.lang.StringBuilder()
         body.append("{")
         body.append(java.lang.String.format("\"sn\":\"%s\"", "${input}"))
@@ -1486,6 +1487,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 for (i in 0 until printOrderItems.size) {
+                    Log.d("Debug", "Is kitchenReceiptPrinters initialized: ${this::kitchenReceiptPrinters.isInitialized}")
                     kitchenReceiptPrinters.printerCategories?.toCollection(arrayListOf()).forEach {
                         Log.e(
                             "PrinterReceipt",
