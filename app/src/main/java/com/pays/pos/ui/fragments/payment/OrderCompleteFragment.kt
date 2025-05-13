@@ -10125,6 +10125,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValue(Constants.OLD_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
+                        if (viewModelDashBoard.boldPosNeedToRefresh) {
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                        } else {
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                        }
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                      //preAuthPaymentviewModel.clearPreAuthDetails()
@@ -10137,17 +10142,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }catch (e: Exception){}
                         }
 
-                        if (viewModelDashBoard.boldPosNeedToRefresh) {
-                            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
-                        } else {
-                            findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
-                        }
+
                     } else {
 
                      //preAuthPaymentviewModel.clearPreAuthDetails()
                         prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+
+                        findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
 
                         clearObserver()
 
@@ -10159,7 +10162,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }catch (e: Exception){}
                         }
 
-                        findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
                 }
             }
@@ -21926,9 +21928,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             // requireActivity().cacheDir.delete()
             //  restartActivity()
 
-
-            deleteCache(requireContext())
-
+            try {
+                deleteCache(requireContext())
+            }catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             dashboardViewModel.currentCartItems = arrayListOf()
             dashboardViewModel.duplicateCurrentCartItem = arrayListOf()
