@@ -129,7 +129,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/llItemList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="@dimen/_5sdp"
                 android:visibility="visible">
@@ -137,7 +137,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvItemListRefund"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
@@ -149,7 +149,7 @@
                         android:id="@+id/tvRefundItemDetails"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="0dp"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:paddingBottom="@dimen/_1sdp"

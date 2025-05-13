@@ -280,7 +280,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private lateinit var splitAdapter: SplitListAdapter
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
@@ -308,7 +307,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         })
     }
 
-    lateinit var venueUrlByteArray:ByteArray
+    lateinit var venueUrlByteArray: ByteArray
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -321,10 +320,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.lifecycleOwner = this
         isPrint = true
         isPrintCustomer = true
-        if (prefProvider.getValue(Constants.VENUE_LOGO_URL,"").isNotEmpty()) {
+        if (prefProvider.getValue(Constants.VENUE_LOGO_URL, "").isNotEmpty()) {
             runBlocking {
                 lifecycleScope.async {
-                    venueUrlByteArray=LPrint.processImageForPrinting(prefProvider.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                    venueUrlByteArray = LPrint.processImageForPrinting(prefProvider.getValue(Constants.VENUE_LOGO_URL, "")!!, 200, 200)!!
                 }.await()
             }
         }
@@ -479,9 +478,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }, 200)
 
                 }
+*/
             }
 
-            if(isDineIn) {
+            if (isDineIn) {
                 presentation.showThankYou(finalPaidAmount)
             }
         }
@@ -538,7 +538,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun getKitchenReceiptSettings() {
         viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, Observer {
 
-           /* EventBus.getDefault()
+            /* EventBus.getDefault()
                 .post(
                     MessageEvent(
                         "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${
@@ -635,7 +635,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
                                     }
                                 })
-                        }
+                            }
                         }
                     })
 
@@ -787,16 +787,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         scrollNestedView()
 
         view?.let {
-            binding.txtFinalAmount?.addTextChangedListener(object : TextWatcher{
+            binding.txtFinalAmount?.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
                 }
 
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     p0?.let {
-                       if (it.isNotEmpty()){
-                           dashboardViewModel._thankyouAmount.value = p0.toString()
-                       }
+                        if (it.isNotEmpty()) {
+                            dashboardViewModel._thankyouAmount.value = p0.toString()
+                        }
                     }
                 }
 
@@ -995,17 +995,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     }
                 } else if (isAmountWiseSplit) {
-                    if (paidAmount > (amountWiseSplit+tipAmount)) {
+                    if (paidAmount > (amountWiseSplit + tipAmount)) {
                         if (paymentType.equals("cash", true)) {
                             changeAmtGlobal =
-                                MethodUtils.roundOffAmountDouble(paidAmount - (amountWiseSplit+tipAmount))
+                                MethodUtils.roundOffAmountDouble(paidAmount - (amountWiseSplit + tipAmount))
                                     .toDouble()
                         }
                         if (paymentType.equals("cash", true)) {
                             binding.txtChangeAmount.visible()
                         }
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(if ((paidAmount - (amountWiseSplit+tipAmount)) > 0) paidAmount - (amountWiseSplit+tipAmount) else 0.00) + " Change"
+                            MethodUtils.roundOffAmount(if ((paidAmount - (amountWiseSplit + tipAmount)) > 0) paidAmount - (amountWiseSplit + tipAmount) else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountString(
@@ -1134,9 +1134,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     //TODO: Add the network call to make the cash log entry for "out"
 //                    --------------------------------------------------------------------
 
-                    getCashEventDetails(ca, orderID,prefProvider.getValueInt(
-                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
-                    ),1)
+                    getCashEventDetails(
+                        ca, orderID, prefProvider.getValueInt(
+                            PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                        ), 1
+                    )
 
                     LogUtil.logE("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
@@ -1395,8 +1397,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun getCashEventDetails(amount: Double, orderId: Int?,paymentId:Int, fromOrderComplete:Byte=0){
-        transactionViewModel.getCashEventDetails(amount, orderId?:-1, paymentId,"out", 1,fromOrderComplete)
+    private fun getCashEventDetails(amount: Double, orderId: Int?, paymentId: Int, fromOrderComplete: Byte = 0) {
+        transactionViewModel.getCashEventDetails(amount, orderId ?: -1, paymentId, "out", 1, fromOrderComplete)
     }
 
     private fun cloudQueuePrinting(
@@ -1407,7 +1409,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         val date = Date()
         val random = Random()
         val timestamp = java.lang.String.format("%d", date.time / 1000)
-
+        // This is verified by Aman
+        this.kitchenReceiptPrinters = data
         val body = java.lang.StringBuilder()
         body.append("{")
         body.append(java.lang.String.format("\"sn\":\"%s\"", "${input}"))
@@ -1460,6 +1463,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 for (i in 0 until printOrderItems.size) {
+                    Log.d("Debug", "Is kitchenReceiptPrinters initialized: ${this::kitchenReceiptPrinters.isInitialized}")
                     kitchenReceiptPrinters.printerCategories?.toCollection(arrayListOf()).forEach {
                         Log.e(
                             "PrinterReceipt",
@@ -1635,7 +1639,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             object : Observer<Boolean> {
                 override fun onChanged(t: Boolean?) {
                     t?.let {
-                      //  binding.llHome.isClickable = !it
+                        //  binding.llHome.isClickable = !it
                     }
                 }
             })
@@ -2091,7 +2095,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -5100,7 +5104,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
                             }
-                    }catch (e: Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
@@ -7569,7 +7573,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     ) {
                                         try {
 
-                                            if(Build.DISPLAY.contains("RL")) {
+                                            if (Build.DISPLAY.contains("RL")) {
                                                 landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
                                             } else {
                                                 landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
@@ -7721,13 +7725,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             if (it)
                                                                 isPaid = "(Paid) \n"
                                                         }
-                                                    }catch (e:Exception) {}
+                                                    } catch (e: Exception) {
+                                                    }
 
 
                                                     if (dineInList[i]?.customer == null) {
                                                         dineInList[i]?.title?.let {
                                                             write(LPrint.CENTER_ALIGN)
-                                                            write((isPaid+it).toByteArray())
+                                                            write((isPaid + it).toByteArray())
                                                             write(LPrint.LINE_FEED)
                                                         }
 
@@ -7741,7 +7746,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         ""
                                                                     }
                                                         write(LPrint.CENTER_ALIGN)
-                                                        write((isPaid+tableName).trim().toByteArray())
+                                                        write((isPaid + tableName).trim().toByteArray())
                                                         write(LPrint.LINE_FEED)
 
                                                     }
@@ -7865,7 +7870,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     try {
                                         fetchSubTotalFromPreference -= order?.totalDiscount ?: 0.0
-                                    }catch (e: Exception){
+                                    } catch (e: Exception) {
                                         e.printStackTrace()
                                     }
 
@@ -8165,7 +8170,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val payments = getDineInOrderDetails?.payments
 
-                                        if(payments?.first()?.paymentType == "Guest" || payments?.size?:0 > 1) {
+                                        if (payments?.first()?.paymentType == "Guest" || payments?.size ?: 0 > 1) {
 
                                             printPayment(
                                                 false,
@@ -8194,7 +8199,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         order?.payments?.last()?.let {
                                             amount = MethodUtils.roundOffAmountDouble(
-                                                 it.amount + it.tips
+                                                it.amount + it.tips
                                             )
                                         }
 
@@ -8225,7 +8230,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         LPrint.printLeft(
                                             padLine(
                                                 "Transaction ID",
-                                               payment.id.toString(),
+                                                payment.id.toString(),
                                                 48
                                             ).toString()
                                         )
@@ -8244,8 +8249,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         try {
 
-                                                if (payment.paymentType.lowercase() == "Card".lowercase()) {
-                                                    /*val str12 = padLine(
+                                            if (payment.paymentType.lowercase() == "Card".lowercase()) {
+                                                /*val str12 = padLine(
                                                     "",
                                                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
                                                     if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -10206,7 +10211,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             if (it.data != null && isPrint == true) {
                                 isPrint = false
 
-                               // kitchenPrinterList.toCollection(arrayListOf()).addAll(it.data)
+                                // kitchenPrinterList.toCollection(arrayListOf()).addAll(it.data)
 
                                 kitchenPrinterList = it.data
 
