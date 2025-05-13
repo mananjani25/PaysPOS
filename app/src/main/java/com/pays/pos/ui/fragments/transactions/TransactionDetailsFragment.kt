@@ -7878,13 +7878,16 @@ class TransactionDetailsFragment : Fragment() {
                                         paymentDetailsResponse.data.order.order_type.trim()
                                             .equals(PHONE_ORDER, true)
                                     ) {
-                                        printCenter(
-                                            paymentDetailsResponse.data.order.delivery_type,
-                                            isBold = true,
-                                            fontSize = FONT_SIZE_5X
-                                        )
-                                        lineBreak()
-                                        lineBreak()
+                                        paymentDetailsResponse.data.order.delivery_type?.let { deliveryType ->
+                                            printCenter(
+                                                deliveryType,
+                                                isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
+                                            lineBreak()
+                                            lineBreak()
+                                        }
+
                                     }
 
 
