@@ -2574,10 +2574,10 @@ class AllOrdersListingFragment(
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
-                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
-                                landiPrinter.openDevice(1)
+                                val landiPrinter = omniDriver?.getPrinter(Bundle())
+                                landiPrinter?.openDevice(1)
 
-                                val pWidth: Int = landiPrinter.getValidWidth()
+//                                val pWidth: Int? = landiPrinter?.getValidWidth()
 
                                 try  {
 
@@ -2613,12 +2613,12 @@ class AllOrdersListingFragment(
                                         try {
 
                                             if(Build.DISPLAY.contains("RL")) {
-                                                landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                                landiPrinter?.addImage(venueUrlByteArray, Align.RIGHT, 0)
                                             } else {
-                                                landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                                landiPrinter?.addImage(venueUrlByteArray, Align.CENTER, 0)
                                             }
 
-                                            landiPrinter.startPrint(object : OnPrintListener {
+                                            landiPrinter?.startPrint(object : OnPrintListener {
                                                 override fun onSuccess() {
 
                                                 }
