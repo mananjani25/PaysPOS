@@ -478,7 +478,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }, 200)
 
                 }
-*/
             }
 
             if (isDineIn) {
