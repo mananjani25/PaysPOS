@@ -6834,7 +6834,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         orderItemTaxesAttribute.id = tax.id
                         orderItemTaxesAttribute.orderItemId = items.orderItemId
-                        orderItemTaxesAttribute.orderId = orderId
+                       // orderItemTaxesAttribute.orderId = orderId
                     }
                 } else {
                     orderItemTaxesAttribute.taxId = tax.id
