@@ -493,6 +493,8 @@ class CheckoutDineInFragmentNew : Fragment,
             custom_paymentAmount = 0.0
         }
 
+
+        binding.linearTab3.gone()
     }
 
     @SuppressLint("InflateParams")
