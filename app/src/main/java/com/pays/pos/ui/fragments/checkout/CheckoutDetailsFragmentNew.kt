@@ -6606,7 +6606,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             binding.linearTab2.visible()
-            binding.linearTab3.visible()
+            binding.linearTab3.gone()
         }
 
         binding.linearTab1.setOnSingleClickListener {
