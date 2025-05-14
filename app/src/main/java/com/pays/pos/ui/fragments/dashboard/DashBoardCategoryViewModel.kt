@@ -7072,7 +7072,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-
             val resource: Resource<CreateOrderResponse> =
 
                 posRepository.createOrder(orderRequestModel)

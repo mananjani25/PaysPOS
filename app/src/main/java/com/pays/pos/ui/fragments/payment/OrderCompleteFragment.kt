@@ -7666,7 +7666,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         write("ReceiptID : ${order?.offlineId?.trim()}".toByteArray())
                                         write(LPrint.LINE_FEED)
 
-                                        write("Employee : ${order?.employee?.name?.trim()}".toByteArray())
+                                        write("Employee : ${ prefProvider.employeeName() ?: order?.employee?.name?.trim()}".toByteArray())
                                         write(LPrint.LINE_FEED)
 
                                         write(
