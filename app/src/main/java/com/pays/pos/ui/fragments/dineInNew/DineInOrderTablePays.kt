@@ -2630,6 +2630,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             listItemGuestSelected.forEach {
                 it.orderType = "DineIn"
 
+                it.guestIndexForDineIn = guestIndexForDineIn
                 dashboardViewModel.addItemToCartItems(it)
 
             }
