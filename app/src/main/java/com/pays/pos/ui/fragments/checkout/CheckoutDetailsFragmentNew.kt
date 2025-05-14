@@ -299,6 +299,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         dashboardViewModel.paymentInProgress.value = false
         dashboardViewModel.tipBeforeEnabled = true
 
+        /*For amount wise split*/
+        dashboardViewModel.isAmountWiseSplit.value = false
+        dashboardViewModel.amountWiseSplit.value = 0.0
+
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
         dashboardViewModel.cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -6124,7 +6128,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 String.format(
                     "%.3f",
                     (dashboardViewModel.subTotalPrice + dashboardViewModel.totalTax + dashboardViewModel.totalServiceCharge)
-                ).toDouble().toString(),
+                 ).toDouble().toString(),
                 String.format(
                     "%.3f",
                     (dashboardViewModel.subTotalPrice + dashboardViewModel.totalTax + dashboardViewModel.totalServiceCharge + dashboardViewModel.cashdiscountAmount)
@@ -6147,7 +6151,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
-            surchargeOnTip = 0.0  // remove the surcharge of the tip
+                surchargeOnTip = 0.0  // remove the surcharge of the tip
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount
@@ -6602,7 +6606,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             binding.linearTab2.visible()
-            binding.linearTab3.gone()
+            binding.linearTab3.visible()
         }
 
         binding.linearTab1.setOnSingleClickListener {
