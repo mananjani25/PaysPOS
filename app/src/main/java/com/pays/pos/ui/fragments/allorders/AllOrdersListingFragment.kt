@@ -2707,7 +2707,7 @@ class AllOrdersListingFragment(
                                         order?.orderType.trim().equals(
                                             PHONE_ORDER, true)
                                     ) {
-                                        printCenter(order?.deliveryType, isBold = true, fontSize = FONT_SIZE_4X)
+                                        printCenter(order?.deliveryType, isBold = true, fontSize = FONT_SIZE_5X)
                                         lineBreak()
                                         lineBreak()
                                     }
