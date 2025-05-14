@@ -18,6 +18,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PAYMENT_ID
 import com.pays.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
@@ -183,6 +184,15 @@ open class PaymentViewModel @Inject constructor(
         if (cashPaymentType(orderRequestModel)) {
             _showProgressCash.value = Event(true)
         } else _showProgress.value = Event(true)
+
+        if(prefProvider.getValue(ORDER_TYPE,TAKEOUT) == DINE_IN) {
+            orderRequestModel.order.apply {
+                val empId = prefProvider.employeeId()
+                employeeId = empId
+                paymentAttributes?.employeeId = empId
+            }
+        }
+
 
         viewModelScope.launch {
 

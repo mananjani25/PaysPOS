@@ -1347,6 +1347,17 @@ class CheckoutDineInFragmentNew : Fragment,
                                 arrayListOf()
                             )
                         )
+
+                        if(prefProvider.getValue(ORDER_TYPE,TAKEOUT) == DINE_IN) {
+                            dineInDataModel.dineInOrderDetails.apply {
+                                val empId = prefProvider.employeeId()
+                                this?.employeeId = empId
+                                if(this?.payments?.isNotEmpty() == true) {
+                                    this.payments?.last()?.employeeId = empId
+                                }
+                            }
+                        }
+
                         bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
 
                         Log.e("PRINT_DATA_DINE_IN",Gson().toJson(dineInDataModel.dineInOrderDetails))
