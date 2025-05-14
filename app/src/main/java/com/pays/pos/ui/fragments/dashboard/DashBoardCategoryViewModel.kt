@@ -6891,7 +6891,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun orderItemModifierAttributes(
-        item: TbCartItem, terminalId: Int, orderId: Int = -1
+        item: TbCartItem, terminalId: Int, orderId: Int = -1 ,
+        isFromWastageItem: Boolean = false
     ): List<OrderItemModifierAttribute> {
 
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -6903,7 +6904,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (prefProvider.getValueboolean(
                         DINE_IN_UPDATE, false
                     ) && it.orderModifierId != null
-                ) id = it.orderModifierId
+                ) if(!isFromWastageItem) id = it.orderModifierId
                 name = it.name
                 price = it.price
                 modifier_id = it.id
