@@ -4578,7 +4578,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     wastageItemModifiersAttributes = dashboardViewModel.orderItemModifierAttributes(
                         dineInTableAdapter.getList()[clickedPosition].item!!,
                         prefProvider.getValueInt(TERMINAL_ID, -1),
-                        orderId ?: -1
+                        orderId ?: -1,
+                        true
                     )
                 )
                 val wastageItemRequest = WastageItemRequest(wastageRequest)

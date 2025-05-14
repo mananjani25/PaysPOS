@@ -32,7 +32,7 @@ data class WastageItemRequest(
         val orderItemId: Int?,
         @SerializedName("wastage_note")
         val wastageNote: String?,
-        @SerializedName("wastage_item_modifiers")
+        @SerializedName("wastage_item_modifiers_attributes")
         var wastageItemModifiersAttributes: List<OrderItemModifierAttribute> = emptyList()
     ) : Parcelable
 }

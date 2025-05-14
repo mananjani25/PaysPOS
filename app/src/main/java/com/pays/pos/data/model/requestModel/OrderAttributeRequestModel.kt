@@ -449,6 +449,9 @@ class OrderItemModifierAttribute : Parcelable {
     @SerializedName("id")
     var id: Int? = null
 
+    @SerializedName("order_item_modifier_id")
+    var order_item_modifier_id: Int? = null
+
     @SerializedName("order_item_id")
     var order_item_id: Int? = null
 
