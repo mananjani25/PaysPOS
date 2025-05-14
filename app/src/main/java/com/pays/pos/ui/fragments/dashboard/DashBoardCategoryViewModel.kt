@@ -6765,7 +6765,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
             orderItemsAttribute.orderItemModifiersAttributes =
-                orderItemModifierAttributes(item, cartModel.terminalId)
+                orderItemModifierAttributes(item, cartModel.terminalId, orderId ?: -1)
 
             orderItemsAttribute.orderItemVariationAttributes =
                 orderItemVariationAttributes(item)
@@ -6891,7 +6891,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun orderItemModifierAttributes(
-        item: TbCartItem, terminalId: Int
+        item: TbCartItem, terminalId: Int, orderId: Int = -1
     ): List<OrderItemModifierAttribute> {
 
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -6913,6 +6913,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
                 modifier_quantity = it.modifier_quantity
+
+                if(orderId != -1)
+                    this.orderId = orderId
+
+                order_item_modifier_id = it.orderModifierId
                 _destroy = it._destroy
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
