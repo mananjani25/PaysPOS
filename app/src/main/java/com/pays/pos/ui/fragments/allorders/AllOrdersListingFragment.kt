@@ -5815,6 +5815,10 @@ class AllOrdersListingFragment(
                                 ) {
 
                                 } else if (orderData?.customer?.addresses?.isNotEmpty()) {
+                                    appendText(
+                                        orderData?.customer?.addresses?.get(0).fullAddress
+                                    )
+                                    lineFeed(1)
 
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -5823,20 +5827,20 @@ class AllOrdersListingFragment(
 //                                )
 //                            }
 
-                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                        ?.forEach {
-
-                                            if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                appendText(
-                                                    it.fullAddress
-                                                )
-                                                lineFeed(1)
-                                            }
-                                        }
+//                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                        ?.forEach {
+//
+//                                            if (it.typeOfAddress.equals(
+//                                                    Constants.BILLING_ADDRESS,
+//                                                    ignoreCase = true
+//                                                )
+//                                            ) {
+//                                                appendText(
+//                                                    it.fullAddress
+//                                                )
+//                                                lineFeed(1)
+//                                            }
+//                                        }
 
 
                                 }
