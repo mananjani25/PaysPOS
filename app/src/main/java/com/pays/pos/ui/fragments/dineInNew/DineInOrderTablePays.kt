@@ -11817,13 +11817,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print Tax Amount
                                      */
 
+                                    var paidTax = 0.0
+
+                                    getOrderDetailsResponse?.payments?.forEach {
+                                        paidTax += it.taxAmount
+                                    }
+                                    val taxAmountToPrint = (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) - paidTax
+                                    
                                     if (viewModel.totalTaxAmount != null) {
 
 
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt),
+                                                "$" + MethodUtils.roundOffAmountString(taxAmountToPrint),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -11904,8 +11911,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print total amount
                                      */
 
+
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) )
+                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + taxAmountToPrint )
 
 
                                     val totalAmountToPrint =

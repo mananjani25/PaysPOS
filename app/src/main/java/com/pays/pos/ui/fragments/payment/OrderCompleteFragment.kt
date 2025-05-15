@@ -7893,13 +7893,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print Tax Amount
                                      */
 
+                                    var paidTax = 0.0
+                                    var paidServiceCharge = 0.0
+
+                                    order?.payments?.last()?.apply {
+                                        paidTax = this.taxAmount
+                                        paidServiceCharge = serviceChargeAmount
+                                    }
+
                                     if (order?.totalTaxAmount != null) {
 
 
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(order.totalTaxAmount),
+                                                "$" + MethodUtils.roundOffAmountString(/*order.totalTaxAmount*/paidTax),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -7927,7 +7935,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         val serviceChargeToPrint =
                                             padLine(
                                                 "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                "$" + MethodUtils.roundOffAmountString(/*serviceCharge*/paidServiceCharge),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -7969,7 +7977,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     var totalAmt = order?.subTotal ?: 0.0
                                     totalAmt += serviceCharge
-                                    totalAmt += order?.totalTaxAmount ?: 0.0
+                                    totalAmt += /*order?.totalTaxAmount*/paidTax ?: 0.0
 
                                     totalAmt = MethodUtils.roundOffAmountDouble(totalAmt)
 
