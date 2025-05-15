@@ -3435,7 +3435,9 @@ class CustomDisplay(
                 }
             }else {
                 openCashDrawer()
-                callUpdateTip(mTransactionViewModel)
+                if (this::mTransactionViewModel.isInitialized){
+                    callUpdateTip(mTransactionViewModel)
+                }
             }
         }
     }
