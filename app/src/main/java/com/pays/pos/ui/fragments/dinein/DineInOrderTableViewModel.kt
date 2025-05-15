@@ -132,7 +132,18 @@ class DineInOrderTableViewModel @Inject constructor(
 
 //        _showProgress.value = Event(true)
         viewModelScope.launch {
+
+            if(model.paymentAttributes.paymentType == "External") {
+                model.paymentAttributes.cash_discount_or_surcharge = 0.0
+                model.paymentAttributes.paymentAttributes?.forEach {
+                    if(model.paymentAttributes.paymentType == "External") {
+                        it.cash_discount_or_surcharge = 0.0
+                    }
+                }
+            }
+
             val resource = posRepository.payByGuest(id, isAllPaymentComplete, model)
+
 
             when (resource.status) {
                 Status.SUCCESS -> {
