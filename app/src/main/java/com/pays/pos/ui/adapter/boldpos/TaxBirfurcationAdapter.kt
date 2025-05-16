@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.data.entities.TaxData
 import com.pays.pos.databinding.LayoutTaxBifurcationBinding
@@ -125,10 +126,28 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
         }
     }
 
-    fun setList(list: ArrayList<TaxData>) {
-        taxlist = list
-        notifyDataSetChanged()
+//    fun setList(list: ArrayList<TaxData>) {
+//        taxlist = list
+//        notifyDataSetChanged()
+//
+//    }
 
+    fun setList(newList: List<TaxData>) {
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = taxlist.size
+            override fun getNewListSize() = newList.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return taxlist[oldItemPosition].id == newList[newItemPosition].id
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return taxlist[oldItemPosition] == newList[newItemPosition]
+            }
+        })
+
+        taxlist = ArrayList(newList)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun clearList() {
