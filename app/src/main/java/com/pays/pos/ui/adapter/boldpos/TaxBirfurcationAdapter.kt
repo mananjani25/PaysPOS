@@ -126,11 +126,11 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
         }
     }
 
-//    fun setList(list: ArrayList<TaxData>) {
-//        taxlist = list
-//        notifyDataSetChanged()
-//
-//    }
+    /*fun setList(list: ArrayList<TaxData>) {
+        taxlist = list
+        notifyDataSetChanged()
+
+    }*/
 
     fun setList(newList: List<TaxData>) {
         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
