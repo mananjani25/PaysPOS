@@ -210,7 +210,6 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             itemBinding.executePendingBindings()
 
             itemBinding.txtTip.setOnClickListener {
-
 //                (filterList[position].paymentType == "Card" && filterList[position].tips > 0) ||
                 if (filterList[position].paymentType == "External" || (filterList[position].tips > 0.0 && ( MethodUtils.roundOffAmountDouble(filterList[position].refundedAmount + filterList[position].tips)) ==  MethodUtils.roundOffAmountDouble(filterList[position].totalAmount))) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
