@@ -887,10 +887,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    activity?.let { ProgressUtils.showProgressDialog(it) }
                 }
             }
-
         }
         getAllKitchenPrintersListFromDB()
         /* lifecycleScope.launch {
