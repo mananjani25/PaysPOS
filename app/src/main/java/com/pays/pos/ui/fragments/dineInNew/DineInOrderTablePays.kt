@@ -664,16 +664,32 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if(kitchenPrinterList.isNotEmpty()) {
 
-                binding.txtEditOrder.isEnabled = false
-                binding.txtAddguest.isEnabled = false
+
+                val activatedPrinters = kitchenPrinterList.count { it.kitchenStatus == true }
+
+                if(activatedPrinters > 0) {
+                    binding.txtEditOrder.isEnabled = false
+                    binding.txtAddguest.isEnabled = false
 
 
-                checkForAutoFire(false, fireAll = true)
+                    checkForAutoFire(false, fireAll = true)
 
-                Handler().postDelayed({
-                    binding.txtEditOrder.isEnabled = true
-                    binding.txtAddguest.isEnabled = true
-                }, 2000)
+                    Handler().postDelayed({
+                        binding.txtEditOrder.isEnabled = true
+                        binding.txtAddguest.isEnabled = true
+                    }, 2000)
+                } else {
+                    try {
+                        runOnUiThread {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect kitchen printer!"
+                            )
+                        }
+                    }catch (e:Exception) {
+                        e.printStackTrace()
+                    }
+                }
             } else {
                 try {
                     runOnUiThread {
@@ -2195,6 +2211,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             appliedServiceCharge.add(data)
         }
+
+            val paidGuest = dineInTableAdapter.getList().count { it.isHeader == 0 && it.isPaid==true}
+            totalGuestCount
+
+            if(paidGuest == totalGuestCount-1) {
+                if (MethodUtils.roundOffAmountDouble(subTotalGuest) <= 0.0)
+                    bundle.putBoolean(CLEAR_TABLE_DINE_IN, true)
+            }
+
+
         bundle.putParcelableArrayList(
             "serviceChargeAppliedList",
             appliedServiceCharge

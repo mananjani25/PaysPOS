@@ -3668,9 +3668,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
             return
         } else {
+            var isTableMerged = cartModelsList[0].dineInList?.get(0)?.floorPlanTable?.status?.contains("Merged") ?: false
             var existing_count = dineInCartAdapter.getList().size - 1
             var total_count = existing_count + count
-            if (total_count <= 15) {
+
+            if (total_count <= 15 || (isTableMerged && total_count <= 30)) {
                 var existinglist: ArrayList<DineInModel> = arrayListOf()
                 cartModelsList[0].dineInList?.forEach {
                     if (!it.isDestroy) {
@@ -3680,9 +3682,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                 val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
                 if (existinglist.isNotEmpty()) {
+
+                    val limit = if(isTableMerged) 31 else 16
                     // List of available counts from list to add new guest
                     var availableName: ArrayList<Int> = arrayListOf()
-                    for (i in 1 until 16) {
+                    for (i in 1 until limit) {
                         var filteredList: List<DineInModel> = arrayListOf()
                         filteredList = dineInCartAdapter.getList()
                             .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
@@ -3723,8 +3727,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 cartModelsList[0].dineInList = existinglist.toList()
                 viewModel.addGuestFromDashBoard(cartModelsList)
             } else {
+
+                val count = if(isTableMerged) 30 else 15
+
                 AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(), "You can't add more than 15 Guest in an order."
+                    requireContext(), "You can't add more than $count Guest in an order."
                 ) { _, _ ->
                 }
             }
