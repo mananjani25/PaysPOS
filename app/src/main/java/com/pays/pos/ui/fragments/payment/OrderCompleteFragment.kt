@@ -7873,11 +7873,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         e.printStackTrace()
                                     }
 
+                                    var  splitAmount = order?.payments?.last()?.subTotal ?: 0.0
+
+                                    if(splitAmount == fetchSubTotalFromPreference) {
+                                        splitAmount = 0.0
+                                    }
+
+                                    var subTotalAmount = if(splitAmount != 0.0)
+                                        "$("+MethodUtils.roundOffAmountString(splitAmount)+")"
+                                    else ""
+
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(
-                                            fetchSubTotalFromPreference
-                                        ),
+                                        subTotalAmount+"$"+MethodUtils.roundOffAmountString(fetchSubTotalFromPreference),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
