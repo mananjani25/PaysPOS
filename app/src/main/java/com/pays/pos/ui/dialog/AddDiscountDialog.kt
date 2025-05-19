@@ -283,6 +283,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         binding.llKeypad.txt10.setOnClickListener {
 
+            discountAdapter.clearSelectedItem()
             val discount = TbDiscount(
                 "",
                 selectedCurrency,
@@ -294,8 +295,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             )
 
             calculationDiscount(discount, -1)
+
+            binding.edtAmount.setText("10.00")
         }
         binding.llKeypad.txt20.setOnClickListener {
+
+            discountAdapter.clearSelectedItem()
 
             val discount = TbDiscount(
                 "",
@@ -308,8 +313,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             )
 
             calculationDiscount(discount, -1)
+            binding.edtAmount.setText("20.00")
+
         }
         binding.llKeypad.txt30.setOnClickListener {
+
+            discountAdapter.clearSelectedItem()
             val discount = TbDiscount(
                 "",
                 selectedCurrency,
@@ -321,6 +330,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             )
 
             calculationDiscount(discount, -1)
+            binding.edtAmount.setText("30.00")
+
         }
     }
 
@@ -472,8 +483,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if(!dashBoardViewModel.discountNeedToUpdate)
                 dashBoardViewModel.cartFooterNeedToBeUpdated = false
 
-            if (binding.edtAmount.text.toString().trim()
-                    .isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()
+            if (binding.edtAmount.text.toString().trim().isNotEmpty()
+                && binding.edtAmount.text.toString().trim().isNotBlank()
+                && binding.edtAmount.text.toString().trim().toDouble() != 0.0
             ) {
                 addDiscount()
             } else {
