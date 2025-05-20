@@ -4751,6 +4751,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 Log.e("DINE IN CRASH", "${e.message.toString()}")
                                             }
 
+                                            fetchSubTotalFromPreference -= guestDiscount
                                             val subTotalToPrint = padLine(
                                                 "Sub Total",
                                                 "$" + MethodUtils.roundOffAmountString(
