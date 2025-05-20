@@ -47,6 +47,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     private var rate: Double = 0.00
     private var tipID: Int? = null
+    private var clickOnSave : Boolean = false   // used for checking tipID when clicked on save/continue
+    private var clickOnSaveId : Int = -1        // used for saving tipID when clicked on save/continue
     private var totalTip: Double = 0.00
     private var totalPrice: Double = 0.0
     private lateinit var binding: DailogAddTipsBinding
@@ -57,6 +59,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private var tipModel: GetTipReponse.Data? = null
     var selectedListPos: Int = -1
     var splitCount = 1
+    private var llkeypadClicked : Boolean = false
     var isAmountWiseSplit = false
     var amountWiseSplit = 0.0
 
@@ -65,15 +68,15 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private var isFromDetails = false
     private var isFromTransaction = false
 
-    companion object {
-        fun newInstance() = AddTipsDialog()
-        //Added By Rahul Pandit to solve PA1-I792 *Start*
-        fun clearSavedTip(context: Context) {
-            val sharedPreferences = context.getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit().remove("selected_tip_id").apply()
-        }//Added By Rahul Pandit to solve PA1-I792 *End*
-
-    }
+//    companion object {
+//        fun newInstance() = AddTipsDialog()
+//        //Added By Rahul Pandit to solve PA1-I792 *Start*
+//        fun clearSavedTip(context: Context) {
+//            val sharedPreferences = context.getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+//            sharedPreferences.edit().remove("selected_tip_id").apply()
+//        }//Added By Rahul Pandit to solve PA1-I792 *End*
+//
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -114,9 +117,21 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         tipsListAdapter = DialogTipsListAdapter()
         binding.rvDiscountList.adapter = tipsListAdapter
 
+        llkeypadClicked = false
+        clickOnSave = prefProvider.getValueboolean("save_button_clicked",false)
+        clickOnSaveId = prefProvider.getValueInt("save_button_clicked_id",-1)
+        if(clickOnSave  && totalTip > 0.0){
+            tipID = clickOnSaveId
+            saveSelectedTip(clickOnSaveId)
+        }else{
+            tipID = null
+            saveSelectedTip(-1)
+        }
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
         binding.edtAmount.setText("" + MethodUtils.roundOffAmountString(totalTip))
+
+
 
         setDiscountList()
         setupData()
@@ -163,6 +178,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             }
 
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+            saveSelectedTip(-1)
+            tipID = null
+            resetDialogTipsList()
         }
         binding.llKeypad.txt20.setOnClickListener {
             rate = binding.llKeypad.txt20.text.toString().trim()
@@ -183,7 +201,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
-
+            saveSelectedTip(-1)
+            tipID = null
+            resetDialogTipsList()
         }
         binding.llKeypad.txt30.setOnClickListener(object:View.OnClickListener{
             override fun onClick(p0: View?) {
@@ -206,7 +226,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                     )
                 }
                 binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
-
+                saveSelectedTip(-1)
+                tipID = null
+                resetDialogTipsList()
             }
         })
 
@@ -287,6 +309,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             calculateValue("", true)
             tipsListAdapter.clearSelectedItem()
             clearSavedTip()
+            saveSelectedTip(-1)
+            tipID = null
+            resetDialogTipsList()
         }
         binding.llKeypad.tvDZero.setOnClickListener {
             calculateValue("00", false)
@@ -320,7 +345,10 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
             tipsListAdapter.clearSelectedItem()
             selectedListPos = -1
-            clearSavedTip()//Added By Rahul Pandit to solve PA1-I792
+//            clearSavedTip()//Added By Rahul Pandit to solve PA1-I792
+            saveSelectedTip(-1)
+            tipID = null
+            resetDialogTipsList()
         }
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
@@ -346,8 +374,12 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                         result
                     )
                 }
-                saveSelectedTip(tipID?:0)//Added By Rahul Pandit to solve PA1-I792
-
+                if(llkeypadClicked){
+                    tipID = null
+                    resetDialogTipsList()
+                }
+                saveSelectedTip(tipID?:-1)//Added By Rahul Pandit to solve PA1-I792
+                saveClickOnSaveTip(true,tipID ?: -1)
                 findNavController().navigateUp()
             }else{
                 AlertUtils.showCustomAlert(requireContext(), "Please enter tip amount")
@@ -379,6 +411,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
             dashboardViewModel.tipRemovedObserver.value = true
             clearSavedTip()//Added By Rahul Pandit to solve PA1-I792
+            saveClickOnSaveTip(false, -1)
             findNavController().navigateUp()
         }
     }
@@ -418,7 +451,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
             selectedListPos = pos
-            saveSelectedTip(model.id)//Added By Rahul Pandit to solve PA1-I792
+            saveSelectedTip(model.id ?:-1) //Added By Rahul Pandit to solve PA1-I792
         }else{
             binding.edtAmount.setText("0.00")
         }
@@ -427,14 +460,20 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     //Added By Rahul Pandit to solve PA1-I792 *Start*
     private fun saveSelectedTip(tipId: Int) {
-        val sharedPreferences = requireContext().getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit()
-            .putInt("selected_tip_id", tipId)
-            .apply()
+        //        val sharedPreferences = requireContext().getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+//        sharedPreferences.edit()
+//            .putInt("selected_tip_id", tipId)
+//            .apply()
+        prefProvider.setValueInt("selected_tip_id", tipId)
+    }
+    private fun saveClickOnSaveTip(check: Boolean, id: Int?) {
+        prefProvider.setValueboolean("save_button_clicked", check)
+        id?.let { prefProvider.setValueInt("save_button_clicked_id", it) }
     }
     private fun clearSavedTip() {
-        val sharedPreferences = requireContext().getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
-        sharedPreferences.edit().remove("selected_tip_id").apply()
+        //        val sharedPreferences = requireContext().getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+//        sharedPreferences.edit().remove("selected_tip_id").apply()
+        prefProvider.deleteValue("selected_tip_id")
     }
     //Added By Rahul Pandit to solve PA1-I792 *End*
 
@@ -450,6 +489,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
         } else {
             binding.edtAmount.append(number)
+            saveSelectedTip(-1)
+            llkeypadClicked = true
+
+//            if(!prefProvider.getValueboolean("save_button_clicked",false)){
+//                saveClickOnSaveTip(false,-1)
+//                tipID = null
+//            }
         }
     }
 
