@@ -1739,7 +1739,8 @@ class AllOrdersListingFragment(
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
-
+                
+                updatedCartModel.discountId = order.discountId
                 /*---------------BIS-4189---------------*/
                 if (updatedCartModel.discountSelectdValue.isNaN()){
                     updatedCartModel.discountSelectdValue=0.0
