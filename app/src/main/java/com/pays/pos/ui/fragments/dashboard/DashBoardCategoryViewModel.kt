@@ -105,6 +105,7 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.data.remote.Constants.PAX_SERIAL_NO
 import com.pays.pos.data.remote.Constants.PAX_TERMINAL_ID
+import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.REPORT_END_TIME
 import com.pays.pos.data.remote.Constants.REPORT_START_TIME
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -275,6 +276,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderAttributeRequestModel = OrderAttributeRequestModel()
     var dineInItemClickedFromCart = false
     var dineInAdapterBackup: DineInTableAdapter? = null
+
     //destroyed guests for dine in
     val destroyedDineGuestsList: ArrayList<DineInModel> = ArrayList()
 
@@ -304,7 +306,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     /***
      * PreAuth Payment Attribute retrieved from PAX "PRE AUTH" response
      */
-    var paymentAttributes:PaymentAttributes ? = null
+    var paymentAttributes: PaymentAttributes? = null
 
     /**
      * Tracking main cart discount
@@ -397,6 +399,7 @@ class DashBoardCategoryViewModel @Inject constructor(
      * For amount wise split
      **/
     val isAmountWiseSplit = MutableLiveData<Boolean>(false)
+
     /**
      * For amount wise split
      **/
@@ -562,27 +565,29 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     /*-----------Customer Create----------------*/
-    private val _createCustomerObservable = MutableLiveData<Pair<Boolean,OrderRequestModel?>>()
-    val createCustomerObservable: LiveData<Pair<Boolean,OrderRequestModel?>> get()  = _createCustomerObservable
+    private val _createCustomerObservable = MutableLiveData<Pair<Boolean, OrderRequestModel?>>()
+    val createCustomerObservable: LiveData<Pair<Boolean, OrderRequestModel?>> get() = _createCustomerObservable
 
-    fun createCustomer(createCustomerRequestModel: CreateCustomerRequestModel, orderRequestModel:OrderRequestModel){
+    fun createCustomer(createCustomerRequestModel: CreateCustomerRequestModel, orderRequestModel: OrderRequestModel) {
         viewModelScope.launch {
             val result = posRepository.createCustomer(createCustomerRequestModel)
-            when(result.status){
-                Status.SUCCESS->{
-                    _createCustomerObservable.postValue(Pair(true,orderRequestModel))
+            when (result.status) {
+                Status.SUCCESS -> {
+                    _createCustomerObservable.postValue(Pair(true, orderRequestModel))
                 }
-                Status.ERROR->{
-                    _createCustomerObservable.postValue(Pair(true,null))
-                    _snackbarText.value = Event(result.message?:"Unable to sync customer")
+
+                Status.ERROR -> {
+                    _createCustomerObservable.postValue(Pair(true, null))
+                    _snackbarText.value = Event(result.message ?: "Unable to sync customer")
                     _showProgress.value = Event(false)
                 }
-                Status.LOADING->{}
+
+                Status.LOADING -> {}
             }
         }
     }
 
-    fun getCustomerDetailsFromId(customerId:String):LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
+    fun getCustomerDetailsFromId(customerId: String): LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
     /*-----------Customer Create----------------*/
 
     fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {
@@ -743,7 +748,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         reloadCustomerDisplay.postValue(value)
     }*/
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
-    fun reloadCustomerDisplay(value:Boolean){
+    fun reloadCustomerDisplay(value: Boolean) {
         /* Uncomment the below code, if the customer Display is not refreshing everytime */
 //        reloadCustomerDisplay.postValue(true)
     }
@@ -756,7 +761,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         appDatabase.itemDao().getItemListByCategory(id)
 
     }.flow.cachedIn(viewModelScope)
-/* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
+    /* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
@@ -923,8 +928,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 posRepository.addItemCart(mCartModel)
                 destroyedList.clear()
 
-            }catch (e:Exception) {
-                Log.e("DINE IN CRASH",e.message.toString())
+            } catch (e: Exception) {
+                Log.e("DINE IN CRASH", e.message.toString())
             }
         }
 
@@ -5101,7 +5106,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 CoroutineScope(Dispatchers.IO).async {
                     cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
-                    if (cartModel==null && getAllCartModels() != null && !getAllCartModels().isEmpty()){
+                    if (cartModel == null && getAllCartModels() != null && !getAllCartModels().isEmpty()) {
                         cartModel = getAllCartModels().get(0)
                     }
                 }.await()
@@ -5445,6 +5450,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         val serviceChargesList = cartModel.serviceCharge
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                // Added by Rahul Pandit to Solve PA1-I882 START
+                if (prefProvider.getValue(ORDER_TYPE,"") == PHONE_ORDER){
+                    totalServiceCharge = 0.0
+                    return
+                }
+                // Added by Rahul Pandit to Solve PA1-I882 END
                 serviceChargesList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                         var serviceTotal = (subTotalPrice * it.percentage) / 100
@@ -6382,7 +6393,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
             }
-        }catch (e:Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return orderServiceChargesAttributeList
@@ -6834,7 +6845,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         orderItemTaxesAttribute.id = tax.id
                         orderItemTaxesAttribute.orderItemId = items.orderItemId
-                        orderItemTaxesAttribute.orderId = orderId
+                       // orderItemTaxesAttribute.orderId = orderId
                     }
                 } else {
                     orderItemTaxesAttribute.taxId = tax.id
@@ -7610,8 +7621,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
                             val listModifierSet: ArrayList<ModifierSet> = arrayListOf()
+/*
                             ThreadPoolManager.instance.executeTask {
-
                                 modifierSetList.forEach {
 
                                     val modifierSet = posRepository.getSingleModifier(it.id!!)
@@ -7630,25 +7641,44 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 }
                                             }
                                         }
-
                                         val model = TbItem().convertToModifier(it, modifierSet)
-
                                         listModifierSet.add(model)
-
                                     } else {
                                         listModifierSet.add(it)
                                     }
-
-                                }
-
-                                viewModelScope.launch {
-                                    appDatabase.modifierSetDao().addAll(listModifierSet)
                                 }
                             }
+*/
 
+                            async(Dispatchers.IO) {
+                                Log.d(TAG, "syncInventoryModule: async started")
+                                modifierSetList.forEach {
+                                    val modifierSet = posRepository.getSingleModifier(it.id!!)
+                                    if (modifierSet != null) {
+                                        it.modifiers.forEach {
+                                            modifierSet.modifiers.forEach { mod ->
+                                                if (mod.id == it.id) {
+                                                    mod.itemQuantity = it.itemQuantity
+                                                    mod.name = it.name
+                                                    mod.price = it.price
+                                                    mod.isDeleted = it.isDeleted
+                                                    mod.isChecked = it.isChecked
+                                                    mod.sort = it.sort
+                                                }
+                                            }
+                                        }
+                                        val model = TbItem().convertToModifier(it, modifierSet)
+                                        listModifierSet.add(model)
+                                    } else {
+                                        listModifierSet.add(it)
+                                    }
+                                }
+                            }.await().let {
+                                Log.d(TAG, "syncInventoryModule: await")
+                                appDatabase.modifierSetDao().addAll(listModifierSet)
+                                appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
+                            }
 
-
-                            appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
                             appDatabase.optionSetDao().addAll(mData.optionSets)
 
                             prefProvider.setValue(SYNC_TIME_STAMP, response.data.timeStamp)
@@ -7996,7 +8026,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it.settingData.data.isPreAuthEnable
                                     )
                                     isPreAuthCartOpened.value = it.settingData.data.isPreAuthEnable
-                                }catch (e:Exception) {
+                                } catch (e: Exception) {
 
                                 }
 
@@ -8021,8 +8051,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 /*--------------------Set the payment type------------------*/
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    var activePaymentType=posRepository.getActivePaymentGateway()
-                                    prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,venueDetailsResponse.settingData.data.activatedPaymentGateway?:"")
+                                    var activePaymentType = posRepository.getActivePaymentGateway()
+                                    prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE, venueDetailsResponse.settingData.data.activatedPaymentGateway ?: "")
 
 
                                     /* var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
@@ -8030,24 +8060,32 @@ class DashBoardCategoryViewModel @Inject constructor(
                                      var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
                                      var epi = "2319995597"*/
 
-                                    var foundTerminal=venueDetailsResponse.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
-                                        Constants.TERMINAL_NAME, ""
-                                    ),ignoreCase = true) }
-                                    if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)) {
+                                    var foundTerminal = venueDetailsResponse.settingData.data.terminals.filter { term ->
+                                        term.name.equals(
+                                            prefProvider.getValue(
+                                                Constants.TERMINAL_NAME, ""
+                                            ), ignoreCase = true
+                                        )
+                                    }
+                                    if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX, ignoreCase = true)) {
                                         prefProvider.clearValorPaymentDetails()
                                         prefProvider.clearDejavooPaymentDetails()
-                                    }else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR,ignoreCase = true)){
+                                    } else if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR, ignoreCase = true)) {
                                         prefProvider.clearDejavooPaymentDetails()
                                         prefProvider.clearPaxPaymentDetails()
-                                    }else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO,ignoreCase = true)){
+                                    } else if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO, ignoreCase = true)) {
                                         prefProvider.clearValorPaymentDetails()
                                         prefProvider.clearPaxPaymentDetails()
                                     }
-                                    if (foundTerminal.isNotEmpty()){
-                                        if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
-                                            if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR,ignoreCase = true) || venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VELOR,ignoreCase = true)){
+                                    if (foundTerminal.isNotEmpty()) {
+                                        if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX, ignoreCase = true)) {
+                                            if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(
+                                                    Constants.VALOR,
+                                                    ignoreCase = true
+                                                ) || venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VELOR, ignoreCase = true)
+                                            ) {
 
-                                                withContext(Dispatchers.Main){
+                                                withContext(Dispatchers.Main) {
                                                     prefProvider.setValue(
                                                         VALOR_APP_ID, foundTerminal.get(0).app_id/*appID*/ ?: ""
                                                     )
@@ -8064,8 +8102,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     )
                                                 }
 
-                                            }
-                                            else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO)){
+                                            } else if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO)) {
                                                 prefProvider.setValue(
                                                     DEJAVOO_AUTH_KEY, foundTerminal.get(0).dejavoo_auth_key/*appID*/ ?: ""
                                                 )
@@ -8085,10 +8122,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
 
                                     }
-                                    if (activePaymentType.isEmpty()){
+                                    if (activePaymentType.isEmpty()) {
 //                                    Insert to DB
                                         posRepository.insertActivePaymentGateway(ActivePaymentGateway(type = venueDetailsResponse.settingData.data.activatedPaymentGateway))
-                                    }else{
+                                    } else {
 //                                    Update to DB
                                         activePaymentType.first().type = venueDetailsResponse.settingData.data.activatedPaymentGateway
                                         posRepository.updateActivePayment(activePaymentType.first())
@@ -8144,12 +8181,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
                                  var epi = "2319995597"*/
 
-                               /* var foundTerminal=it.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
-                                    Constants.TERMINAL_NAME, ""
-                                ),ignoreCase = true) }
-                                if (foundTerminal.isNotEmpty()){
-                                    prefProvider.setValue(
-                                        VALOR_APP_ID, foundTerminal.get(0).app_id*//*appID*//* ?: ""
+                                /* var foundTerminal=it.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
+                                     Constants.TERMINAL_NAME, ""
+                                 ),ignoreCase = true) }
+                                 if (foundTerminal.isNotEmpty()){
+                                     prefProvider.setValue(
+                                         VALOR_APP_ID, foundTerminal.get(0).app_id*//*appID*//* ?: ""
                                     )
 
                                     prefProvider.setValue(
@@ -8253,32 +8290,32 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 /*Added by Rahul Pandit to solve PA1-I812*/
                                 withContext(Dispatchers.IO) {
-                                    var allNotes=posRepository.allNoteList()
-                                    allNotes.forEach {localNote->
-                                        var found = it.settingData.data.notes.filter {it.id == localNote.id && it.name.equals(localNote.name) }
-                                        if (found.isEmpty()){
+                                    var allNotes = posRepository.allNoteList()
+                                    allNotes.forEach { localNote ->
+                                        var found = it.settingData.data.notes.filter { it.id == localNote.id && it.name.equals(localNote.name) }
+                                        if (found.isEmpty()) {
                                             posRepository.deleteNoteDatabase(localNote.id)
                                         }
                                     }
                                 }
-                               /*Added by Rahul Pandit to solve PA1-I812*/
+                                /*Added by Rahul Pandit to solve PA1-I812*/
 
                                 /*Added by Rahul Pandit to solve PA1-I812*/
                                 withContext(Dispatchers.IO) {
-                                    var allDiscounts=tipDiscountRepository.allDiscountsList()
-                                    allDiscounts.forEach {localDiscount->
-                                        var found = it.settingData.data.discounts.filter {it.id == localDiscount.id && it.name.equals(localDiscount.name) }
-                                        if (found.isEmpty()){
+                                    var allDiscounts = tipDiscountRepository.allDiscountsList()
+                                    allDiscounts.forEach { localDiscount ->
+                                        var found = it.settingData.data.discounts.filter { it.id == localDiscount.id && it.name.equals(localDiscount.name) }
+                                        if (found.isEmpty()) {
                                             tipDiscountRepository.deleteDiscountDatabase(localDiscount.id)
                                         }
                                     }
                                 }
-                               /*Added by Rahul Pandit to solve PA1-I812*/
+                                /*Added by Rahul Pandit to solve PA1-I812*/
 
 //                                tipDiscountRepository.deleteDiscountsFromDb()
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.settingData.data.notes)
-                                if(it.settingData.data.discounts.size != tipDiscountRepository.allDiscountList().value?.data?.size) {
+                                if (it.settingData.data.discounts.size != tipDiscountRepository.allDiscountList().value?.data?.size) {
                                     tipDiscountRepository.deleteDiscountsFromDb()
                                 }
                                 tipDiscountRepository.addDiscount(it.settingData.data.discounts)
@@ -8299,10 +8336,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 withContext(Dispatchers.IO) {
 
-                                    var allTips=tipDiscountRepository.allTipsList()
-                                    allTips.forEach {localTip->
-                                        var found = it.settingData.data.tip_settings.filter {it.id == localTip.id && it.name.equals(localTip.name) }
-                                        if (found.isEmpty()){
+                                    var allTips = tipDiscountRepository.allTipsList()
+                                    allTips.forEach { localTip ->
+                                        var found = it.settingData.data.tip_settings.filter { it.id == localTip.id && it.name.equals(localTip.name) }
+                                        if (found.isEmpty()) {
                                             tipDiscountRepository.deleteTipDatabase(localTip.id)
                                         }
                                     }
@@ -8311,10 +8348,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
                                 /*Added by Rahul Pandit to solve PA1-I812*/
                                 withContext(Dispatchers.IO) {
-                                    var allReasons=posRepository.allCancelOrderReasons()
-                                    allReasons.forEach {localReason->
-                                        var found = it.settingData.data.cancelOrderReasons.filter {it.id == localReason.id}
-                                        if (found.isEmpty()){
+                                    var allReasons = posRepository.allCancelOrderReasons()
+                                    allReasons.forEach { localReason ->
+                                        var found = it.settingData.data.cancelOrderReasons.filter { it.id == localReason.id }
+                                        if (found.isEmpty()) {
                                             posRepository.deleteCancelOrderReasonDatabase(localReason.id)
                                         }
                                     }
@@ -8324,10 +8361,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 /*Added by Rahul Pandit to solve PA1-I812*/
                                 withContext(Dispatchers.IO) {
-                                    var allReasons=posRepository.allWastageReasons()
-                                    allReasons.forEach {localReason->
-                                        var found = it.settingData.data.wastageReasons.filter {it.id == localReason.id}
-                                        if (found.isEmpty()){
+                                    var allReasons = posRepository.allWastageReasons()
+                                    allReasons.forEach { localReason ->
+                                        var found = it.settingData.data.wastageReasons.filter { it.id == localReason.id }
+                                        if (found.isEmpty()) {
                                             posRepository.deleteWastageReasonDB(localReason.id)
                                         }
                                     }
@@ -8405,11 +8442,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         runBlocking {
-                                            try{
-                                                var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId?:true
+                                            try {
+                                                var printOrderId = posRepository.getLabelPrinterSettingsData().printOrderId ?: true
 
                                                 posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
-                                            }catch (e:Exception){
+                                            } catch (e: Exception) {
                                                 posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, true)
                                             }
 
@@ -9135,10 +9172,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun updateOrderId(printOrderId: Boolean) {
         viewModelScope.launch {
-            var insertedRows=posRepository.updateOrderId(printOrderId)
-            if (insertedRows>0){
+            var insertedRows = posRepository.updateOrderId(printOrderId)
+            if (insertedRows > 0) {
                 _printOrderIdInStickyReceipt.postValue(true)
-            }else {
+            } else {
                 _printOrderIdInStickyReceipt.postValue(false)
             }
         }
@@ -9214,41 +9251,38 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-
     fun checkCardExistOrNot(cardNumber: String) {
 
         _showProgress.value = Event(true)
-            viewModelScope.launch {
-                var resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
+        viewModelScope.launch {
+            var resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
 
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        resource.data.let { response ->
-                            if (response?.status == 200) {
-                                _showProgress.value = Event(false)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            _showProgress.value = Event(false)
 
-                                    _physicalGiftCardCheck.value = Event(response?.status?: 400)
+                            _physicalGiftCardCheck.value = Event(response?.status ?: 400)
 
 
-                            } else {
-                                _physicalGiftCardCheck.value= Event(response?.status?: 400)
-                            }
+                        } else {
+                            _physicalGiftCardCheck.value = Event(response?.status ?: 400)
                         }
                     }
+                }
 
-                    Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
-                        _showProgress.value = Event(false)
-                        _physicalGiftCardCheck.value= Event(resource.data?.status ?: 400)
-                    }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                    _physicalGiftCardCheck.value = Event(resource.data?.status ?: 400)
+                }
 
-                    Status.LOADING -> {
-                        _showProgress.value = Event(true)
-                    }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
                 }
             }
-
-
+        }
 
 
     }

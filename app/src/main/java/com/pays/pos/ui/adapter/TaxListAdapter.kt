@@ -54,8 +54,8 @@ class TaxListAdapter(val viewModel: TaxListViewModel) :
         }
     }
 
-    fun getItem(position: Int): TaxData {
-        return taxList[position]
+    fun getItem(position: Int): TaxData? {
+        return  if (position in 0 until taxList.size) taxList[position] else null
     }
 
     inner class MyViewHolder(val taxItemBinding: ViewTaxItemBinding) :

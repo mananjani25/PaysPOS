@@ -6147,6 +6147,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
+            surchargeOnTip = 0.0  // remove the surcharge of the tip
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount
