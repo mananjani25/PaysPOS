@@ -114,7 +114,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
         binding.txtTitle.text = getString(R.string.add_tips)
 
-        tipsListAdapter = DialogTipsListAdapter()
+        tipsListAdapter = DialogTipsListAdapter(prefProvider)
         binding.rvDiscountList.adapter = tipsListAdapter
 
         llkeypadClicked = false

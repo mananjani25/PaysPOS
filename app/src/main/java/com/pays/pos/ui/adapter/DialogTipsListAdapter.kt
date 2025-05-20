@@ -12,10 +12,9 @@ import com.pays.pos.data.model.responseModel.NoteResponse
 import com.pays.pos.databinding.ViewDialogTipsListBinding
 import com.pays.pos.di.PrefProvider
 
-class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewHolder>() {
+class DialogTipsListAdapter(var prefProvider : PrefProvider) : RecyclerView.Adapter<DialogTipsListAdapter.MyViewHolder>() {
     var selectedPosition = -1
     private lateinit var listner: DiscountInterface
-    private lateinit var prefProvider : PrefProvider
 
     inner class MyViewHolder(private val binding: ViewDialogTipsListBinding) :
         RecyclerView.ViewHolder(binding.root) {
