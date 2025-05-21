@@ -44,6 +44,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     private var itemPos: Int = 0
     var reason_id = 0
     private val onlineDetailsViewModel by activityViewModels<OnlineDetailViewModel>()
+    private var backpressed = false
 
 
     @Inject
@@ -110,7 +111,9 @@ class ReasonForCancelOrderDialog : DialogFragment() {
         navigate()
 
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+//            findNavController().navigateUp()
+            backpressed = true
+            findNavController().popBackStack()
         }
 
         getCancelOrderReasons()
@@ -233,8 +236,9 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_1")
         super.onDismiss(dialog)
-
-        onlineDetailsViewModel.toggleRefresh(true)
+        if(!backpressed) {
+            onlineDetailsViewModel.toggleRefresh(true)
+        }
 
         Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_2")
 
