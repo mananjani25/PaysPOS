@@ -7894,9 +7894,10 @@ class TransactionDetailsFragment : Fragment() {
                                     printLeft("ReceiptID : ${order.order.offline_id.trim()}")
                                     lineBreak()
 
-
-                                    printLeft("Employee : ${order.order.employee.trim()}")
-                                    lineBreak()
+                                    if (!order.order.employee.isNullOrEmpty()){
+                                        printLeft("Employee : ${order.order.employee.trim()}")
+                                        lineBreak()
+                                    }
 
                                     printLeft(
                                         "Order Time : ${
