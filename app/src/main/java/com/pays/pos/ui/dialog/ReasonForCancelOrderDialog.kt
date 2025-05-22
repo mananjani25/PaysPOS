@@ -44,7 +44,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     private var itemPos: Int = 0
     var reason_id = 0
     private val onlineDetailsViewModel by activityViewModels<OnlineDetailViewModel>()
-    private var imgCrossClicked = false
+    private var imgBackClicked = false
 
 
     @Inject
@@ -112,7 +112,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
 
         binding.imgBack.setOnClickListener {
 //            findNavController().navigateUp()
-            imgCrossClicked = true
+            imgBackClicked = true
             findNavController().popBackStack()
         }
 
@@ -236,7 +236,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_1")
         super.onDismiss(dialog)
-        if(!imgCrossClicked) {
+        if(!imgBackClicked) {
             onlineDetailsViewModel.toggleRefresh(true)
         }
 
