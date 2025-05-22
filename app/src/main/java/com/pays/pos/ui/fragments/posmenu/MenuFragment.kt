@@ -27,6 +27,7 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -229,6 +230,16 @@ class MenuFragment : DialogFragment() {
                     )
                 }
 
+            }
+        }
+
+        viewModel.showClockOutProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity() as MainActivity)
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
             }
         }
     }
