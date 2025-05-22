@@ -5203,7 +5203,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     oldCartItemIds.add(it.id)
                                                 }
 
-                                                if(currentItemIds.toList() != oldItemIds.toList() || cartItemIds.toList() != oldCartItemIds.toList()){
+                                                if(currentItemIds.toList() != oldItemIds.toList() && cartItemIds.toList() != oldCartItemIds.toList()){
                                                     isOrderUpdate = true
                                                     break
                                                 }
