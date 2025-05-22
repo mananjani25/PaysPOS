@@ -8010,7 +8010,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                                subTotalToPrint =  padLine(
                                                     "Sub Total",
-                                                    "$" + order.order.sub_total.let {
+                                                    "$" + order.sub_total.let {
                                                         MethodUtils.roundOffAmountString(
                                                             it
                                                         )
