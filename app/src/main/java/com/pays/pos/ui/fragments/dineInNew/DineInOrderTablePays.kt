@@ -94,8 +94,6 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.lineBreak
-import com.pays.pos.utils.landi.LPrint.printLeft
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
@@ -670,6 +668,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if(activatedPrinters > 0) {
                     binding.txtEditOrder.isEnabled = false
                     binding.txtAddguest.isEnabled = false
+                    binding.txtFireAll.isEnabled = false
 
 
                     checkForAutoFire(false, fireAll = true)
@@ -677,6 +676,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     Handler().postDelayed({
                         binding.txtEditOrder.isEnabled = true
                         binding.txtAddguest.isEnabled = true
+                        binding.txtFireAll.isEnabled = true
                     }, 2000)
                 } else {
                     try {
