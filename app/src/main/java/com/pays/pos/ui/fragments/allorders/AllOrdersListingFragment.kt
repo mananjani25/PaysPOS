@@ -5768,7 +5768,7 @@ class AllOrdersListingFragment(
 
              }
 
-
+            lineFeed(1)
 
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
 
