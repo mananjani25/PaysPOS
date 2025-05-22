@@ -5823,11 +5823,12 @@ class AllOrdersListingFragment(
 //                                )
 //                            }
 
-                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
                                         ?.forEach {
 
                                             if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
+                                                    SHIPPING_ADDRESS,
                                                     ignoreCase = true
                                                 )
                                             ) {

@@ -2806,11 +2806,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     lineFeed(1)
                 }
 
-                if (createOrderResponse.data?.order?.customer?.addresses?.isNotEmpty() == true){
-                    appendText(createOrderResponse.data?.order?.customer?.addresses?.get(0)?.fullAddress.toString())
-                    lineFeed(1)
-
-                }
                 if (createOrderResponse.data?.order?.customer?.phones?.isNotEmpty() == true){
                     var phoneNo = createOrderResponse.data?.order?.customer?.phones?.size?.minus(1)
                         ?.let { createOrderResponse.data?.order?.customer?.phones?.get(it)?.phoneNumber }
@@ -2820,6 +2815,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }
 
+                if (createOrderResponse.data?.order?.customer?.addresses?.isNotEmpty() == true){
+                    appendText(createOrderResponse.data?.order?.customer?.addresses?.get(0)?.fullAddress.toString())
+                    lineFeed(1)
+
+                }
             }
 
             if (createOrderResponse.data.order.note.isNotEmpty()){
