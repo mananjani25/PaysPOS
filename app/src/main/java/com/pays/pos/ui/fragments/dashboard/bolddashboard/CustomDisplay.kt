@@ -1205,7 +1205,7 @@ class CustomDisplay(
                                 ?: false
                         ) {
                             binding.txtTotalCard?.text =
-                                dashBoardCategoryViewModel.customerCardAmount.value
+                                dashBoardCategoryViewModel.customerCardAmount.value + tippedAmount
                         } else {
                             if ((dashBoardCategoryViewModel.cashDiscountType.contains("Surcharge",ignoreCase = true)) && (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty)){
                                 binding.txtTotalCard?.text =
@@ -1252,10 +1252,10 @@ class CustomDisplay(
                                     binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
 //                                    -dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 }else{
-                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice + tippedAmount)
                                 }
                             }else {
-                                binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                                binding.txtTotalCard?.text = getSurchargedPrice(totalPrice + tippedAmount)
                             }
                         }
 
@@ -4000,11 +4000,11 @@ class CustomDisplay(
         })
 
         dashBoardCategoryViewModel.customerCardPrice.observe(lifecycleOwner,{
-            binding.txtTotalCard?.text = "$ ${String.format("%.2f", it)}"
+            binding.txtTotalCard?.text = "$ ${String.format("%.2f", it + tippedAmount)}"
         })
 
         dashBoardCategoryViewModel.customerNormalPrice.observe(lifecycleOwner,{
-            binding.txtOrderTotal.text = "$ ${String.format("%.2f", it)}"
+            binding.txtOrderTotal.text = "$ ${String.format("%.2f", it + tippedAmount)}"
         })
     }
 
