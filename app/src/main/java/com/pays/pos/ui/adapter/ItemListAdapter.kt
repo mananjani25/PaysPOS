@@ -7,6 +7,9 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.remote.Constants.ADD_VALUE
+import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
+import com.pays.pos.data.remote.Constants.SELL_CARD
 import com.pays.pos.databinding.ViewItemBinding
 import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.extensions.gone
@@ -143,8 +146,12 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
     }
 
     fun add(categoryModel: List<TbItem>) {
-        this.itemsList = categoryModel as ArrayList<TbItem>
-        this.filterList = categoryModel
+//        this.itemsList = categoryModel as ArrayList<TbItem>
+//        this.filterList = categoryModel
+        val filteredList = categoryModel.filterNot {
+            it.name == SELL_CARD || it.name == BALANCE_INQUIRY || it.name == ADD_VALUE
+        }
+        this.filterList = ArrayList(filteredList)
         notifyDataSetChanged()
     }
 

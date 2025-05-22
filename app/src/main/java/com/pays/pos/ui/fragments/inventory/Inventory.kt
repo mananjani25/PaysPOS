@@ -124,7 +124,9 @@ class Inventory : Fragment() {
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnSingleClickListener {
             // (requireActivity() as MainActivity).enableDrawer()
-            findNavController().navigate(R.id.action_inventory_to_menuFragment)
+            if(findNavController().currentDestination?.id == R.id.inventory) {
+                findNavController().navigate(R.id.action_inventory_to_menuFragment)
+            }
         }
         binding.commonToolbar.txtHome.setOnSingleClickListener {
             findNavController().navigate(R.id.action_inventory_to_dashboardCategory)

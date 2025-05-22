@@ -94,8 +94,6 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.lineBreak
-import com.pays.pos.utils.landi.LPrint.printLeft
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
@@ -670,6 +668,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if(activatedPrinters > 0) {
                     binding.txtEditOrder.isEnabled = false
                     binding.txtAddguest.isEnabled = false
+                    binding.txtFireAll.isEnabled = false
 
 
                     checkForAutoFire(false, fireAll = true)
@@ -677,6 +676,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     Handler().postDelayed({
                         binding.txtEditOrder.isEnabled = true
                         binding.txtAddguest.isEnabled = true
+                        binding.txtFireAll.isEnabled = true
                     }, 2000)
                 } else {
                     try {
@@ -2630,6 +2630,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             listItemGuestSelected.forEach {
                 it.orderType = "DineIn"
 
+                it.guestIndexForDineIn = guestIndexForDineIn
                 dashboardViewModel.addItemToCartItems(it)
 
             }
@@ -4576,7 +4577,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     orderItemId = dineInTableAdapter.getList()[clickedPosition].item?.orderItemId,
                     wastageItemModifiersAttributes = dashboardViewModel.orderItemModifierAttributes(
                         dineInTableAdapter.getList()[clickedPosition].item!!,
-                        prefProvider.getValueInt(TERMINAL_ID, -1)
+                        prefProvider.getValueInt(TERMINAL_ID, -1),
+                        orderId ?: -1,
+                        true
                     )
                 )
                 val wastageItemRequest = WastageItemRequest(wastageRequest)
@@ -7301,7 +7304,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(guestSubTotal),
+                                        "$" + MethodUtils.roundOffAmountString(guestSubTotal - discountPriceForGuest),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -11814,13 +11817,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print Tax Amount
                                      */
 
+                                    var paidTax = 0.0
+
+                                    getOrderDetailsResponse?.payments?.forEach {
+                                        paidTax += it.taxAmount
+                                    }
+                                    val taxAmountToPrint = (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) - paidTax
+                                    
                                     if (viewModel.totalTaxAmount != null) {
 
 
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt),
+                                                "$" + MethodUtils.roundOffAmountString(taxAmountToPrint),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -11901,8 +11911,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print total amount
                                      */
 
+
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) )
+                                        MethodUtils.roundOffAmountDouble(subTotalDInin + serviceChargesFinal + taxAmountToPrint )
 
 
                                     val totalAmountToPrint =

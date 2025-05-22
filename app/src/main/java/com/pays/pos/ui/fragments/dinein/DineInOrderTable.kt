@@ -3451,7 +3451,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     orderItemId = dineInTableAdapter.getList()[clickedPosition].item?.orderItemId,
                     wastageItemModifiersAttributes = dashboardViewModel.orderItemModifierAttributes(
                         dineInTableAdapter.getList()[clickedPosition].item!!,
-                        prefProvider.getValueInt(TERMINAL_ID, -1)
+                        prefProvider.getValueInt(TERMINAL_ID, -1),
                     )
                 )
                 val wastageItemRequest = WastageItemRequest(wastageRequest)

@@ -406,6 +406,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     LogUtil.logE(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
 
 
+                    var guestIndex = -1
+                    var i = 0
+                    while ( i <= position ) {
+                        if(list[i].isHeader == 0)
+                            guestIndex++
+                        i++
+                    }
+
                     listner.onGuestPay(
                         list[position],
                         position,
@@ -417,7 +425,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         list[0].guestDividedAmt,
                         listItemWT,
                         listItem,
-                        list[position+1].item?.guestIndexForDineIn ?: -1
+                        /*list[position+1].item?.guestIndexForDineIn ?: -1*/guestIndex
                     )
                 }
             }

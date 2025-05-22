@@ -47,7 +47,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("refund_detail")
         val refundDetails: RefundDetails,
         @SerializedName("employee_id")
-        val employeeId: Int,
+        var employeeId: Int,
         @SerializedName("future_delivery_date")
         val futureDeliveryDate: String?,
         @SerializedName("future_delivery_time")
@@ -475,7 +475,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("dynamic_payment_id")
             val dynamicPaymentId: Int?,
             @SerializedName("employee_id")
-            val employeeId: Int,
+            var employeeId: Int,
             @SerializedName("id")
             val id: Int,
             @SerializedName("offline_id")

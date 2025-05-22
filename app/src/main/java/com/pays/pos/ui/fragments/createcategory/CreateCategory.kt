@@ -35,6 +35,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.DIALOG_IMAGE_PATH
 import com.pays.pos.data.remote.Constants.IMAGE_DIALOG_TITTLE
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.extensions.setOnSingleClickListener
@@ -147,11 +148,15 @@ class CreateCategory : Fragment() {
 
     private fun callBackFromImage() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
-            Constants.DIALOG_IMAGE_PATH
+            DIALOG_IMAGE_PATH
         )?.observe(viewLifecycleOwner) { result ->
             // Do something with the result.
-            LogUtil.logE("!_@_ image path", result)
-            viewProfile(result)
+//            LogUtil.logE("!_@_ image path", result)
+//            viewProfile(result)
+            result?.let {
+                LogUtil.logE("!_@_ image path", it)
+                viewProfile(it) 
+            }
         }
     }
 
