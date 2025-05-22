@@ -1130,6 +1130,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
 
                         R.id.menu_order_note -> {
+                            if (viewModel.cartModel?.note?.isNotEmpty() == true){
+                                viewModel.manualCartOrderNote = viewModel.cartModel?.note
+                            }
                             findNavController().navigate(
                                 R.id.action_manualSaleNew_to_addNoteDialog,
                                 bundleOf("isOrderNote" to true, "isFromManual" to true)
@@ -1835,6 +1838,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val isOrderNote = bundle.getBoolean("isOrderNote")
             if (isOrderNote) {
                 viewModel.manualCartOrderNote=note.toString()
+                viewModel.cartModel?.note = note.toString()
                 manualCartModel?.let {
                     manualCartModel?.note = note.toString()
                     prefProvider.setValue(
