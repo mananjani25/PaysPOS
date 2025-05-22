@@ -1089,6 +1089,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
 
+            if (prefProvider.getValue(Constants.ORDER_TYPE, "") == Constants.DINE_IN) {
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
+            }
+
             /*Added by Rahul for solving Discount issue */
             popupMenu.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
                 override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
