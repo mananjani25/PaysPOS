@@ -18,6 +18,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.google.android.libraries.places.api.Places
@@ -44,7 +45,10 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.callback.AddressTextChangeListner
 import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -1046,8 +1050,9 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
-        binding.header.txtSave.setOnClickListener(object: View.OnClickListener{
+        binding.header.txtSave.setOnSingleClickListener(object: View.OnClickListener{
             override fun onClick(p0: View?) {
+                binding.header.txtSave.isEnabled = false
                 var zipText = binding.edtZip.text.toString().trim()
 
                 if (zipText.length > 10) {
@@ -1112,7 +1117,10 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
                     }
                 }
-
+                lifecycleScope.launch {
+                    delay(2000)
+                    binding.header.txtSave.isEnabled = true
+                }
             }
 
             private fun createOrUpdateCustomerObject() {
