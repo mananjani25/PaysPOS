@@ -7881,7 +7881,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
                                     var subTotalAmount = if(splitAmount != 0.0)
-                                        "$("+MethodUtils.roundOffAmountString(splitAmount)+")"
+                                        "($"+MethodUtils.roundOffAmountString(splitAmount)+") "
                                     else ""
 
                                     val subTotalToPrint = padLine(
