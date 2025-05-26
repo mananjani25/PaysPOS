@@ -171,6 +171,8 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var isFromOnlineOrderRefund: Boolean = false
+    private var customerFirstName: String = ""
+    private var customerLastName: String = ""
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var receiptModel: CreateOrderResponse.Data? = null
@@ -241,6 +243,8 @@ class TransactionDetailsFragment : Fragment() {
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
+        customerFirstName = arguments?.getString("customer_first_name")!!
+        customerLastName = arguments?.getString("customer_last_name")!!
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
 //        } else {
@@ -2284,11 +2288,17 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvTipLabel.text = "Tip (0%)"
                 }
 
-                if (it.data.order.customer != null) {
+                val pervious = it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                val latested = customerFirstName + " " + customerLastName
+                if (it.data.order.customer != null && pervious == latested) {
                     binding.tvCustomerName.text =
-                        it.data.order.customer.firstName + " " + it.data.order.customer.lastName
-                } else {
+                        it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                } else if (customerFirstName.isNotEmpty()){
+                    binding.tvCustomerName.text =
+                        customerFirstName + " " + customerLastName
+                } else{
                     binding.tvCustomerName.text = ""
+                    binding.tvCustomerName.invisible()
                 }
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
