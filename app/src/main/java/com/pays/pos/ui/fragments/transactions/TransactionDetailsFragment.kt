@@ -164,6 +164,7 @@ class TransactionDetailsFragment : Fragment() {
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
+    private var customerName: String = ""
     private var orderType: String = ""
     var mLastClickTime: Long = 0
     private val TAG = "TransactionDetailsFr"
@@ -238,6 +239,7 @@ class TransactionDetailsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         orderId = arguments?.getInt("orderId")!!
+        customerName = arguments?.getString("customerName") ?: ""
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
@@ -2285,8 +2287,11 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 if (it.data.order.customer != null) {
-                    binding.tvCustomerName.text =
+                    binding.tvCustomerName.text = if (customerName.isNotBlank()) {
+                        customerName
+                    }else {
                         it.data.order.customer.firstName + " " + it.data.order.customer.lastName
+                    }
                 } else {
                     binding.tvCustomerName.text = ""
                 }
