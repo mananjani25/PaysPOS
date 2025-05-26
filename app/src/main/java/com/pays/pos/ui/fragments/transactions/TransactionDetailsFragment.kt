@@ -171,6 +171,8 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var isFromOnlineOrderRefund: Boolean = false
+    private var customerFirstName: String = ""
+    private var customerLastName: String = ""
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var receiptModel: CreateOrderResponse.Data? = null
@@ -241,6 +243,8 @@ class TransactionDetailsFragment : Fragment() {
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
+        customerFirstName = arguments?.getString("customer_first_name")!!
+        customerLastName = arguments?.getString("customer_last_name")!!
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
 //        } else {
@@ -2287,7 +2291,10 @@ class TransactionDetailsFragment : Fragment() {
                 if (it.data.order.customer != null) {
                     binding.tvCustomerName.text =
                         it.data.order.customer.firstName + " " + it.data.order.customer.lastName
-                } else {
+                } else if (customerFirstName.isNotEmpty()){
+                    binding.tvCustomerName.text =
+                        customerFirstName + " " + customerLastName
+                } else{
                     binding.tvCustomerName.text = ""
                 }
                 binding.orderDetails = it
