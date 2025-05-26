@@ -2923,8 +2923,14 @@ class TransactionDetailsFragment : Fragment() {
         type: String
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+            data.ipAddress?.let{
+                if (it.contains(":")) {
+                    SunmiPrinterApi.getInstance()
+                        .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, it)
+                } else {
+                    Log.e(TAG, "IPAddressMissing->$it")
+                }
+            } ?: Log.e(TAG, "IPAddressMissing")
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
                     .connectPrinter(requireContext(), object : ConnectCallback {
