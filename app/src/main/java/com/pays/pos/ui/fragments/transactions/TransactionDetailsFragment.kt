@@ -2364,14 +2364,10 @@ class TransactionDetailsFragment : Fragment() {
                                         )
                                         taxlistbirfurcation?.add(taxData)
                                     } else {
-                                        taxlistbirfurcation!![found].totalTaxTypePrice =
-                                            taxlistbirfurcation!![found].totalTaxTypePrice + getTaxFromTotalPrice(
-                                                orderItemTaxe,
-                                                totalPrice,
-                                                orderItem
-                                            )
-                                        taxlistbirfurcation!![found].subTotalAmount =
-                                            taxlistbirfurcation!![found].subTotalAmount + totalPrice
+                                        if (tipAmount == 0.0){
+                                            taxlistbirfurcation!![found].totalTaxTypePrice += getTaxFromTotalPrice( orderItemTaxe, totalPrice, orderItem)
+                                        }
+                                        taxlistbirfurcation!![found].subTotalAmount = taxlistbirfurcation!![found].subTotalAmount + totalPrice
                                     }
                                     Log.d(TAG, "found : " + found)
                                 } else {
@@ -8010,7 +8006,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                                subTotalToPrint =  padLine(
                                                     "Sub Total",
-                                                    "$" + order.order.sub_total.let {
+                                                    "$" + order.sub_total.let {
                                                         MethodUtils.roundOffAmountString(
                                                             it
                                                         )

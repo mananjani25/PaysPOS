@@ -10,8 +10,9 @@ import com.pays.pos.R
 import com.pays.pos.data.model.responseModel.GetTipReponse
 import com.pays.pos.data.model.responseModel.NoteResponse
 import com.pays.pos.databinding.ViewDialogTipsListBinding
+import com.pays.pos.di.PrefProvider
 
-class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewHolder>() {
+class DialogTipsListAdapter(var prefProvider : PrefProvider) : RecyclerView.Adapter<DialogTipsListAdapter.MyViewHolder>() {
     var selectedPosition = -1
     private lateinit var listner: DiscountInterface
 
@@ -19,16 +20,17 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: GetTipReponse.Data, position: Int) {
             //Added By Rahul Pandit to solve PA1-I792
-            val sharedPreferences = binding.root.context.getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
-            val savedTipId = sharedPreferences.getInt("selected_tip_id", -1)//Added By Rahul Pandit to solve PA1-I792
-            if ((selectedPosition == position || model.id == savedTipId) && model.isCheckedInAdapter) {
-                binding.linearParent.background =
-                    binding.root.context.getDrawable(R.drawable.button_selected)
+            //            val sharedPreferences = binding.root.context.getSharedPreferences("TipPrefs", Context.MODE_PRIVATE)
+            val savedTipId = prefProvider.getValueInt("selected_tip_id", -1)    //  Added By Rahul Pandit to solve PA1-I792
+            if (savedTipId != -1 && (selectedPosition == position || model.id == savedTipId)) {
+                model.isCheckedInAdapter = true         //  Reset state only for saved tip
+                binding.linearParent.background = binding.root.context.getDrawable(R.drawable.button_selected)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.white))
                 binding.txtName.setTextColor(binding.root.context.resources.getColor(R.color.white))
 
-
+                selectedPosition = position
             } else {
+                model.isCheckedInAdapter = false        // Prevent highlight from old memory
                 binding.linearParent.background =
                     binding.root.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
@@ -42,10 +44,32 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
         init {
             binding.root.setOnClickListener(object: View.OnClickListener{
                 override fun onClick(p0: View?) {
-                    selectedPosition = layoutPosition
-                    notifyDataSetChanged()
-                    discountList[layoutPosition].isCheckedInAdapter=!discountList[layoutPosition].isCheckedInAdapter
-                    listner.selectedItem(discountList[layoutPosition], layoutPosition)
+                    val currentPosition = layoutPosition
+                    val currentModel = discountList[currentPosition]
+
+                    if (selectedPosition == currentPosition && currentModel.isCheckedInAdapter) {
+                        // Case: same item reselected → deselect
+                        currentModel.isCheckedInAdapter = false
+                        selectedPosition = -1
+                        prefProvider.setValueInt("selected_tip_id",-1)
+                        notifyDataSetChanged()
+                        listner.selectedItem(currentModel, currentPosition)
+                    } else {
+                        // Case: different item selected → update selection
+                        if (selectedPosition >= 0 && selectedPosition < discountList.size) {
+                            discountList[selectedPosition].isCheckedInAdapter = false
+                        }
+
+                        currentModel.isCheckedInAdapter = true
+                        selectedPosition = currentPosition
+                        notifyDataSetChanged()
+                        listner.selectedItem(currentModel, currentPosition)
+                    }
+//                    selectedPosition = layoutPosition
+//                    notifyDataSetChanged()
+//                    discountList[layoutPosition].isCheckedInAdapter=!discountList[layoutPosition].isCheckedInAdapter
+//                    listner.selectedItem(discountList[layoutPosition], layoutPosition)
+
                 }
             })
         }

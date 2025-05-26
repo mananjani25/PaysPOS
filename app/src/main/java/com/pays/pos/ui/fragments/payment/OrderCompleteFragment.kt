@@ -4751,6 +4751,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 Log.e("DINE IN CRASH", "${e.message.toString()}")
                                             }
 
+                                            fetchSubTotalFromPreference -= guestDiscount
                                             val subTotalToPrint = padLine(
                                                 "Sub Total",
                                                 "$" + MethodUtils.roundOffAmountString(
@@ -7666,7 +7667,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         write("ReceiptID : ${order?.offlineId?.trim()}".toByteArray())
                                         write(LPrint.LINE_FEED)
 
-                                        write("Employee : ${order?.employee?.name?.trim()}".toByteArray())
+                                        write("Employee : ${ prefProvider.employeeName() ?: order?.employee?.name?.trim()}".toByteArray())
                                         write(LPrint.LINE_FEED)
 
                                         write(
@@ -7873,11 +7874,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         e.printStackTrace()
                                     }
 
+                                    var  splitAmount = order?.payments?.last()?.subTotal ?: 0.0
+
+                                    if(splitAmount == fetchSubTotalFromPreference) {
+                                        splitAmount = 0.0
+                                    }
+
+                                    var subTotalAmount = if(splitAmount != 0.0)
+                                        "$("+MethodUtils.roundOffAmountString(splitAmount)+")"
+                                    else ""
+
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(
-                                            fetchSubTotalFromPreference
-                                        ),
+                                        subTotalAmount+"$"+MethodUtils.roundOffAmountString(fetchSubTotalFromPreference),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -7893,13 +7902,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print Tax Amount
                                      */
 
+                                    var paidTax = 0.0
+                                    var paidServiceCharge = 0.0
+
+                                    order?.payments?.last()?.apply {
+                                        paidTax = this.taxAmount
+                                        paidServiceCharge = serviceChargeAmount
+                                    }
+
                                     if (order?.totalTaxAmount != null) {
 
 
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(order.totalTaxAmount),
+                                                "$" + MethodUtils.roundOffAmountString(/*order.totalTaxAmount*/paidTax),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -7927,7 +7944,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         val serviceChargeToPrint =
                                             padLine(
                                                 "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                "$" + MethodUtils.roundOffAmountString(/*serviceCharge*/paidServiceCharge),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -7969,7 +7986,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     var totalAmt = order?.subTotal ?: 0.0
                                     totalAmt += serviceCharge
-                                    totalAmt += order?.totalTaxAmount ?: 0.0
+                                    totalAmt += /*order?.totalTaxAmount*/paidTax ?: 0.0
 
                                     totalAmt = MethodUtils.roundOffAmountDouble(totalAmt)
 

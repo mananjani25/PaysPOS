@@ -5768,7 +5768,7 @@ class AllOrdersListingFragment(
 
              }
 
-
+            lineFeed(1)
 
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
 
@@ -5823,11 +5823,12 @@ class AllOrdersListingFragment(
 //                                )
 //                            }
 
-                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+//                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
                                         ?.forEach {
 
                                             if (it.typeOfAddress.equals(
-                                                    Constants.BILLING_ADDRESS,
+                                                    SHIPPING_ADDRESS,
                                                     ignoreCase = true
                                                 )
                                             ) {
@@ -8552,7 +8553,7 @@ class AllOrdersListingFragment(
                         val printTime = padLine(
                             if (customerSettingModel.showPrintTime) {
 //                                "Print Time:${MethodUtils.formatted()}"
-                                "Print Time" + getCurrentTimeFromTimeZone(
+                                "Print Time:" + getCurrentTimeFromTimeZone(
                                     requireContext(),
                                     MethodUtils.formatted()
                                 )

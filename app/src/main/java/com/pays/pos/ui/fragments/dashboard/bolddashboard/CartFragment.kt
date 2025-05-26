@@ -156,6 +156,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -404,8 +405,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     }
                                                     else {
                                                         if (!isFromPayment) {
-                                                            binding.checkloylaty.isChecked = false
-                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                           if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                                binding.checkloylaty.isChecked = true
+//                                                                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                            }
+//                                                            binding.checkloylaty.isChecked = false
+//                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
 //                                                            prefProvider.setValueboolean( Constants.LOYALTY_ADDED, false )
 //                                                            prefProvider.setValueboolean( Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
                                                         }
