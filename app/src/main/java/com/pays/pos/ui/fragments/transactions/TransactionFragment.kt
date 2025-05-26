@@ -1466,8 +1466,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     val bundle = Bundle().apply {
                         putInt("orderId", it.orderDetails.id)
                         putInt("paymentId", it.id)
-                        putString("customer_first_name", it.customer.firstName)
-                        putString("customer_last_name", it.customer.lastName)
                         putBoolean("isFromTrans", true)
                         putInt(
                             "selectedorderType",
