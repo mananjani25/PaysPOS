@@ -37,7 +37,6 @@ import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.TAG
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.statusUtils.Status
@@ -67,6 +66,7 @@ class AllOrdersCountsFragment : Fragment() {
     private var cancelledOrdersCount: Int? = 0
     private var completedOrdersCount: Int? = 0
     private var upcomingOrderCount: Int? = 0
+    private val TAG = "AllOrdersCountsFragment"
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -290,6 +290,7 @@ class AllOrdersCountsFragment : Fragment() {
 
 
                             when (ORDER_TAB) {
+
                                 ALL_ORDER_TAB -> {
                                     pendingOrdersCount = it.data?.data?.all_orders?.pending ?: 0
                                     ongoingOrderCount = it.data?.data?.all_orders?.in_progress ?: 0
@@ -382,8 +383,7 @@ class AllOrdersCountsFragment : Fragment() {
                             val openOrdersPendingCount = it.data?.data?.open_orders?.active ?: 0
                             val phoneOrdersPendingCount = it.data?.data?.phone_orders?.active ?: 0
                             var webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
-                            var thirdPartyOrdersPendingCount =
-                                it.data?.data?.third_party_online_orders?.pending ?: 0
+                            var thirdPartyOrdersPendingCount = it.data?.data?.third_party_online_orders?.pending ?: 0
 
                             //Added to reflect order count of online order and web order combine
                             webOrdersPendingCount += thirdPartyOrdersPendingCount
@@ -513,6 +513,10 @@ class AllOrdersCountsFragment : Fragment() {
         if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
             list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
+        } else if (tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
+            list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
+            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
+            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))
         } else {
             list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
