@@ -1700,7 +1700,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             0,
                             false,
                             0,
-                            "Guest ${availableName[i - 1]}",
+                            "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}",
                             floorPlanTable = cartList!!.dineInList!![0].floorPlanTable
 
                         )

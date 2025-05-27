@@ -1376,7 +1376,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     0,
                     false,
                     0,
-                    "Guest $i",
+                    "Guest ${if (i > 9) i else "0"+i}",
                     floorPlanTable = orderFloorDetails,
 
                     )
@@ -3669,7 +3669,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
                         try {
                             var commonDineInModel =
-                                cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
+                                cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}" }
                             if (commonDineInModel != null) {
                                 commonDineInModel.isDestroy = false
                                 dineInList.add(commonDineInModel)
@@ -3680,7 +3680,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     0,
                                     false,
                                     0,
-                                    "Guest ${availableName[i - 1]}",
+                                    "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}",
                                     floorPlanTable = cartModelsList[0].dineInList!![0].floorPlanTable
 
                                 )
