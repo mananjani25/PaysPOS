@@ -1678,7 +1678,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 for (i in 1 until limit) {
                     var filteredList: List<DineInModel> = arrayListOf()
                     filteredList = dineInTableAdapter.getList()
-                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                        .filter { item ->
+                            if (item.title?.substringAfter("Guest ")?.contains("0") == true) {
+                                item.title?.substringAfter("Guest 0") == i.toString()
+                            } else {
+                                item.title?.substringAfter("Guest ") == i.toString()
+                            }
+                        }
                         ?: arrayListOf()
                     if (filteredList.isEmpty()) {
                         availableName.add(i)

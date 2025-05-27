@@ -103,7 +103,6 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -3649,7 +3648,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     for (i in 1 until limit) {
                         var filteredList: List<DineInModel> = arrayListOf()
                         filteredList = dineInCartAdapter.getList()
-                            .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                            .filter { item ->
+                                if (item.title?.substringAfter("Guest ")?.contains("0") == true) {
+                                    item.title?.substringAfter("Guest 0") == i.toString()
+                                } else {
+                                    item.title?.substringAfter("Guest ") == i.toString()
+                                }
+                            }
                             ?: arrayListOf()
                         if (filteredList.isEmpty()) {
                             availableName.add(i)
