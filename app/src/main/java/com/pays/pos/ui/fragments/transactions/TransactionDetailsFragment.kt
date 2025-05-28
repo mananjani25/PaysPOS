@@ -2288,11 +2288,16 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvTipLabel.text = "Tip (0%)"
                 }
 
-                val pervious = it .data.order.customer.firstName + " " + it.data.order.customer.lastName
-                val latested = customerFirstName + " " + customerLastName
-                if (it.data.order.customer != null && pervious == latested) {
-                    binding.tvCustomerName.text =
-                        it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                if (it.data.order.customer != null ) {
+                    val pervious = it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                    val latested = customerFirstName + " " + customerLastName
+                    if (pervious == latested){
+                        binding.tvCustomerName.text =
+                            it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                    }else if (customerFirstName.isNotEmpty()){
+                        binding.tvCustomerName.text =
+                            customerFirstName + " " + customerLastName
+                    }
                 } else if (customerFirstName.isNotEmpty()){
                     binding.tvCustomerName.text =
                         customerFirstName + " " + customerLastName
