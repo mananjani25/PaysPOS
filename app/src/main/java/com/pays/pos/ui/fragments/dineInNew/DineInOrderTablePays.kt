@@ -10687,54 +10687,96 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }")
 
 
+//            listItemWithGuest.forEach { guest ->
+//
+//                lineFeed(1)
+//                appendText("------------------------")
+//                lineFeed(1)
+//
+//                appendText(guest.key.substringBefore("name:"))
+//                lineFeed(1)
+//                appendText("------------------------")
+//                lineFeed(1)
+//
+//                guest.value.forEach {obj->
+//                    data.printerCategories.forEach {
+//                        if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+//
+//
+//                            appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+//                            lineFeed(1)
+//
+//                            if (obj.modifiers.isNotEmpty()){
+//
+//
+//                                for (j in 0 until obj.modifiers.size) {
+//                                    val modifierObj = obj.modifiers.get(j)
+//                                    appendText(
+//                                        "  " + "" + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
+//                                    )
+//                                    lineFeed(1)
+//
+//                                }
+//
+//
+//                            }
+//
+//                            if (obj.note.isNotEmpty()) {
+//
+//                                appendText("  Note:" + obj.note)
+//                                lineFeed(1)
+//                            }
+//
+//                            lineFeed(1)
+//
+//                        }
+//                    }
+//
+//                }
+//
+//            }
+
             listItemWithGuest.forEach { guest ->
 
-                lineFeed(1)
-                appendText("------------------------")
-                lineFeed(1)
-
-                appendText(guest.key.substringBefore("name:"))
-                lineFeed(1)
-                appendText("------------------------")
-                lineFeed(1)
-
-                guest.value.forEach {obj->
-                    data.printerCategories.forEach {
-                        if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
-
-
-                            appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
-                            lineFeed(1)
-
-                            if (obj.modifiers.isNotEmpty()){
-
-
-                                for (j in 0 until obj.modifiers.size) {
-                                    val modifierObj = obj.modifiers.get(j)
-                                    appendText(
-                                        "  " + "" + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
-                                    )
-                                    lineFeed(1)
-
-                                }
-
-
-                            }
-
-                            if (obj.note.isNotEmpty()) {
-
-                                appendText("  Note:" + obj.note)
-                                lineFeed(1)
-                            }
-
-                            lineFeed(1)
-
-                        }
+                val hasItemsToPrint = guest.value.any { obj ->
+                    data.printerCategories.any { cat ->
+                        cat.id == obj.categoryId && cat.printerEnable && cat.categoryActive
                     }
-
                 }
 
+                if (hasItemsToPrint) {
+                    lineFeed(1)
+                    appendText("------------------------")
+                    lineFeed(1)
+                    appendText(guest.key.substringBefore("name:"))
+                    lineFeed(1)
+                    appendText("------------------------")
+                    lineFeed(1)
+
+                    guest.value.forEach { obj ->
+                        data.printerCategories.forEach { cat ->
+                            if (cat.id == obj.categoryId && cat.printerEnable && cat.categoryActive) {
+
+                                appendText("${obj.itemQuantity} ${obj.name.uppercase()}")
+                                lineFeed(1)
+
+                                obj.modifiers.forEach { modifier ->
+                                    appendText("  ${modifier.modifier_quantity}x ${modifier.name.uppercase()}")
+                                    lineFeed(1)
+                                }
+
+                                if (obj.note.isNotEmpty()) {
+                                    appendText("  Note: ${obj.note}")
+                                    lineFeed(1)
+                                }
+
+                                lineFeed(1)
+                            }
+                        }
+                    }
+                }
             }
+
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true) {
                 lineFeed(2)
