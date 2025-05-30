@@ -900,10 +900,18 @@ open class PaymentViewModel @Inject constructor(
 //        if (cartModel.customer != null)
 //            orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
+        Log.e("customerID", "createOrderRequest: 1", )
+        if (cartModel.orderType == DINE_IN){
+            orderAttributeRequestModel.customer_id = ""
+        }else{
+            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+            if (customerId != -1) {
+                orderAttributeRequestModel.customer_id = "" + customerId
+            }else{
+                orderAttributeRequestModel.customer_id = ""
+            }
         }
+
 
         var needPaymentAttributes = needToAddPaymentAttributes
         if (textToPay) {
@@ -1304,11 +1312,22 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.used_reward_points = redeemLoyaltyInfo?.usedLoyaltyPoints
         }
 
-
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
+        Log.e("customerID", "createOrderRequest: 2", )
+        if (cartModel.orderType == DINE_IN){
+            orderAttributeRequestModel.customer_id = ""
+        }else{
+            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+            if (customerId != -1) {
+                orderAttributeRequestModel.customer_id = "" + customerId
+            }else{
+                orderAttributeRequestModel.customer_id = ""
+            }
         }
+
+//        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+//        if (customerId != -1) {
+//            orderAttributeRequestModel.customer_id = ""
+//        }
 
         var needPaymentAttributes = needToAddPaymentAttributes
         if (textToPay) {
@@ -1559,12 +1578,24 @@ open class PaymentViewModel @Inject constructor(
 //        if (cartModel.customer != null)
 //            orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
-        } else {
+        if (cartModel.orderType == DINE_IN){
             orderAttributeRequestModel.customer_id = ""
+        }else{
+            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+            if (customerId != -1) {
+                orderAttributeRequestModel.customer_id = "" + customerId
+            }else{
+                orderAttributeRequestModel.customer_id = ""
+            }
         }
+
+//        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+//        if (customerId != -1) {
+//            Log.e("customerID", "createOrderRequest: 3", )
+//            orderAttributeRequestModel.customer_id = ""
+//        } else {
+//            orderAttributeRequestModel.customer_id = ""
+//        }
 
 
         orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
@@ -1828,12 +1859,24 @@ open class PaymentViewModel @Inject constructor(
 //        if (cartModel.customer != null)
 //            orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
-        } else {
+        if (cartModel.orderType == DINE_IN){
             orderAttributeRequestModel.customer_id = ""
+        }else{
+            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+            if (customerId != -1) {
+                orderAttributeRequestModel.customer_id = "" + customerId
+            }else{
+                orderAttributeRequestModel.customer_id = ""
+            }
         }
+
+//        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+//        if (customerId != -1) {
+//            Log.e("customerID", "createOrderRequest: 4", )
+//            orderAttributeRequestModel.customer_id = ""
+//        } else {
+//            orderAttributeRequestModel.customer_id = ""
+//        }
 
 
         if(isPreAuth) {
@@ -2009,9 +2052,21 @@ open class PaymentViewModel @Inject constructor(
 //        if (cartModel.customer != null)
 //            orderAttributeRequestModel.customer_id = cartModel.customer?.id
 
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
+//        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+//        if (customerId != -1) {
+//            Log.e("customerID", "createOrderRequest: 5", )
+//            orderAttributeRequestModel.customer_id = ""
+//        }
+
+        if (cartModel.orderType == DINE_IN){
+            orderAttributeRequestModel.customer_id = ""
+        }else{
+            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+            if (customerId != -1) {
+                orderAttributeRequestModel.customer_id = "" + customerId
+            }else{
+                orderAttributeRequestModel.customer_id = ""
+            }
         }
 
 
