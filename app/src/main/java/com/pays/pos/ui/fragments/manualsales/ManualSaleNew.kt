@@ -75,7 +75,6 @@ import com.pays.pos.utils.MethodUtils.Companion.getSaltString
 import com.pays.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
@@ -222,7 +221,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
                     viewModel.cartModel = null
                     viewModel.manualCartOrderNote=""
-
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                        viewModel.deleteManualSaleItemsFromCartItems()
+                    }
                     findNavController().popBackStack()
                 }
             }
@@ -230,7 +231,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
             binding.btnPay.gone()
-            binding.layoutHeader.txtTransaction.invisible()
         } else {
             binding.btnPay.gone()
         }
@@ -418,6 +418,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 viewModel.cartModel = null
                 viewModel.manualCartOrderNote=""
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    viewModel.deleteManualSaleItemsFromCartItems()
+                }
                 findNavController().navigateUp()
             } catch (e: Exception) {
                 e.printStackTrace()
