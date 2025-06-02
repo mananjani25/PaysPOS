@@ -4351,7 +4351,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 if (cartModelsList.isNotEmpty() && cartModelsList[0].customer != null) {
                                     cartModelsList[0].customer = null
                                     viewModel.addCart(cartModelsList[0])
-                                    viewModel.deleteCustomer(cartlist[0].cartId)
+                                    viewModel.deleteCustomer(cartModelsList[0].cartId)
                                 }
 
                                 clearCustomer()
