@@ -2290,6 +2290,19 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     binding.tvCustomerName.text = ""
                 }
+
+                if (it.data.order.employee != null){
+                    if (it.data.order.order_type_name.equals("Kiosk TakeOut")){
+                        binding.edtEmployeeName.text =
+                            prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+                    }else{
+                        binding.edtEmployeeName.text = it.data.order.employee
+                    }
+                }else{
+                    binding.edtEmployeeName.text = ""
+                }
+
+
                 binding.orderDetails = it
                 orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
                 Log.e("OrderTypeId", it.data.order.order_type_id.toString())
