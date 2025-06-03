@@ -11822,7 +11822,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     getOrderDetailsResponse?.payments?.forEach {
                                         paidTax += it.taxAmount
                                     }
-                                    val taxAmountToPrint = (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) - paidTax
+
+                                    val taxAmountToPrint = if (subTotalDInin != 0.0) {
+                                        (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) - paidTax
+                                    } else {
+                                        0.0
+                                    }
                                     
                                     if (viewModel.totalTaxAmount != null) {
 
