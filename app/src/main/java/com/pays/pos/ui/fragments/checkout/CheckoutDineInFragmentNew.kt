@@ -450,12 +450,14 @@ class CheckoutDineInFragmentNew : Fragment,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LogUtil.logE(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
-        orderId = dineInDataModel?.orderId
-        isGuestPay = dineInDataModel?.isFromGuest ?: false
-        isLastPayment = dineInDataModel?.isLastPayment ?: false
-        guestRequestModel = dineInDataModel?.guestPaymentReq
-        splitModel = dineInDataModel?.splitModel
-        serviceChargeAppliedList = dineInDataModel?.servicChargeAppliedlist!!
+        orderId = dineInDataModel.orderId
+        isGuestPay = dineInDataModel.isFromGuest ?: false
+        isLastPayment = dineInDataModel.isLastPayment ?: false
+        guestRequestModel = dineInDataModel.guestPaymentReq
+        if (!isGuestPay) {
+            splitModel = dineInDataModel.splitModel
+        }
+        serviceChargeAppliedList = dineInDataModel.servicChargeAppliedlist!!
         LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
