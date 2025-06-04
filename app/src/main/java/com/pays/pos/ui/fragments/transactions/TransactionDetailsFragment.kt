@@ -171,6 +171,8 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var isFromOnlineOrderRefund: Boolean = false
+    private var isRefundSuccess: Boolean = false
+
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var receiptModel: CreateOrderResponse.Data? = null
@@ -241,6 +243,7 @@ class TransactionDetailsFragment : Fragment() {
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
+        isRefundSuccess = arguments?.getBoolean("is_refund_success")?:false
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
 //        } else {
@@ -267,6 +270,7 @@ class TransactionDetailsFragment : Fragment() {
         orderUpdateTips()
         if (isFromOnlineOrderRefund) {
             acceptedAndDeclineOrder()
+            //getKitchenPrinters(true)
         }
 
         initPOSLink()
@@ -365,7 +369,7 @@ class TransactionDetailsFragment : Fragment() {
         }
         binding.txtPrintKitchenReceipt.setOnClickListener {
             isPrint = true
-            getKitchenPrinters()
+            getKitchenPrinters(false)
         }
         binding.linearTaxDetail.setOnClickListener {
             if (taxBirfurcationAdapter.taxlist.size > 0) {
@@ -2185,6 +2189,12 @@ class TransactionDetailsFragment : Fragment() {
 
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e("checkIsfromOnlineOrder","is_Auto_print  ${it.data.print_automated_receipt}")
+                Log.e("checkIsfromOnlineOrder","isFromOnlinOrderRefund ${isRefundSuccess}")
+                if (it.data.print_automated_receipt == false && isRefundSuccess){
+                    isPrint=true
+                    getKitchenPrinters(true)
+                }
                 paymentDetailsResponse = it
                 enableDisableRefundButton()
                 enableDisableTipButton()
@@ -2672,7 +2682,7 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
-    private fun getKitchenPrinters() {
+    private fun getKitchenPrinters(isVoidPayment:Boolean) {
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
@@ -2733,7 +2743,8 @@ class TransactionDetailsFragment : Fragment() {
                                                                     ) {
                                                                         initKitchenPrinter(
                                                                             kitchenPrinterList.get(i),
-                                                                            Constants.KITCHEN
+                                                                            Constants.KITCHEN,
+                                                                            isVoidPayment
                                                                         )
                                                                     }
 
@@ -2777,7 +2788,8 @@ class TransactionDetailsFragment : Fragment() {
                                                                                 kitchenPrinterList.get(
                                                                                     i
                                                                                 ),
-                                                                                Constants.KITCHEN
+                                                                                Constants.KITCHEN,
+                                                                                isVoidPayment
                                                                             )
                                                                         }
                                                                     } catch (e: Exception) {
@@ -2920,7 +2932,8 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment:Boolean
     ) {
         if (data.name.startsWith(SUNMI_PRINTER, true)) {
             data.ipAddress?.let{
@@ -2946,7 +2959,7 @@ class TransactionDetailsFragment : Fragment() {
                             println("onConnect")
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(200)
-                                generateKitchenReceiptSunmi(data, type)
+                                generateKitchenReceiptSunmi(data, type,isVoidPayment)
                             }
                         }
 
@@ -2957,7 +2970,7 @@ class TransactionDetailsFragment : Fragment() {
             } else {
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(200)
-                    generateKitchenReceiptSunmi(data, type)
+                    generateKitchenReceiptSunmi(data, type,isVoidPayment)
                 }
             }
         } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
@@ -2985,6 +2998,19 @@ class TransactionDetailsFragment : Fragment() {
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
+
+                                                if (isVoidPayment){
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(3, 3)
+                                                            )
+                                                            .actionPrintText("***** VOIDED *****")
+                                                    )
+                                                    actionFeedLine(1)
+                                                }
+
                                                 if (printOrderIDInStickyPrinter) {
                                                     add(
                                                         PrinterBuilder()
@@ -3160,6 +3186,18 @@ class TransactionDetailsFragment : Fragment() {
                                 }
                             }
                         } else {
+                            if (isVoidPayment){
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(3, 3)
+                                        )
+                                        .actionPrintText("***** VOIDED *****")
+                                )
+                                actionFeedLine(1)
+                            }
+
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
@@ -3445,12 +3483,12 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
-                setService2(data, type)
+                setService2(data, type,isVoidPayment)
             }
         } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
-                generateKitchenReceiptLandiInner(data)
+                generateKitchenReceiptLandiInner(data,isVoidPayment)
             }
         } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
@@ -3491,7 +3529,7 @@ class TransactionDetailsFragment : Fragment() {
                             Printer.PARAM_DEFAULT
                         )
                     }
-                    generateReceiptForU220(mPrinter, data, type)
+                    generateReceiptForU220(mPrinter, data, type,isVoidPayment)
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
@@ -4261,12 +4299,18 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun generateKitchenReceiptSunmi(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
         try {
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(4)
+
+            if (isVoidPayment) {
+                PrintSunmiUtils.orderIdLarge("***** VOIDED *****")
+                SunmiPrinterApi.getInstance().lineWrap(2)
+            }
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.custom_order_id)
             } else {
@@ -4427,7 +4471,8 @@ class TransactionDetailsFragment : Fragment() {
     private fun generateReceiptForU220(
         mPrinter: Printer,
         data: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
 
         var fontSizeH = 1
@@ -4447,6 +4492,26 @@ class TransactionDetailsFragment : Fragment() {
                 fontSizeH = 2
                 fontSizeW = 2
             }
+        }
+        if (isVoidPayment) {
+
+            mPrinter.addFeedUnit(30)
+            mPrinter.addFeedLine(2)
+            mPrinter.addTextFont(Builder.FONT_E)
+            mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(2, 2)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            mPrinter.addText("***** VOIDED *****")
+            mPrinter.addFeedLine(1)
+            mPrinter.addFeedUnit(30)
+            mPrinter.addFeedLine(1)
         }
 
         mPrinter.addFeedUnit(30)
@@ -4855,12 +4920,18 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun generateKitchenReceiptSunmiInner(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
+            if (isVoidPayment){
+                PrintSunmiUtils.headerText("***** VOIDED *****")
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
             } else {
@@ -5001,7 +5072,7 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
-    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters) {
+    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,isVoidPayment: Boolean) {
 
         this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
 
@@ -5014,6 +5085,13 @@ class TransactionDetailsFragment : Fragment() {
 
                             try {
 
+                                if (isVoidPayment) {
+                                    printCenter(
+                                        "***** VOIDED *****",
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
                                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                                     printCenter(
                                         "OrderID:" + paymentDetailsResponse.data.custom_order_id,
@@ -5180,7 +5258,8 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun setService2(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
@@ -5191,14 +5270,14 @@ class TransactionDetailsFragment : Fragment() {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, type)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, type,isVoidPayment)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService2(kitchenReceiptPrinters, type)
+                setService2(kitchenReceiptPrinters, type,isVoidPayment)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
