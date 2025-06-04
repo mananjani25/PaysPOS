@@ -832,6 +832,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
                         viewModel.cartModel!!.discountPrice = orderDiscount
+                        viewModel.totalDiscount = orderDiscount
                         viewModel.cartModel!!.discountSelectdValue = value
                         viewModel.cartModel!!.discountType = result.discountType
                         if (result.id != -1) {
