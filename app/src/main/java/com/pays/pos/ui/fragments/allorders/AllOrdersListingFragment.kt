@@ -2341,11 +2341,15 @@ class AllOrdersListingFragment(
 
             "CANCEL" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
+
+                   var data:OnlineOrderResponseModel.Data = adapter.getItem(pos)
                     val bundle = Bundle().apply {
                         /* putParcelable("refundData", refundData)
                          putDouble("refundAmount", subTotalPrice)*/
 
                         putInt("orderId", order.id)
+                        putParcelable("data",data)
+                        putParcelable("kitchen_settings",kitchenSettingModel)
                         putString("startDate", viewModel.startDate.value.toString())
                         putString("endDate", viewModel.endDate.value.toString())
                     }
@@ -5699,7 +5703,7 @@ class AllOrdersListingFragment(
     }
 
     // To get connected kitchen printers
-    private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data) {
+    private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data,isCancelOrder:Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
             var it = viewModel.getKitchenPrinterList()
 
@@ -5719,7 +5723,8 @@ class AllOrdersListingFragment(
                         initKitchenPrinter(
                             it,
                             Constants.KITCHEN,
-                            data
+                            data,
+                            isCancelOrder
                         )
 
                     }
@@ -5776,7 +5781,8 @@ class AllOrdersListingFragment(
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderResponseModel.Data
+        orderData: OnlineOrderResponseModel.Data,
+        isCancelOrder: Boolean=false
     ) {
         if (data.name.startsWith(SUNMI_PRINTER,true) && data.printer_type == WIFI){
 
@@ -6022,7 +6028,7 @@ class AllOrdersListingFragment(
                                 Log.d("tracking printers", "In IF")
                                 CoroutineScope(Dispatchers.Main).launch {
 
-                                    initKitchenPrinter(data, type, orderData)
+                                    initKitchenPrinter(data, type, orderData,isCancelOrder)
                                 }
                             }
 
@@ -6033,7 +6039,7 @@ class AllOrdersListingFragment(
                         })
                 } else {
                     Log.d("tracking printers", "In Else")
-                    generateKitchenReceiptSunmi(data, type, orderData)
+                    generateKitchenReceiptSunmi(data, type, orderData,isCancelOrder)
                 }
 
             } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
@@ -8307,11 +8313,17 @@ class AllOrdersListingFragment(
     private fun generateKitchenReceiptSunmi(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderResponseModel.Data
+        orderData: OnlineOrderResponseModel.Data,
+        isCancelOrder: Boolean = false
     ) {
 
         try {
 
+
+
+            if (isCancelOrder) {
+                PrintSunmiUtils.orderIdLarge("***** CANCELLED *****")
+            }
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().lineWrap(2)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
