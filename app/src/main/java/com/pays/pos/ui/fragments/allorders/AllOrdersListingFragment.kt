@@ -3062,6 +3062,28 @@ class AllOrdersListingFragment(
                                         }
                                     }
 
+                                    if (printType == Constants.PRINT_UNPAID){
+                                        if (customerSettingModel.showTipLineForCash) {
+                                            lineBreak()
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                printBoldLeft("Tip       _____________")
+                                                lineBreak()
+                                            } else {
+                                                printBoldLeft("Tip                               _____________")
+                                                lineBreak()
+                                            }
+
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                printBoldLeft("Total     _____________")
+                                                lineBreak()
+                                            } else {
+                                                printBoldLeft("Total                             _____________")
+                                            }
+
+                                        }
+
+                                    }
+
                                     /**
                                      * Tips suggestion
                                      */
@@ -4172,6 +4194,72 @@ class AllOrdersListingFragment(
                 )
             }
 
+            if (printType == Constants.PRINT_UNPAID) {
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        "Tip",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        "Total",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
 
             if (customerSettingModel.showTipSuggestion) {
                 builder.addFeedLine(1)
@@ -5039,7 +5127,40 @@ class AllOrdersListingFragment(
 
             }
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if ( printType == Constants.PRINT_UNPAID) {
+
+
+                if (customerSettingModel.showTipLineForCash) {
+
+                    SunmiPrinterApi.getInstance().lineWrap(2)
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+
+                        PrintSunmiUtils.tips("Tip       _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.tips("Tip                                _____________")
+
+                    }
+
+
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+
+                        PrintSunmiUtils.tips("Total     _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.tips("Total                              _____________")
+                    }
+
+                }
+
+            }
+
+
+            if (printType != Constants.PRINT_UNPAID){
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -8978,6 +9099,53 @@ class AllOrdersListingFragment(
                 }
 
             }
+
+            if (printType == Constants.PRINT_UNPAID) {
+
+
+                if (customerSettingModel.showTipLineForCash) {
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ){
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Tip       _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Tip                               _____________")
+                        }
+                    } else {
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Tip       _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Tip                               _____________")
+                        }
+                    }
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ){
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Total     _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Total                             _____________")
+                        }
+                    } else {
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Total     _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Total                             _____________")
+                        }
+                    }
+                }
+
+            }
+
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
