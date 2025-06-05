@@ -1196,8 +1196,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+
+//            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            paymentAmount = getCalCashDiscWithAmount(
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(),true
+            )
             val bundle = Bundle()
-            bundle.putDouble("totalPrice", WholetotalPrice)
+            bundle.putDouble("paymentAmount", MethodUtils.roundOffAmountDouble(paymentAmount))
+            bundle.putString("isCashDiscount", cashDiscountType)
             bundle.putInt("splitValue", isSelectedCount)
             bundle.putBoolean("amountWiseSplit", false)
             dashboardViewModel.wholetotalPrice = WholetotalPrice
