@@ -1424,10 +1424,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setCharacterSize(2, 2)
 
-        if (isOrderUpdated == true) {
+        /*if (isOrderUpdated == true) {
             appendText("***** UPDATED *****")
             lineFeed(2)
-        }
+        }*/
 
         if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
             appendText("OrderID:${receiptModel?.order?.custom_order_id}")

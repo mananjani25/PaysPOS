@@ -3209,7 +3209,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
 //                                    }
 //                                    lineBreak()
 //                                    lineBreak()
-                                    printCenter("***** CANCELLED *****")
+                                    printCenter("***** CANCELLED *****", isBold = true, fontSize = FONT_SIZE_5X)
                                     lineBreak()
 
                                     if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
