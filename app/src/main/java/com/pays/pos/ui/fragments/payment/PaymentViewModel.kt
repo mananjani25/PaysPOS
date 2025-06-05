@@ -176,7 +176,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun submit(orderRequestModel: OrderRequestModel) {
-        Log.d("Omkar", "179 submit checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
+        Log.d(TAG, "179 submit checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
         if (orderRequestModel.order.deliveryType.equals("null")) {
             orderRequestModel.order.deliveryType = ""
         }
@@ -208,7 +208,7 @@ open class PaymentViewModel @Inject constructor(
                         }"
                     )
                 )
-                Log.d("Omkar", "211 submit checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
+                Log.d(TAG, "211 submit checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
                 posRepository.createOrder(orderRequestModel)
             }
 
@@ -2896,6 +2896,12 @@ open class PaymentViewModel @Inject constructor(
 //            if () //gift card redeem and its less = > totalAM - tipAmount
 
             amount = totalAM
+
+//            if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
+//                if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
+//                    amount = totalAM - tipAmount
+//                }
+//            }
 
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {

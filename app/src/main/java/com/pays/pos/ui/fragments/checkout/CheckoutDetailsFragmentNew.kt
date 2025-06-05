@@ -5147,12 +5147,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             val isSplitEnabled = prefProvider.getValueboolean(SPLIT_ENABLE, false) || (splitValue > -1)
                             val giftCardNumber = binding.edtGiftCardNumber.text.toString().trim()
 
-                            if (actualTotalAmount > it.data.amount) {
+                            Log.d(TAG,"Gift Card Observer -> actualTotalAmount: ${actualTotalAmount}")
+                            Log.d(TAG,"Gift Card Observer -> isSplitEnabled: ${isSplitEnabled}")
+                            Log.d(TAG,"Gift Card Observer -> giftCardNumber: ${giftCardNumber}")
+                            Log.d(TAG,"Gift Card Observer -> it.data.amount: ${it.data.amount}")
+
+                            if (actualTotalAmount >= it.data.amount) {
                                 if (isSplitEnabled) {
-                                    Log.d(TAG, "checkAlreadyEnabled")
+                                    Log.d(TAG, "check isSplitEnabled")
                                     handleGiftCardRedemption(it.data.amount, giftCardNumber)
                                 } else {
-                                    Log.e(TAG, "checkELfadafe")
+                                    Log.e(TAG, "check !isSplitEnabled")
                                     prefProvider.setValueboolean(SPLIT_ENABLE, true)
                                     splitAllAmounts(Constants.SUB_TOTAL, it.data.amount.toPrecision(2).toDouble())
                                     splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
@@ -5160,7 +5165,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
                                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.00)
                                     splitAllAmounts(Constants.TIP, 0.0)
-                                    handleGiftCardRedemption(it.data.amount, giftCardNumber)
+                                    handleGiftCardRedemption(it.data.amount - tipAmount, giftCardNumber)
                                 }
                             } else {
 //                                 splitAllAmounts(Constants.SUB_TOTAL, dashboardViewModel.totalPrice.toDouble())
