@@ -5122,7 +5122,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (it.data != null) {
                     if (isAdded) {
 
-                        if (it.data.amount == 0.0) {
+                        Log.d(TAG, "showProgressObserver tipAmount: $tipAmount")
+                        Log.d(TAG, "showProgressObserver isTipIsMax: ${tipAmount >= it.data.amount}")
+
+                        if (it.data.amount == 0.0 || tipAmount >= it.data.amount) {
 //                            binding.edtGiftCardNumber.setText("")
                             prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -5139,7 +5142,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
                             Log.d(TAG,"Gift Card Observer -> totalPrice :${dashboardViewModel.totalPrice}")
                             Log.d(TAG,"Gift Card Observer -> totalPrice: $totalPrice")
-                            Log.d(TAG,"Gift Card Observer -> amount: ${it.data.amount}")
+                            Log.d(TAG,"Gift Card Observer -> gift card amount: ${it.data.amount}")
                             Log.d(TAG,"Gift Card Observer -> amountDashboard: ${dashboardViewModel.totalPrice}")
                             Log.d(TAG,"Gift Card Observer -> checkSplitCount: ${splitValue}")
 
@@ -5150,14 +5153,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             Log.d(TAG,"Gift Card Observer -> actualTotalAmount: ${actualTotalAmount}")
                             Log.d(TAG,"Gift Card Observer -> isSplitEnabled: ${isSplitEnabled}")
                             Log.d(TAG,"Gift Card Observer -> giftCardNumber: ${giftCardNumber}")
-                            Log.d(TAG,"Gift Card Observer -> it.data.amount: ${it.data.amount}")
+
+                            val newAmt = if (actualTotalAmount >= it.data.amount) {
+                                it.data.amount - tipAmount
+                            } else {
+                                actualTotalAmount
+                            }
 
                             if (actualTotalAmount >= it.data.amount) {
                                 if (isSplitEnabled) {
                                     Log.d(TAG, "check isSplitEnabled")
-                                    handleGiftCardRedemption(it.data.amount, giftCardNumber)
+                                    handleGiftCardRedemption(newAmt, giftCardNumber)
                                 } else {
-                                    Log.e(TAG, "check !isSplitEnabled")
+                                    Log.d(TAG, "check !isSplitEnabled")
                                     prefProvider.setValueboolean(SPLIT_ENABLE, true)
                                     splitAllAmounts(Constants.SUB_TOTAL, it.data.amount.toPrecision(2).toDouble())
                                     splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
@@ -5165,13 +5173,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
                                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.00)
                                     splitAllAmounts(Constants.TIP, 0.0)
-                                    handleGiftCardRedemption(it.data.amount - tipAmount, giftCardNumber)
+                                    handleGiftCardRedemption(newAmt, giftCardNumber)
                                 }
                             } else {
 //                                 splitAllAmounts(Constants.SUB_TOTAL, dashboardViewModel.totalPrice.toDouble())
-                                handleGiftCardRedemption(actualTotalAmount, giftCardNumber)
+                                Log.d(TAG, "check ActualTotalAmount is Less")
+                                handleGiftCardRedemption(newAmt, giftCardNumber)
                             }
                         }
+
                     } else {
                         binding.edtGiftCardNumber.setText("")
                         AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), message = it.message) { _, _ -> }
@@ -5182,6 +5192,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun handleGiftCardRedemption(amount: Double, giftCardNumber: String) {
+        Log.d(TAG, "handleGiftCardRedemption Amount: $amount")
         paymentAmount = amount
         paymentviewModel.totalPayAmount(amount)
         prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
@@ -8370,7 +8381,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         orderTypeId = it.first().id ?: -1
                                         orderTypeName = it.first().orderType ?: ""
                                     }
-
                                 }
                             }
                         }
@@ -8501,7 +8511,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Log.d(TAG, "paymentAttributesRequest viewmodelTotal: ${dashboardViewModel.totalPrice}")
                 Log.d(TAG, "paymentAttributesRequest gift_card_redeemed_amount: ${paymentReq?.gift_card_redeemed_amount}")
 
-                if (paymentReq?.gift_card_redeemed_amount != null && (paymentReq.gift_card_redeemed_amount ?: 0.00) > 0.00) {
+                /*if (paymentReq?.gift_card_redeemed_amount != null && (paymentReq.gift_card_redeemed_amount ?: 0.00) > 0.00) {
                     Log.e("checkSplit","giftCardwholeTotal ${WholetotalPrice}" )
 
                     Log.e("checkSplit","viewmodelTotal  ${dashboardViewModel.totalPrice}")
@@ -8511,12 +8521,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                          paymentReq.amount = paymentAmount
                          Log.e("AcceptPaymentReq","changedParams_checkPAymentAmt:  $paymentAmount")
 
-                     } else if (paymentReq.gift_card_redeemed_amount?.toDouble() != totalPrice.toDouble()) {
+                     } else if (paymentReq.gift_card_redeemed_amount != totalPrice) {
                         paymentReq.gift_card_redeemed_amount = dashboardViewModel.totalPrice
                         paymentReq.amount = dashboardViewModel.totalPrice
                         Log.e("AcceptPaymentReq","changedParams")
                     }
-                }
+                }*/
 
                 val isLastPayment = ((paymentReq?.amount ?: 0.00) >= (paymentReq?.subTotal ?: 0.00)) && (isSelectedCount <= 1)
 
