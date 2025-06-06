@@ -2181,6 +2181,7 @@ class TransactionDetailsFragment : Fragment() {
         val bundle = Bundle().apply {
             putInt("orderId", orderId)
             putInt("paymentId", paymentId)
+            putBoolean("is_refund_success",true)
         }
 
         val id = findNavController().currentDestination?.id
