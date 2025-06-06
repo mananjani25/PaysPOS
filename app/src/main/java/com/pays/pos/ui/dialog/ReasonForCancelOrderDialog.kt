@@ -25,24 +25,14 @@ import androidx.navigation.fragment.findNavController
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
-import com.pays.pos.R
-import com.pays.pos.data.model.requestModel.RefundRequestModel
-import com.pays.pos.data.model.responseModel.VenueDetailsResponse
-import com.pays.pos.databinding.DialogCancelOrderReasonBinding
-import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.adapter.CancelOrderReasonAdapter
-import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.liveSnackBar
-import com.pays.pos.utils.extensions.showAlert
-import com.pays.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.R
+import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.model.responseModel.VenueDetailsResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
@@ -50,14 +40,19 @@ import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.WIFI
+import com.pays.pos.databinding.DialogCancelOrderReasonBinding
+import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.adapter.CancelOrderReasonAdapter
 import com.pays.pos.ui.fragments.allorders.AllOrdersListingFragment.OnBluetoothPermissionGranted
+import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.pays.pos.ui.fragments.settings.kitchenreceipt.KitchenReceiptSettings
+import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.PrintSunmiUtils
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.addBuilderText
 import com.pays.pos.utils.addBuilderTextForU220
 import com.pays.pos.utils.addHorizontalKitchenLine
@@ -69,12 +64,15 @@ import com.pays.pos.utils.addOrdersForKitchenOnlineOrderSunmi
 import com.pays.pos.utils.addOrdersForKitchenOnlineOrderSunmiInner
 import com.pays.pos.utils.addOrdersForKitchenOnlineOrderU220
 import com.pays.pos.utils.addReprintOrdersForStarKitchen
-import com.pays.pos.utils.addSingleReprintOrdersForStarKitchen
 import com.pays.pos.utils.checkItemsforPrinterOnlineOrder
+import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.padLine
 import com.pays.pos.utils.printer.PrinterClass
+import com.pays.pos.utils.statusUtils.Status
 import com.sdksuite.omnidriver.OmniDriver
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
@@ -704,7 +702,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                                 PrinterBuilder()
                                     .styleBold(true)
                                     .styleMagnification(
-                                        MagnificationParameter(3, 3)
+                                        MagnificationParameter(2, 2)
                                     )
                                     .actionPrintText("***** CANCELLED *****")
                             )
@@ -716,7 +714,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                                     PrinterBuilder()
                                         .styleBold(true)
                                         .styleMagnification(
-                                            MagnificationParameter(3, 3)
+                                            MagnificationParameter(2, 2)
                                         )
                                         .actionPrintText(
                                             "OrderId: ${orderData.custom_order_id}"

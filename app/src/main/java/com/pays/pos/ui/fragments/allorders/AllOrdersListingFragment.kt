@@ -6070,7 +6070,7 @@ class AllOrdersListingFragment(
 
                             if (!oneItemPerReceipt) {
                                 orderData.orderItems.forEach { item ->
-                                    data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                    data.printerCategories.toCollection(arrayListOf()).forEach {
                                         if (it?.id == item.categoryId) {
                                             if (it.categoryActive && it.printerEnable) {
                                                 for (singularity in 1..item.quantity) {
