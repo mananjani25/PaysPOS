@@ -137,6 +137,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     var cjkCharWidth: Int = 24
     var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
     var omniDriver: OmniDriver? = null
+    private var needToRefresh = false
 
 
     @Inject
@@ -212,7 +213,9 @@ class ReasonForCancelOrderDialog : DialogFragment() {
         navigate()
 
         binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
+//            findNavController().navigateUp()
+            needToRefresh = true
+            findNavController().popBackStack()
         }
 
         getCancelOrderReasons()
@@ -346,8 +349,9 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_1")
         super.onDismiss(dialog)
-
-        onlineDetailsViewModel.toggleRefresh(true)
+        if(!needToRefresh) {
+            onlineDetailsViewModel.toggleRefresh(true)
+        }
 
         Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_2")
 
