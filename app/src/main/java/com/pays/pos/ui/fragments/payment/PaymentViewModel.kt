@@ -18,6 +18,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PAYMENT_ID
 import com.pays.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
@@ -183,6 +184,15 @@ open class PaymentViewModel @Inject constructor(
         if (cashPaymentType(orderRequestModel)) {
             _showProgressCash.value = Event(true)
         } else _showProgress.value = Event(true)
+
+        if(prefProvider.getValue(ORDER_TYPE,TAKEOUT) == DINE_IN) {
+            orderRequestModel.order.apply {
+                val empId = prefProvider.employeeId()
+                employeeId = empId
+                paymentAttributes?.employeeId = empId
+            }
+        }
+
 
         viewModelScope.launch {
 
@@ -851,7 +861,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
@@ -1258,7 +1268,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
@@ -1518,7 +1528,7 @@ open class PaymentViewModel @Inject constructor(
 
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
 
@@ -1785,7 +1795,7 @@ open class PaymentViewModel @Inject constructor(
             )
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
@@ -1981,7 +1991,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge

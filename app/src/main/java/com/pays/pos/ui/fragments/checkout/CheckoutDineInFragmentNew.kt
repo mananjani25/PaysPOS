@@ -450,12 +450,14 @@ class CheckoutDineInFragmentNew : Fragment,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         LogUtil.logE(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
-        orderId = dineInDataModel?.orderId
-        isGuestPay = dineInDataModel?.isFromGuest ?: false
-        isLastPayment = dineInDataModel?.isLastPayment ?: false
-        guestRequestModel = dineInDataModel?.guestPaymentReq
-        splitModel = dineInDataModel?.splitModel
-        serviceChargeAppliedList = dineInDataModel?.servicChargeAppliedlist!!
+        orderId = dineInDataModel.orderId
+        isGuestPay = dineInDataModel.isFromGuest ?: false
+        isLastPayment = dineInDataModel.isLastPayment ?: false
+        guestRequestModel = dineInDataModel.guestPaymentReq
+        if (!isGuestPay) {
+            splitModel = dineInDataModel.splitModel
+        }
+        serviceChargeAppliedList = dineInDataModel.servicChargeAppliedlist!!
         LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
@@ -493,6 +495,8 @@ class CheckoutDineInFragmentNew : Fragment,
             custom_paymentAmount = 0.0
         }
 
+
+        binding.linearTab3.gone()
     }
 
     @SuppressLint("InflateParams")
@@ -678,11 +682,12 @@ class CheckoutDineInFragmentNew : Fragment,
                 if (custom_paymentAmount != 0.0) {
                     dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
                 }
-                paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-                    "External"
-                } else {
-                    "Cash"
-                }
+//                paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+//                    "External"
+//                } else {
+//                    "Cash"
+//                }
+                paymentType = "External"
                 guestAttributeCalculation(-1, "", dynamicPaymentId = dynamicPaymentId, dynamicPaymentType = dynamicPaymentName)
 
                 dashboardViewModel.apply {
@@ -1345,6 +1350,17 @@ class CheckoutDineInFragmentNew : Fragment,
                                 arrayListOf()
                             )
                         )
+
+                        if(prefProvider.getValue(ORDER_TYPE,TAKEOUT) == DINE_IN) {
+                            dineInDataModel.dineInOrderDetails.apply {
+                                val empId = prefProvider.employeeId()
+                                this?.employeeId = empId
+                                if(this?.payments?.isNotEmpty() == true) {
+                                    this.payments?.last()?.employeeId = empId
+                                }
+                            }
+                        }
+
                         bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
 
                         Log.e("PRINT_DATA_DINE_IN",Gson().toJson(dineInDataModel.dineInOrderDetails))
@@ -1728,11 +1744,14 @@ class CheckoutDineInFragmentNew : Fragment,
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
 
-        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-            "External"
-        } else {
-            "Cash"
-        }
+//        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+//            "External"
+//        } else {
+//            "Cash"
+//        }
+
+
+        paymentType = "External"
 
         if (isGuestPay) {
 

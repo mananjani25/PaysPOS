@@ -5106,9 +5106,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 CoroutineScope(Dispatchers.IO).async {
                     cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
-                    if (cartModel == null && getAllCartModels() != null && !getAllCartModels().isEmpty()) {
-                        cartModel = getAllCartModels().get(0)
+
+                    if (cartModel == null && getAllCartModels().isNotEmpty()) {
+                        cartModel = getAllCartModels().firstOrNull()
                     }
+
                 }.await()
             }
 
@@ -6765,7 +6767,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
             orderItemsAttribute.orderItemModifiersAttributes =
-                orderItemModifierAttributes(item, cartModel.terminalId)
+                orderItemModifierAttributes(item, cartModel.terminalId, orderId ?: -1)
 
             orderItemsAttribute.orderItemVariationAttributes =
                 orderItemVariationAttributes(item)
@@ -6891,7 +6893,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun orderItemModifierAttributes(
-        item: TbCartItem, terminalId: Int
+        item: TbCartItem, terminalId: Int, orderId: Int = -1 ,
+        isFromWastageItem: Boolean = false
     ): List<OrderItemModifierAttribute> {
 
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -6903,7 +6906,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (prefProvider.getValueboolean(
                         DINE_IN_UPDATE, false
                     ) && it.orderModifierId != null
-                ) id = it.orderModifierId
+                ) if(!isFromWastageItem) id = it.orderModifierId
                 name = it.name
                 price = it.price
                 modifier_id = it.id
@@ -6913,6 +6916,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 quantity = it.itemQuantity
                 order_item_taxes_attributes = orderModifierTaxesAttributes(item, it, terminalId)
                 modifier_quantity = it.modifier_quantity
+
+                if(orderId != -1)
+                    this.orderId = orderId
+
+                order_item_modifier_id = it.orderModifierId
                 _destroy = it._destroy
             }
             orderItemModifierAttributeList.add(orderItemModifierAttribute)
@@ -7067,7 +7075,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
-
             val resource: Resource<CreateOrderResponse> =
 
                 posRepository.createOrder(orderRequestModel)
@@ -7186,6 +7193,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
+            customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1).toString()
 
             /**
              *  currentDineInItems keeps track of all dine in Items even if they are destroyed
@@ -9096,6 +9104,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     // To clear customer if creating gift card
     fun clearCustomer() {
+        prefProvider.saveCustomerData(null)
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
         prefProvider.setValue(Constants.PREF_CUSTOMER, "")

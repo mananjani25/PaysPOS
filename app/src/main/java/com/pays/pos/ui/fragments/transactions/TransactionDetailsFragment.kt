@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -76,7 +77,9 @@ import com.pays.pos.data.model.valor.ValorTransactionsList
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.OPEN_ORDER_UPDATE_FOR_PRINT
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
+import com.pays.pos.data.remote.Constants.WIFI
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
@@ -111,11 +114,31 @@ import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
 import java.io.StringReader
+import java.io.UnsupportedEncodingException
 import java.lang.ref.WeakReference
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
+import java.util.Random
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -164,6 +187,7 @@ class TransactionDetailsFragment : Fragment() {
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
+    private var customerName: String = ""
     private var orderType: String = ""
     var mLastClickTime: Long = 0
     private val TAG = "TransactionDetailsFr"
@@ -171,6 +195,8 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var isFromOnlineOrderRefund: Boolean = false
+    private var isRefundSuccess: Boolean = false
+
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var receiptModel: CreateOrderResponse.Data? = null
@@ -184,6 +210,10 @@ class TransactionDetailsFragment : Fragment() {
     var CardName = ""
     var EDCType = ""
     var omniDriver: OmniDriver? = null
+    var charHSize: Int = 1
+    var asciiCharWidth: Int = 12
+    var cjkCharWidth: Int = 24
+    var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -238,9 +268,11 @@ class TransactionDetailsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         orderId = arguments?.getInt("orderId")!!
+        customerName = arguments?.getString("customerName") ?: ""
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
+        isRefundSuccess = arguments?.getBoolean("is_refund_success")?:false
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
 //        } else {
@@ -267,6 +299,7 @@ class TransactionDetailsFragment : Fragment() {
         orderUpdateTips()
         if (isFromOnlineOrderRefund) {
             acceptedAndDeclineOrder()
+            //getKitchenPrinters(true)
         }
 
         initPOSLink()
@@ -365,7 +398,7 @@ class TransactionDetailsFragment : Fragment() {
         }
         binding.txtPrintKitchenReceipt.setOnClickListener {
             isPrint = true
-            getKitchenPrinters()
+            getKitchenPrinters(false)
         }
         binding.linearTaxDetail.setOnClickListener {
             if (taxBirfurcationAdapter.taxlist.size > 0) {
@@ -2150,6 +2183,7 @@ class TransactionDetailsFragment : Fragment() {
         val bundle = Bundle().apply {
             putInt("orderId", orderId)
             putInt("paymentId", paymentId)
+            putBoolean("is_refund_success",true)
         }
 
         val id = findNavController().currentDestination?.id
@@ -2185,6 +2219,12 @@ class TransactionDetailsFragment : Fragment() {
 
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e("checkIsfromOnlineOrder","is_Auto_print  ${it.data.print_automated_receipt}")
+                Log.e("checkIsfromOnlineOrder","isFromOnlinOrderRefund ${isRefundSuccess}")
+                if (it.data.print_automated_receipt == false && isRefundSuccess){
+                    isPrint=true
+                    getKitchenPrinters(true)
+                }
                 paymentDetailsResponse = it
                 enableDisableRefundButton()
                 enableDisableTipButton()
@@ -2285,8 +2325,11 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 if (it.data.order.customer != null) {
-                    binding.tvCustomerName.text =
+                    binding.tvCustomerName.text = if (customerName.isNotBlank()) {
+                        customerName
+                    }else {
                         it.data.order.customer.firstName + " " + it.data.order.customer.lastName
+                    }
                 } else {
                     binding.tvCustomerName.text = ""
                 }
@@ -2364,14 +2407,10 @@ class TransactionDetailsFragment : Fragment() {
                                         )
                                         taxlistbirfurcation?.add(taxData)
                                     } else {
-                                        taxlistbirfurcation!![found].totalTaxTypePrice =
-                                            taxlistbirfurcation!![found].totalTaxTypePrice + getTaxFromTotalPrice(
-                                                orderItemTaxe,
-                                                totalPrice,
-                                                orderItem
-                                            )
-                                        taxlistbirfurcation!![found].subTotalAmount =
-                                            taxlistbirfurcation!![found].subTotalAmount + totalPrice
+                                        if (tipAmount == 0.0){
+                                            taxlistbirfurcation!![found].totalTaxTypePrice += getTaxFromTotalPrice( orderItemTaxe, totalPrice, orderItem)
+                                        }
+                                        taxlistbirfurcation!![found].subTotalAmount = taxlistbirfurcation!![found].subTotalAmount + totalPrice
                                     }
                                     Log.d(TAG, "found : " + found)
                                 } else {
@@ -2676,7 +2715,7 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
-    private fun getKitchenPrinters() {
+    private fun getKitchenPrinters(isVoidPayment:Boolean) {
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
@@ -2737,7 +2776,8 @@ class TransactionDetailsFragment : Fragment() {
                                                                     ) {
                                                                         initKitchenPrinter(
                                                                             kitchenPrinterList.get(i),
-                                                                            Constants.KITCHEN
+                                                                            Constants.KITCHEN,
+                                                                            isVoidPayment
                                                                         )
                                                                     }
 
@@ -2781,7 +2821,8 @@ class TransactionDetailsFragment : Fragment() {
                                                                                 kitchenPrinterList.get(
                                                                                     i
                                                                                 ),
-                                                                                Constants.KITCHEN
+                                                                                Constants.KITCHEN,
+                                                                                isVoidPayment
                                                                             )
                                                                         }
                                                                     } catch (e: Exception) {
@@ -2802,6 +2843,9 @@ class TransactionDetailsFragment : Fragment() {
                                 }
                             }
                         }
+                    }
+                    else{
+                        isPrint = false
                     }
 
 
@@ -2924,11 +2968,28 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment:Boolean
     ) {
-        if (data.name.startsWith(SUNMI_PRINTER, true)) {
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
+        if (data.name.startsWith(SUNMI_PRINTER, true) && data.printer_type == WIFI) {
+            Log.e(TAG, "PrinitngQueue ${data.ipAddress}")
+            data.ipAddress?.let { cloudQueuePrinting(it, 2241, data,isVoidPayment) }
+
+        } else {
+
+            Log.e(TAG, "NonQueue ")
+
+
+            if (data.name.startsWith(SUNMI_PRINTER, true)) {
+            data.ipAddress?.let{
+                if (it.contains(":")) {
+                    SunmiPrinterApi.getInstance()
+                        .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, it)
+                } else {
+                   // Log.e(TAG, "IPAddressMissing->$it")
+                }
+            } ?: Log.e(TAG, "IPAddressMissing")
             if (!SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance()
                     .connectPrinter(requireContext(), object : ConnectCallback {
@@ -2944,7 +3005,7 @@ class TransactionDetailsFragment : Fragment() {
                             println("onConnect")
                             viewLifecycleOwner.lifecycleScope.launch {
                                 delay(200)
-                                generateKitchenReceiptSunmi(data, type)
+                                generateKitchenReceiptSunmi(data, type,isVoidPayment)
                             }
                         }
 
@@ -2955,7 +3016,7 @@ class TransactionDetailsFragment : Fragment() {
             } else {
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(200)
-                    generateKitchenReceiptSunmi(data, type)
+                    generateKitchenReceiptSunmi(data, type,isVoidPayment)
                 }
             }
         } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
@@ -2977,200 +3038,51 @@ class TransactionDetailsFragment : Fragment() {
                         styleCharacterSpace(0.0)
                         styleAlignment(Alignment.Center)
 
-                        if (!oneItemPerReceipt) {
-                            paymentDetailsResponse.data.order.order_items.forEach { item ->
-                                data.printerCategories.toCollection(arrayListOf())?.forEach {
-                                    if (it?.id == item.categoryId) {
-                                        if (it.categoryActive && it.printerEnable) {
-                                            for (singularity in 1..item.quantity) {
-                                                if (printOrderIDInStickyPrinter) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(3, 3)
-                                                            )
-                                                            .actionPrintText(
-                                                                "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
-                                                            )
-                                                    )
-                                                }
-
-                                                actionFeedLine(1)
-
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(2, 2)
-                                                        )
-                                                        .actionPrintText(
-                                                            "${paymentDetailsResponse.data.order.order_type_name}"
-                                                        )
-                                                )
-
-                                                actionFeedLine(1)
-
-                                                if (paymentDetailsResponse.data.order.order_type_name.contains(
-                                                        "Phone",
-                                                        true
-                                                    ) || (paymentDetailsResponse.data.order.order_type_name.equals(
-                                                        "OnlineWebOrder",
-                                                        ignoreCase = true
-                                                    ))
-                                                ) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(2, 2)
-                                                            )
-                                                            .actionPrintText(
-                                                                "${paymentDetailsResponse.data.order.delivery_type}"
-                                                            )
-                                                    )
-
-                                                    actionFeedLine(1)
-                                                }
-
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleAlignment(Alignment.Left)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(2, 2)
-                                                        )
-                                                        .actionPrintText(
-                                                            content = addSingleReprintTransactionOrdersForStarKitchen(
-                                                                1,
-                                                                item,
-                                                                data.printerCategories.toCollection(
-                                                                    arrayListOf()
-                                                                )
-                                                            )
-                                                        )
-                                                )
-
-                                                actionFeedLine(1)
-                                                if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Center)
-                                                            .styleBold(true)
-                                                            .actionPrintText(
-                                                                content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    "--------------------------------------------\nOrder Note"
-                                                                } else ""
-                                                            )
-                                                    )
-                                                }
-                                                if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Center)
-                                                            .actionPrintText(
-                                                                content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    paymentDetailsResponse.data.order.note.toString()
-                                                                } else ""
-                                                            )
-                                                    )
-                                                }
-
-                                                actionFeedLine(1)
-                                                actionFeedLine(1)
-
-                                                var printedName = StringBuilder("")
-                                                paymentDetailsResponse.data.order.customer?.firstName?.let { firstName ->
-                                                    paymentDetailsResponse.data.order.customer?.lastName?.let { lastName ->
-                                                        if (kitchenSettingModel.showCustomerName || paymentDetailsResponse.data.order.order_type.equals(
-                                                                "KioskOpenorder", true
-                                                            ) || paymentDetailsResponse.data.order.order_type.equals(
-                                                                "OnlineWebOrder",
-                                                                true
-                                                            ) || paymentDetailsResponse.data.order.order_type.equals(
-                                                                "OnlineOrder",
-                                                                true
-                                                            )
-                                                        ) {
-                                                            if (!firstName.contains(
-                                                                    "customer",
-                                                                    ignoreCase = true
-                                                                )
-                                                            ) {
-                                                                printedName.append(firstName)
-                                                                printedName.append(" ")
-                                                            }
-
-                                                            if (!lastName.isBlank()) {
-                                                                printedName.append(lastName)
-                                                            }
-
-                                                            if (printedName.isNotEmpty()) {
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleBold(true)
-                                                                        .actionPrintText(
-                                                                            content = "Customer Details\n"
-                                                                        )
-                                                                )
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Center)
-                                                                        .actionPrintText(
-                                                                            content =
-                                                                            "--------------------------------------------"
-                                                                        )
-                                                                )
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .actionPrintText(
-                                                                            content = printedName.toString()
-                                                                        )
-                                                                )
-
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-
-                                                actionFeedLine(1)
-
-                                                add(
-                                                    PrinterBuilder()
-                                                        .actionPrintText(
-                                                            Constants.getReceiptFormatDateFromUTCServer(
-                                                                requireContext(),
-                                                                paymentDetailsResponse.data.order?.created_at.toString()
-                                                            )
-                                                        )
-                                                )
-
-                                                printerBuilder.actionFeedLine(1)
-                                                actionCut(CutType.Partial)
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
+                        if (isVoidPayment){
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
                                     .styleMagnification(
-                                        MagnificationParameter(3, 3)
+                                        MagnificationParameter(2, 2)
                                     )
-                                    .actionPrintText(
-                                        "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
-                                    )
+                                    .actionPrintText("***** VOIDED *****")
                             )
+                            actionFeedLine(1)
+                        }
 
-                            styleAlignment(Alignment.Center)
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .styleMagnification(
+                                    MagnificationParameter(2, 2)
+                                )
+                                .actionPrintText(
+                                    "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
+                                )
+                        )
 
+                        styleAlignment(Alignment.Center)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .styleMagnification(
+                                    MagnificationParameter(2, 2)
+                                )
+                                .actionPrintText(
+                                    if (kitchenSettingModel.showOrderType)
+                                        paymentDetailsResponse.data.order.order_type
+                                    else ""
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals(
+                                "OnlineWebOrder",
+                                ignoreCase = true
+                            ))
+                        ) {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
@@ -3178,232 +3090,666 @@ class TransactionDetailsFragment : Fragment() {
                                         MagnificationParameter(2, 2)
                                     )
                                     .actionPrintText(
-                                        if (kitchenSettingModel.showOrderType)
-                                            paymentDetailsResponse.data.order.order_type
-                                        else ""
+                                        paymentDetailsResponse.data.order.delivery_type
                                     )
                             )
 
                             actionFeedLine(1)
+                        }
 
-                            if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals(
-                                    "OnlineWebOrder",
-                                    ignoreCase = true
-                                ))
+                        add(
+                            PrinterBuilder()
+                                .styleMagnification(
+                                    MagnificationParameter(2, 2)
+                                )
+                                .actionPrintText(
+                                    "Employee:${
+                                        prefProvider.getValue(
+                                            Constants.EMPLOYEE_NAME,
+                                            ""
+                                        )
+                                    }"
+                                )
+                        )
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .styleMagnification(
+                                    MagnificationParameter(2, 2)
+                                )
+                                .actionPrintText(
+                                    Constants.getReceiptFormatDateFromUTCServer(
+                                        requireContext(),
+                                        paymentDetailsResponse.data.order.created_at.toString()
+                                    )
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    "--------------------------------------------"
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder().styleMagnification(
+                                MagnificationParameter(2, 2)
+                            ).styleAlignment(Alignment.Left)
+                                .actionPrintText(
+                                    content = addReprintTransactionOrdersForStarKitchen(
+                                        paymentDetailsResponse.data.order.order_items!!,
+                                        data.printerCategories.toCollection(arrayListOf())
+                                    )
+                                )
+                        )
+
+                        actionFeedLine(1)
+                        if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                            add(
+                                PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
+                                    .styleAlignment(Alignment.Center)
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                            "--------------------------------------------\nOrder Note\n "
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
+                                    .actionPrintText(
+                                        content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                            paymentDetailsResponse.data.order.note.toString()
+                                        } else ""
+                                    )
+                            )
+                        }
+                        actionFeedLine(1)
+                        if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .styleBold(true)
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+                                            "Customer Details\n"
+                                        } else ""
+                                    )
+                            )
+                        }
+
+                        if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+                                            "--------------------------------------------"
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+                                            paymentDetailsResponse.data.order.customer?.firstName + " " + paymentDetailsResponse.data.order.customer?.lastName
+                                        } else ""
+                                    )
+                            )
+                        }
+                        try {
+                            if (kitchenSettingModel.showCustomerPhone && paymentDetailsResponse.data.order.customer?.phones?.get(
+                                    0
+                                ) != null
                             ) {
                                 add(
                                     PrinterBuilder()
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            paymentDetailsResponse.data.order.delivery_type
-                                        )
-                                )
-
-                                actionFeedLine(1)
-                            }
-
-                            add(
-                                PrinterBuilder()
-                                    .styleMagnification(
-                                        MagnificationParameter(2, 2)
-                                    )
-                                    .actionPrintText(
-                                        "Employee:${
-                                            prefProvider.getValue(
-                                                Constants.EMPLOYEE_NAME,
-                                                ""
-                                            )
-                                        }"
-                                    )
-                            )
-                            actionFeedLine(1)
-
-                            add(
-                                PrinterBuilder()
-                                    .styleMagnification(
-                                        MagnificationParameter(2, 2)
-                                    )
-                                    .actionPrintText(
-                                        Constants.getReceiptFormatDateFromUTCServer(
-                                            requireContext(),
-                                            paymentDetailsResponse.data.order.created_at.toString()
-                                        )
-                                    )
-                            )
-
-                            actionFeedLine(1)
-
-                            add(
-                                PrinterBuilder()
-                                    .styleBold(true)
-                                    .actionPrintText(
-                                        "--------------------------------------------"
-                                    )
-                            )
-
-                            actionFeedLine(1)
-
-                            add(
-                                PrinterBuilder().styleMagnification(
-                                    MagnificationParameter(2, 2)
-                                ).styleAlignment(Alignment.Left)
-                                    .actionPrintText(
-                                        content = addReprintTransactionOrdersForStarKitchen(
-                                            paymentDetailsResponse.data.order.order_items!!,
-                                            data.printerCategories.toCollection(arrayListOf())
-                                        )
-                                    )
-                            )
-
-                            actionFeedLine(1)
-                            if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .styleAlignment(Alignment.Center)
-                                        .styleBold(true)
-                                        .actionPrintText(
-                                            content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                "--------------------------------------------\nOrder Note\n "
-                                            } else ""
-                                        )
-                                )
-                            }
-                            if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Center)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                paymentDetailsResponse.data.order.note.toString()
-                                            } else ""
-                                        )
-                                )
-                            }
-                            actionFeedLine(1)
-                            if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
-                                                "Customer Details\n"
-                                            } else ""
-                                        )
-                                )
-                            }
-
-                            if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Center)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
-                                                "--------------------------------------------"
-                                            } else ""
-                                        )
-                                )
-                            }
-                            if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
                                         .styleMagnification(
                                             MagnificationParameter(2, 2)
                                         )
                                         .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
-                                                paymentDetailsResponse.data.order.customer?.firstName + " " + paymentDetailsResponse.data.order.customer?.lastName
+                                            content = if (kitchenSettingModel.showCustomerPhone && paymentDetailsResponse.data.order.customer?.phones?.get(
+                                                    0
+                                                ) != null
+                                            ) {
+
+                                                var phoneNumber =
+                                                    paymentDetailsResponse.data.order.customer?.phones?.get(
+                                                        0
+                                                    )?.phoneNumber.toString()
+                                                if (phoneNumber.length != 10) {
+                                                    // Handle invalid input (must be 10 digits)
+                                                    "Invalid phone number"
+                                                }
+
+                                                val areaCode = phoneNumber.substring(0, 3)
+                                                val firstPart = phoneNumber.substring(3, 6)
+                                                val secondPart = phoneNumber.substring(6)
+
+                                                "($areaCode)$firstPart-$secondPart"
+
                                             } else ""
                                         )
                                 )
                             }
-                            try {
-                                if (kitchenSettingModel.showCustomerPhone && paymentDetailsResponse.data.order.customer?.phones?.get(
-                                        0
-                                    ) != null
-                                ) {
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .styleMagnification(
-                                                MagnificationParameter(2, 2)
-                                            )
-                                            .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerPhone && paymentDetailsResponse.data.order.customer?.phones?.get(
-                                                        0
-                                                    ) != null
-                                                ) {
+                        } catch (e: Exception) {
 
-                                                    var phoneNumber =
-                                                        paymentDetailsResponse.data.order.customer?.phones?.get(
-                                                            0
-                                                        )?.phoneNumber.toString()
-                                                    if (phoneNumber.length != 10) {
-                                                        // Handle invalid input (must be 10 digits)
-                                                        "Invalid phone number"
-                                                    }
-
-                                                    val areaCode = phoneNumber.substring(0, 3)
-                                                    val firstPart = phoneNumber.substring(3, 6)
-                                                    val secondPart = phoneNumber.substring(6)
-
-                                                    "($areaCode)$firstPart-$secondPart"
-
-                                                } else ""
-                                            )
-                                    )
-                                }
-                            } catch (e: Exception) {
-
-                            }
-
-                            try {
-                                if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
-                                        0
-                                    ) != null
-                                ) {
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .styleMagnification(
-                                                MagnificationParameter(2, 2)
-                                            )
-                                            .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
-                                                        0
-                                                    ) != null
-                                                ) {
-
-                                                    var address =
-                                                        paymentDetailsResponse.data.order.customer?.addresses?.get(
-                                                            0
-                                                        )?.fullAddress
-
-                                                    address
-
-                                                } else ""
-                                            )
-                                    )
-                                }
-                            } catch (e: Exception) {
-
-                            }
-
-                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
+
+                        try {
+                            if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                    0
+                                ) != null
+                            ) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .actionPrintText(
+                                            content = if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                                    0
+                                                ) != null
+                                            ) {
+
+                                                var address =
+                                                    paymentDetailsResponse.data.order.customer?.addresses?.get(
+                                                        0
+                                                    )?.fullAddress
+
+                                                address
+
+                                            } else ""
+                                        )
+                                )
+                            }
+                        } catch (e: Exception) {
+
+                        }
+
+                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+
+//                        if (!oneItemPerReceipt) {
+//                            paymentDetailsResponse.data.order.order_items.forEach { item ->
+//                                data.printerCategories.toCollection(arrayListOf()).forEach {
+//                                    if (it.id == item.categoryId) {
+//                                        if (it.categoryActive && it.printerEnable) {
+//                                            for (singularity in 1..item.quantity) {
+//
+//                                                if (isVoidPayment){
+//                                                    add(
+//                                                        PrinterBuilder()
+//                                                            .styleBold(true)
+//                                                            .styleMagnification(
+//                                                                MagnificationParameter(2, 2)
+//                                                            )
+//                                                            .actionPrintText("***** VOIDED *****")
+//                                                    )
+//                                                    actionFeedLine(1)
+//                                                }
+//                                                actionFeedLine(1)
+//
+//                                                if (printOrderIDInStickyPrinter) {
+//                                                    add(
+//                                                        PrinterBuilder()
+//                                                            .styleBold(true)
+//                                                            .styleMagnification(
+//                                                                MagnificationParameter(2, 2)
+//                                                            )
+//                                                            .actionPrintText(
+//                                                                "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
+//                                                            )
+//                                                    )
+//                                                }
+//
+//                                                actionFeedLine(1)
+//
+//                                                add(
+//                                                    PrinterBuilder()
+//                                                        .styleBold(true)
+//                                                        .styleMagnification(
+//                                                            MagnificationParameter(2, 2)
+//                                                        )
+//                                                        .actionPrintText(
+//                                                            "${paymentDetailsResponse.data.order.order_type_name}"
+//                                                        )
+//                                                )
+//
+//                                                actionFeedLine(1)
+//
+//                                                if (paymentDetailsResponse.data.order.order_type_name.contains(
+//                                                        "Phone",
+//                                                        true
+//                                                    ) || (paymentDetailsResponse.data.order.order_type_name.equals(
+//                                                        "OnlineWebOrder",
+//                                                        ignoreCase = true
+//                                                    ))
+//                                                ) {
+//                                                    add(
+//                                                        PrinterBuilder()
+//                                                            .styleBold(true)
+//                                                            .styleMagnification(
+//                                                                MagnificationParameter(2, 2)
+//                                                            )
+//                                                            .actionPrintText(
+//                                                                "${paymentDetailsResponse.data.order.delivery_type}"
+//                                                            )
+//                                                    )
+//
+//                                                    actionFeedLine(1)
+//                                                }
+//
+//                                                add(
+//                                                    PrinterBuilder()
+//                                                        .styleAlignment(Alignment.Left)
+//                                                        .styleMagnification(
+//                                                            MagnificationParameter(2, 2)
+//                                                        )
+//                                                        .actionPrintText(
+//                                                            content = addSingleReprintTransactionOrdersForStarKitchen(
+//                                                                1,
+//                                                                item,
+//                                                                data.printerCategories.toCollection(
+//                                                                    arrayListOf()
+//                                                                )
+//                                                            )
+//                                                        )
+//                                                )
+//
+//                                                actionFeedLine(1)
+//                                                if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                                    add(
+//                                                        PrinterBuilder()
+//                                                            .styleAlignment(Alignment.Center)
+//                                                            .styleBold(true)
+//                                                            .actionPrintText(
+//                                                                content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                                                    "--------------------------------------------\nOrder Note"
+//                                                                } else ""
+//                                                            )
+//                                                    )
+//                                                }
+//                                                if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                                    add(
+//                                                        PrinterBuilder()
+//                                                            .styleAlignment(Alignment.Center)
+//                                                            .actionPrintText(
+//                                                                content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                                                    paymentDetailsResponse.data.order.note.toString()
+//                                                                } else ""
+//                                                            )
+//                                                    )
+//                                                }
+//
+//                                                actionFeedLine(1)
+//                                                actionFeedLine(1)
+//
+//                                                var printedName = StringBuilder("")
+//                                                paymentDetailsResponse.data.order.customer.firstName.let { firstName ->
+//                                                    paymentDetailsResponse.data.order.customer.lastName.let { lastName ->
+//                                                        if (kitchenSettingModel.showCustomerName || paymentDetailsResponse.data.order.order_type.equals(
+//                                                                "KioskOpenorder", true
+//                                                            ) || paymentDetailsResponse.data.order.order_type.equals(
+//                                                                "OnlineWebOrder",
+//                                                                true
+//                                                            ) || paymentDetailsResponse.data.order.order_type.equals(
+//                                                                "OnlineOrder",
+//                                                                true
+//                                                            )
+//                                                        ) {
+//                                                            if (!firstName.contains(
+//                                                                    "customer",
+//                                                                    ignoreCase = true
+//                                                                )
+//                                                            ) {
+//                                                                printedName.append(firstName)
+//                                                                printedName.append(" ")
+//                                                            }
+//
+//                                                            if (!lastName.isBlank()) {
+//                                                                printedName.append(lastName)
+//                                                            }
+//
+//                                                            if (printedName.isNotEmpty()) {
+//                                                                add(
+//                                                                    PrinterBuilder()
+//                                                                        .styleAlignment(Alignment.Left)
+//                                                                        .styleBold(true)
+//                                                                        .actionPrintText(
+//                                                                            content = "Customer Details\n"
+//                                                                        )
+//                                                                )
+//
+//                                                                add(
+//                                                                    PrinterBuilder()
+//                                                                        .styleAlignment(Alignment.Center)
+//                                                                        .actionPrintText(
+//                                                                            content =
+//                                                                            "--------------------------------------------"
+//                                                                        )
+//                                                                )
+//
+//                                                                add(
+//                                                                    PrinterBuilder()
+//                                                                        .styleAlignment(Alignment.Left)
+//                                                                        .actionPrintText(
+//                                                                            content = printedName.toString()
+//                                                                        )
+//                                                                )
+//
+//                                                            }
+//                                                        }
+//
+//                                                    }
+//                                                }
+//
+//                                                actionFeedLine(1)
+//
+//                                                add(
+//                                                    PrinterBuilder()
+//                                                        .actionPrintText(
+//                                                            Constants.getReceiptFormatDateFromUTCServer(
+//                                                                requireContext(),
+//                                                                paymentDetailsResponse.data.order?.created_at.toString()
+//                                                            )
+//                                                        )
+//                                                )
+//
+//                                                printerBuilder.actionFeedLine(1)
+//                                                actionCut(CutType.Partial)
+//
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        } else
+//                        {
+//                            if (isVoidPayment){
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleBold(true)
+//                                        .styleMagnification(
+//                                            MagnificationParameter(2, 2)
+//                                        )
+//                                        .actionPrintText("***** VOIDED *****")
+//                                )
+//                                actionFeedLine(1)
+//                            }
+//
+//                            add(
+//                                PrinterBuilder()
+//                                    .styleBold(true)
+//                                    .styleMagnification(
+//                                        MagnificationParameter(2, 2)
+//                                    )
+//                                    .actionPrintText(
+//                                        "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
+//                                    )
+//                            )
+//
+//                            styleAlignment(Alignment.Center)
+//
+//                            add(
+//                                PrinterBuilder()
+//                                    .styleBold(true)
+//                                    .styleMagnification(
+//                                        MagnificationParameter(2, 2)
+//                                    )
+//                                    .actionPrintText(
+//                                        if (kitchenSettingModel.showOrderType)
+//                                            paymentDetailsResponse.data.order.order_type
+//                                        else ""
+//                                    )
+//                            )
+//
+//                            actionFeedLine(1)
+//
+//                            if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals(
+//                                    "OnlineWebOrder",
+//                                    ignoreCase = true
+//                                ))
+//                            ) {
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleBold(true)
+//                                        .styleMagnification(
+//                                            MagnificationParameter(2, 2)
+//                                        )
+//                                        .actionPrintText(
+//                                            paymentDetailsResponse.data.order.delivery_type
+//                                        )
+//                                )
+//
+//                                actionFeedLine(1)
+//                            }
+//
+//                            add(
+//                                PrinterBuilder()
+//                                    .styleMagnification(
+//                                        MagnificationParameter(2, 2)
+//                                    )
+//                                    .actionPrintText(
+//                                        "Employee:${
+//                                            prefProvider.getValue(
+//                                                Constants.EMPLOYEE_NAME,
+//                                                ""
+//                                            )
+//                                        }"
+//                                    )
+//                            )
+//                            actionFeedLine(1)
+//
+//                            add(
+//                                PrinterBuilder()
+//                                    .styleMagnification(
+//                                        MagnificationParameter(2, 2)
+//                                    )
+//                                    .actionPrintText(
+//                                        Constants.getReceiptFormatDateFromUTCServer(
+//                                            requireContext(),
+//                                            paymentDetailsResponse.data.order.created_at.toString()
+//                                        )
+//                                    )
+//                            )
+//
+//                            actionFeedLine(1)
+//
+//                            add(
+//                                PrinterBuilder()
+//                                    .styleBold(true)
+//                                    .actionPrintText(
+//                                        "--------------------------------------------"
+//                                    )
+//                            )
+//
+//                            actionFeedLine(1)
+//
+//                            add(
+//                                PrinterBuilder().styleMagnification(
+//                                    MagnificationParameter(2, 2)
+//                                ).styleAlignment(Alignment.Left)
+//                                    .actionPrintText(
+//                                        content = addReprintTransactionOrdersForStarKitchen(
+//                                            paymentDetailsResponse.data.order.order_items!!,
+//                                            data.printerCategories.toCollection(arrayListOf())
+//                                        )
+//                                    )
+//                            )
+//
+//                            actionFeedLine(1)
+//                            if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleMagnification(
+//                                            MagnificationParameter(2, 2)
+//                                        )
+//                                        .styleAlignment(Alignment.Center)
+//                                        .styleBold(true)
+//                                        .actionPrintText(
+//                                            content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                                "--------------------------------------------\nOrder Note\n "
+//                                            } else ""
+//                                        )
+//                                )
+//                            }
+//                            if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleAlignment(Alignment.Center)
+//                                        .styleMagnification(
+//                                            MagnificationParameter(2, 2)
+//                                        )
+//                                        .actionPrintText(
+//                                            content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+//                                                paymentDetailsResponse.data.order.note.toString()
+//                                            } else ""
+//                                        )
+//                                )
+//                            }
+//                            actionFeedLine(1)
+//                            if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleAlignment(Alignment.Left)
+//                                        .styleBold(true)
+//                                        .styleMagnification(
+//                                            MagnificationParameter(2, 2)
+//                                        )
+//                                        .actionPrintText(
+//                                            content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+//                                                "Customer Details\n"
+//                                            } else ""
+//                                        )
+//                                )
+//                            }
+//
+//                            if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleAlignment(Alignment.Center)
+//                                        .actionPrintText(
+//                                            content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+//                                                "--------------------------------------------"
+//                                            } else ""
+//                                        )
+//                                )
+//                            }
+//                            if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+//                                add(
+//                                    PrinterBuilder()
+//                                        .styleAlignment(Alignment.Left)
+//                                        .styleMagnification(
+//                                            MagnificationParameter(2, 2)
+//                                        )
+//                                        .actionPrintText(
+//                                            content = if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
+//                                                paymentDetailsResponse.data.order.customer?.firstName + " " + paymentDetailsResponse.data.order.customer?.lastName
+//                                            } else ""
+//                                        )
+//                                )
+//                            }
+//                            try {
+//                                if (kitchenSettingModel.showCustomerPhone && paymentDetailsResponse.data.order.customer?.phones?.get(
+//                                        0
+//                                    ) != null
+//                                ) {
+//                                    add(
+//                                        PrinterBuilder()
+//                                            .styleAlignment(Alignment.Left)
+//                                            .styleMagnification(
+//                                                MagnificationParameter(2, 2)
+//                                            )
+//                                            .actionPrintText(
+//                                                content = if (kitchenSettingModel.showCustomerPhone && paymentDetailsResponse.data.order.customer?.phones?.get(
+//                                                        0
+//                                                    ) != null
+//                                                ) {
+//
+//                                                    var phoneNumber =
+//                                                        paymentDetailsResponse.data.order.customer?.phones?.get(
+//                                                            0
+//                                                        )?.phoneNumber.toString()
+//                                                    if (phoneNumber.length != 10) {
+//                                                        // Handle invalid input (must be 10 digits)
+//                                                        "Invalid phone number"
+//                                                    }
+//
+//                                                    val areaCode = phoneNumber.substring(0, 3)
+//                                                    val firstPart = phoneNumber.substring(3, 6)
+//                                                    val secondPart = phoneNumber.substring(6)
+//
+//                                                    "($areaCode)$firstPart-$secondPart"
+//
+//                                                } else ""
+//                                            )
+//                                    )
+//                                }
+//                            } catch (e: Exception) {
+//
+//                            }
+//
+//                            try {
+//                                if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+//                                        0
+//                                    ) != null
+//                                ) {
+//                                    add(
+//                                        PrinterBuilder()
+//                                            .styleAlignment(Alignment.Left)
+//                                            .styleMagnification(
+//                                                MagnificationParameter(2, 2)
+//                                            )
+//                                            .actionPrintText(
+//                                                content = if (kitchenSettingModel.showCustomerAddress && paymentDetailsResponse.data.order.customer?.addresses?.get(
+//                                                        0
+//                                                    ) != null
+//                                                ) {
+//
+//                                                    var address =
+//                                                        paymentDetailsResponse.data.order.customer?.addresses?.get(
+//                                                            0
+//                                                        )?.fullAddress
+//
+//                                                    address
+//
+//                                                } else ""
+//                                            )
+//                                    )
+//                                }
+//                            } catch (e: Exception) {
+//
+//                            }
+//
+//                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+//                        }
 
                     }
 
@@ -3443,12 +3789,12 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
-                setService2(data, type)
+                setService2(data, type,isVoidPayment)
             }
         } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
-                generateKitchenReceiptLandiInner(data)
+                generateKitchenReceiptLandiInner(data,isVoidPayment)
             }
         } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
@@ -3489,7 +3835,7 @@ class TransactionDetailsFragment : Fragment() {
                             Printer.PARAM_DEFAULT
                         )
                     }
-                    generateReceiptForU220(mPrinter, data, type)
+                    generateReceiptForU220(mPrinter, data, type, isVoidPayment)
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
@@ -3523,6 +3869,7 @@ class TransactionDetailsFragment : Fragment() {
                     LogUtil.logE(TAG, "PrinterIsNotNull:")
                 }
             }
+        }
         }
     }
 
@@ -4259,12 +4606,18 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun generateKitchenReceiptSunmi(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
         try {
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().lineWrap(4)
+
+            if (isVoidPayment) {
+                PrintSunmiUtils.orderIdLarge("***** VOIDED *****")
+                SunmiPrinterApi.getInstance().lineWrap(2)
+            }
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.custom_order_id)
             } else {
@@ -4425,7 +4778,8 @@ class TransactionDetailsFragment : Fragment() {
     private fun generateReceiptForU220(
         mPrinter: Printer,
         data: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
 
         var fontSizeH = 1
@@ -4445,6 +4799,26 @@ class TransactionDetailsFragment : Fragment() {
                 fontSizeH = 2
                 fontSizeW = 2
             }
+        }
+        if (isVoidPayment) {
+
+            mPrinter.addFeedUnit(30)
+            mPrinter.addFeedLine(2)
+            mPrinter.addTextFont(Builder.FONT_E)
+            mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+            mPrinter.addTextLang(Builder.LANG_EN)
+            mPrinter.addTextSize(2, 2)
+            mPrinter.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            mPrinter.addText("***** VOIDED *****")
+            mPrinter.addFeedLine(1)
+            mPrinter.addFeedUnit(30)
+            mPrinter.addFeedLine(1)
         }
 
         mPrinter.addFeedUnit(30)
@@ -4853,12 +5227,18 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun generateKitchenReceiptSunmiInner(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
+            if (isVoidPayment){
+                PrintSunmiUtils.headerText("***** VOIDED *****")
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
             } else {
@@ -4999,7 +5379,7 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
-    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters) {
+    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,isVoidPayment: Boolean) {
 
         this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
 
@@ -5012,6 +5392,14 @@ class TransactionDetailsFragment : Fragment() {
 
                             try {
 
+                                if (isVoidPayment) {
+                                    printCenter(
+                                        "***** VOIDED *****",
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+                                lineBreak()
                                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                                     printCenter(
                                         "OrderID:" + paymentDetailsResponse.data.custom_order_id,
@@ -5178,7 +5566,8 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun setService2(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        type: String
+        type: String,
+        isVoidPayment: Boolean
     ) {
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
@@ -5189,14 +5578,14 @@ class TransactionDetailsFragment : Fragment() {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, type)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, type,isVoidPayment)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService2(kitchenReceiptPrinters, type)
+                setService2(kitchenReceiptPrinters, type,isVoidPayment)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -6070,7 +6459,7 @@ class TransactionDetailsFragment : Fragment() {
                     addTipsList(
                         builder,
                         tipsList,
-                        paymentDetailsResponse.data.order.total_amount,
+                        paymentDetailsResponse.data.amount,
                         customerSettingModel.fonts
                     )
 
@@ -6865,7 +7254,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipList(
                         tipsList,
-                        paymentDetailsResponse.data.order.total_amount,
+                        paymentDetailsResponse.data.amount,
                         customerSettingModel.fonts
                     )
                 }
@@ -7525,7 +7914,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (tipsList.isNotEmpty()) {
                         addTipsListInnerNew(
                             tipsList,
-                            paymentDetailsResponse.data.order.total_amount,
+                            paymentDetailsResponse.data.amount,
                             customerSettingModel.fonts
                         )
                     }
@@ -7533,7 +7922,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (tipsList.isNotEmpty()) {
                         PrintSunmiUtils.addTipListInner(
                             tipsList,
-                            paymentDetailsResponse.data.order.total_amount,
+                            paymentDetailsResponse.data.amount,
                             customerSettingModel.fonts
                         )
                     }
@@ -7894,9 +8283,10 @@ class TransactionDetailsFragment : Fragment() {
                                     printLeft("ReceiptID : ${order.order.offline_id.trim()}")
                                     lineBreak()
 
-
-                                    printLeft("Employee : ${order.order.employee.trim()}")
-                                    lineBreak()
+                                    if (!order.order.employee.isNullOrEmpty()){
+                                        printLeft("Employee : ${order.order.employee.trim()}")
+                                        lineBreak()
+                                    }
 
                                     printLeft(
                                         "Order Time : ${
@@ -8010,7 +8400,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                                subTotalToPrint =  padLine(
                                                     "Sub Total",
-                                                    "$" + order.order.sub_total.let {
+                                                    "$" + order.sub_total.let {
                                                         MethodUtils.roundOffAmountString(
                                                             it
                                                         )
@@ -8205,7 +8595,7 @@ class TransactionDetailsFragment : Fragment() {
                                         if (tipsList.isNotEmpty()) {
                                             val tipsToPrint = addTipsListInnerLandi(
                                                 tipsList,
-                                                totalAmt,
+                                                paymentDetailsResponse.data.amount,
                                                 customerSettingModel.fonts
                                             )
 
@@ -8478,4 +8868,528 @@ class TransactionDetailsFragment : Fragment() {
 
         super.onStop()
     }
+
+    fun bytesToHexString(bytes: ByteArray): String {
+        val hexstr = java.lang.StringBuilder()
+        for (i in bytes) hexstr.append(String.format("%02x", i))
+        return hexstr.toString()
+    }
+
+    @Throws(java.lang.Exception::class)
+    fun generateSign(body: String, timestamp: String, nonce: String): String {
+
+        val msg = body + "889a389072224d10b641e90b9cc26856" + timestamp + nonce
+        val hmacSha256 = Mac.getInstance("HmacSHA256")
+        val secretKey =
+            SecretKeySpec("1f486ca8d9a341408c8132b23f82f571".encodeToByteArray(), "HmacSHA256")
+        hmacSha256.init(secretKey)
+        val result = hmacSha256.doFinal(msg.toByteArray(charset("UTF-8")))
+        return bytesToHexString(result)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(
+        NoSuchAlgorithmException::class,
+        InvalidKeySpecException::class,
+        InvalidKeyException::class,
+        SignatureException::class
+    )
+    fun sign(
+        body: String,
+        appId: String,
+        timestamp: String,
+        nonce: String,
+        rsaPrivateKey: String
+    ): String {
+        val content = body + appId + timestamp + nonce
+        val keyBytes: ByteArray =
+            java.util.Base64.getDecoder()
+                .decode(rsaPrivateKey.replace("(\\s)|(--.*--)".toRegex(), ""))
+        val pkcs8KeySpec = PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val priKey = keyFactory.generatePrivate(pkcs8KeySpec)
+        val signature: Signature = Signature.getInstance("SHA256withRSA")
+        signature.initSign(priKey)
+        signature.update(content.toByteArray())
+        return java.util.Base64.getEncoder().encodeToString(signature.sign())
+    }
+
+    fun httpPost(path: String, body: String, sn: String? = null): String? {
+        var connection: HttpURLConnection? = null
+        var `is`: InputStream? = null
+        var os: OutputStream? = null
+        var br: BufferedReader? = null
+        var result: String? = null
+
+        val date = Date()
+        val random = Random()
+        val timestamp = String.format("%d", date.time / 1000)
+        val nonce = String.format("%06d", random.nextInt(1000000))
+
+        try {
+            Log.e(TAG, "InitalizeRequestQueue ")
+            val url = URL("https://openapi.sunmi.com$path")
+            connection = url.openConnection() as HttpURLConnection
+            connection!!.requestMethod = "POST"
+            connection!!.connectTimeout = 15000
+            connection!!.readTimeout = 60000
+
+            connection!!.doOutput = true
+            connection!!.doInput = true
+            connection!!.setRequestProperty("Sunmi-Appid", Constants.SUNMI_APP_ID)
+            connection!!.setRequestProperty("Sunmi-Timestamp", timestamp)
+            connection!!.setRequestProperty("Sunmi-Nonce", nonce)
+            connection!!.setRequestProperty("Sunmi-Sign", generateSign(body, timestamp, nonce))
+            connection!!.setRequestProperty("Source", "openapi")
+            connection!!.setRequestProperty("Content-Type", "application/json")
+            os = connection!!.outputStream
+            os.write(body.toByteArray(charset("UTF-8")))
+            if (connection!!.responseCode == 200) {
+                Log.e(TAG, "QueueREsponseOK ")
+
+                /*  if (sn.equals("N434227FT0790")) {
+                  orderContent.clear()
+                   orderContent = java.lang.StringBuilder()
+                  cloudQueuePrinting("N434227FT0738", 2241)
+              }*/
+
+                /* if (path.contains("pushContent")){
+
+                 CoroutineScope(Dispatchers.IO).launch {
+                     delay(500)
+                     clearPrintJob(sn)
+                 }
+             }*/
+
+                `is` = connection!!.inputStream
+                br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
+
+                val sbf = StringBuffer()
+                var temp: String? = null
+                while ((br.readLine().also { temp = it }) != null) {
+                    sbf.append(temp)
+                    sbf.append("\n")
+                }
+                result = sbf.toString()
+            }
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            if (br != null) {
+                try {
+                    br.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (`is` != null) {
+                try {
+                    `is`.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            connection!!.disconnect()
+        }
+        return result
+    }
+
+    fun bindShop(sn: String?, shop_id: Int): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"shop_id\":%d", shop_id))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/bindShop", body.toString())
+    }
+
+    fun onlineStatus(sn: String?): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/onlineStatus", body.toString())
+    }
+
+    fun pushContent(
+        trade_no: String?,
+        sn: String?,
+        count: Int,
+        order_type: Int,
+        media_text: String?,
+        cycle: Int
+    ): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"trade_no\":\"%s\"", "${System.currentTimeMillis()}"))
+        body.append(",")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"order_type\":%d", order_type))
+        body.append(",")
+        body.append(java.lang.String.format("\"content\":\"%s\"", orderContent.toString()))
+        body.append(",")
+        body.append(String.format("\"count\":%d", count))
+        body.append(",")
+        body.append(String.format("\"media_text\":\"%s\"", media_text))
+        body.append(",")
+        body.append(String.format("\"cycle\":%d", cycle))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/pushContent", body.toString(), sn)
+    }
+
+    fun appendText(text: String) {
+        try {
+            val bytes = text.toByteArray(charset("UTF-8"))
+            for (i in bytes) orderContent.append(String.format("%02x", i))
+        } catch (e: UnsupportedEncodingException) {
+        }
+    }
+
+    fun printAndExitPageMode() {
+        orderContent.append("0c")
+    }
+
+
+    fun cutPaper(full_cut: Boolean) {
+        orderContent.append("1d56" + (if ((full_cut)) "30" else "31"))
+    }
+
+    fun lineFeed(n: Int) {
+        for (i in 0 until n) orderContent.append("0a")
+    }
+
+
+    fun setAlignment(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b61" + String.format("%02x", n))
+    }
+
+    fun clearPrintJob(sn: String?): String? {
+        Log.e(TAG, "chekSNCall: ${sn}")
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/clearPrintJob", body.toString(), sn)
+    }
+
+
+    // Append raw data.
+    fun appendRawData(bytes: ByteArray) {
+        for (i in bytes) orderContent.append(String.format("%02x", i))
+    }
+
+    // Append unicode character.
+    fun appendUnicode(unicode: Int, count: Int) {
+        if (count > 0) {
+            val text = StringBuilder()
+            for (i in 0 until count) text.append(unicode.toChar())
+            appendText(text.toString())
+        }
+
+    }
+
+    // [ESC 3] Set line spacing.
+    fun setLineSpacing(n: Int) {
+        if (n >= 0 && n <= 255) orderContent.append("1b33" + String.format("%02x", n))
+    }
+
+    // [ESC !] Set print modes.
+    fun setPrintModes(bold: Boolean, double_h: Boolean, double_w: Boolean) {
+        var n = 0
+        if (bold) n = n or 8
+        if (double_h) n = n or 16
+        if (double_w) n = n or 32
+        charHSize = if ((double_w)) 2 else 1
+        orderContent.append("1b21" + String.format("%02x", n))
+    }
+
+    // [HT] Jump to next TAB position.
+    fun horizontalTab(n: Int) {
+        for (i in 0 until n) orderContent.append("09")
+    }
+
+    // [ESC $] Set absolute print position.
+    fun setAbsolutePrintPosition(n: Int) {
+        if (n >= 0 && n <= 65535) orderContent.append(
+            "1b24" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+    // [ESC \] Set relative print position.
+    fun setRelativePrintPosition(n: Int) {
+        if (n >= -32768 && n <= 32767) orderContent.append(
+            "1b5c" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+
+    // [ESC -] Set underline mode.
+    fun setUnderlineMode(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b2d" + String.format("%02x", n))
+    }
+
+    // [GS B] Set black-white reverse mode.
+    fun setBlackWhiteReverseMode(enabled: Boolean) {
+        orderContent.append("1d42" + (if ((enabled)) "01" else "00"))
+    }
+
+    // [ESC {] Set upside down mode.
+    fun setUpsideDownMode(enabled: Boolean) {
+        orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
+    }
+
+
+    private fun cloudQueuePrinting(
+        input: String,
+        shop_id: Int,
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        isVoidPayment: Boolean
+    ) {
+        Log.e("checkInside:","checkQudefewf")
+
+        // This is verified by Aman
+        Log.e("checkQueueTrans","1::")
+
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(java.lang.String.format("\"sn\":\"%s\"", "${input}"))
+        body.append(",")
+        body.append(java.lang.String.format("\"shop_id\":%d", shop_id))
+        body.append("}")
+
+        orderContent.clear()
+        orderContent = java.lang.StringBuilder()
+        lineFeed(4)
+        setAlignment(1)
+
+        setCharacterSize(2, 2)
+
+        Log.e("checkQueueTrans","2:::")
+        if (isVoidPayment ) {
+            appendText("***** VOIDED *****")
+            lineFeed(2)
+        }
+
+
+        appendText("OrderID:${paymentDetailsResponse.data.custom_order_id}")
+
+
+        lineFeed(2)
+        appendText("" + paymentDetailsResponse.data.order.order_type_name)
+        lineFeed(2)
+//        setCharacterSize(1,1)
+        setAlignment(0)
+        appendText("Employee:${paymentDetailsResponse.data.order.employee}")
+        lineFeed(2)
+
+        Log.e("checkQueueTrans","3::  ${paymentDetailsResponse.data.order.created_at.toString()}")
+
+        appendText(
+            getReceiptFormatDateFromUTCServer(
+                requireContext(),
+                paymentDetailsResponse.data.order.created_at.toString()
+            )
+        )
+        lineFeed(1)
+        appendText("------------------------")
+        lineFeed(2)
+
+        var orderItems = paymentDetailsResponse.data.order.order_items ?: arrayListOf()
+        Log.e("checkQueueTrans","4::  ${orderItems.size}")
+        if (orderItems.isNotEmpty() && orderItems != null)
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+
+                val printOrderItems = checkOrderItemsForOpenORderUpdate()
+
+
+                for (i in 0 until printOrderItems.size) {
+                    Log.d("Debug", "Is kitchenReceiptPrinters initialized: ${kitchenReceiptPrinters}")
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()).forEach {
+                        Log.e(
+                            "PrinterReceipt",
+                            "checkPrinterItemN:   ${printOrderItems.get(i).itemName}"
+                        )
+                        if (it.id == printOrderItems[i].categoryId) {
+                            if (it.categoryActive && it.printerEnable) {
+
+                                val obj = printOrderItems.get(i)
+                                lineFeed(1)
+
+                                if (obj.isEdited) {
+                                    appendText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                                } else {
+                                    appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                                }
+
+                                lineFeed(1)
+                                if (obj.orderItemModifiers.isNotEmpty()) {
+                                    for (j in 0 until obj.orderItemModifiers.size) {
+                                        val modifierObj = obj.orderItemModifiers.get(j)
+
+                                        //builder.addTextPosition(1)
+
+
+                                        appendText(
+                                            "  " + if (modifierObj.modifierQuantity == 1) {
+                                                "   "
+                                            } else {
+                                                "" + modifierObj.modifierQuantity + "x "
+                                            } + modifierObj.name.uppercase()
+                                        )
+
+                                        lineFeed(1)
+                                    }
+                                    lineFeed(1)
+                                }
+
+                                if (obj.note.isNotEmpty()) {
+
+                                    appendText("  Note:" + obj.note)
+
+                                    lineFeed(1)
+                                }
+
+
+                            }
+                        }
+                    }
+
+
+                }
+
+            } else {
+
+
+                for (i in orderItems.indices) {
+
+                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()).forEach {
+                        if (it.id == orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                            val obj = orderItems.get(i)
+
+
+                                appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+
+                            lineFeed(1)
+                            if (obj.orderItemModifiers.isNotEmpty()) {
+                                for (j in 0 until obj.orderItemModifiers.size) {
+                                    val modifierObj = obj.orderItemModifiers.get(j)
+
+                                    appendText(
+                                        if (modifierObj.modifier_quantity == 1) {
+                                            "      " + modifierObj.name.uppercase()
+                                        } else {
+                                            "  " + modifierObj.modifier_quantity + "x  " + modifierObj.name.uppercase()
+                                        }
+                                    )
+                                    lineFeed(1)
+
+
+                                }
+                            }
+                            if (obj.note.isNotEmpty()) {
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
+
+
+                        }
+                    }
+                }
+
+            }
+
+
+
+
+        if (paymentDetailsResponse.data.order.customer != null) {
+            lineFeed(3)
+            appendText("Customer Details")
+            lineFeed(1)
+            appendText("------------------------")
+            lineFeed(2)
+
+
+            if (paymentDetailsResponse.data.order.customer.firstName.isNotEmpty() && paymentDetailsResponse.data.order.customer.lastName.isNotEmpty()) {
+                appendText(paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName)
+                lineFeed(1)
+            }
+
+            if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty()) {
+                appendText(paymentDetailsResponse.data.order.customer.addresses.get(0).fullAddress.toString())
+                lineFeed(1)
+
+            }
+            if (paymentDetailsResponse.data.order.customer.phones.isNotEmpty()) {
+                var phoneNo = paymentDetailsResponse.data.order.customer.phones.size.minus(1)
+                    .let { paymentDetailsResponse.data.order.customer.phones[it].phoneNumber }
+                appendText(MethodUtils.formatPhoneNumber(phoneNo.toString()))
+
+                lineFeed(1)
+
+            }
+
+        }
+
+        if (paymentDetailsResponse.data.order.note.isNotEmpty()) {
+
+            lineFeed(2)
+            setAlignment(1)
+            appendText("Order Note")
+            lineFeed(1)
+            appendText(paymentDetailsResponse.data.order.note ?: "")
+
+        }
+
+
+        lineFeed(6)
+        cutPaper(true)
+
+
+
+        Log.e(TAG, "PushContent ${input}")
+        Log.e(
+            "checkKey", "pushContent: checkSN:${input} ${
+                pushContent(
+                    trade_no =
+                    String.format("%s_%010d", "${input}", System.currentTimeMillis()),
+                    "${input}", 1, 1, "您有新的订单", 0
+                )
+            }"
+        )
+
+    }
+
+    fun setCharacterSize(h: Int, w: Int) {
+        var n = 0
+        if (h >= 1 && h <= 8) n = n or (h - 1)
+        if (w >= 1 && w <= 8) {
+            n = n or ((w - 1) shl 4)
+            charHSize = w
+        }
+        orderContent.append("1d21" + String.format("%02x", n))
+    }
+
 }
