@@ -412,6 +412,25 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         }
                     }
 
+//                    /**
+//                    * The inner loop is reversed (downTo 0), so removing items by index is safe.
+//                    * Used notifyItemRemoved(index) after removal instead of notifyItemChanged(index) for proper RecyclerView update.
+//                    */
+//                    for (it in kitchenAdapter.dataList) {
+//                        if (it.modelName.equals(printer.information?.model?.name, ignoreCase = true)) {
+//                            found = true
+//                            // Iterate backwards to safely remove items without ConcurrentModificationException
+//                            for (index in availableNetworkAdapter.dataList.size - 1 downTo 0) {
+//                                val item = availableNetworkAdapter.dataList[index]
+//                                if (item.modelName.equals(printer.information?.model?.name, ignoreCase = true)) {
+//                                    availableNetworkAdapter.dataList.removeAt(index)
+//                                    availableNetworkAdapter.notifyItemRemoved(index)
+//                                }
+//                            }
+//                            break
+//                        }
+//                    }
+
                     if (!found) {
                         var flagFound = false
                         for (data in availableNetworkAdapter.dataList) {

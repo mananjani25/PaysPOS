@@ -682,11 +682,12 @@ class CheckoutDineInFragmentNew : Fragment,
                 if (custom_paymentAmount != 0.0) {
                     dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
                 }
-                paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-                    "External"
-                } else {
-                    "Cash"
-                }
+//                paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+//                    "External"
+//                } else {
+//                    "Cash"
+//                }
+                paymentType = "External"
                 guestAttributeCalculation(-1, "", dynamicPaymentId = dynamicPaymentId, dynamicPaymentType = dynamicPaymentName)
 
                 dashboardViewModel.apply {
@@ -1743,11 +1744,14 @@ class CheckoutDineInFragmentNew : Fragment,
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
 
-        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-            "External"
-        } else {
-            "Cash"
-        }
+//        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+//            "External"
+//        } else {
+//            "Cash"
+//        }
+
+
+        paymentType = "External"
 
         if (isGuestPay) {
 

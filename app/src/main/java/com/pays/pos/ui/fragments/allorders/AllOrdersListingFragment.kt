@@ -5851,32 +5851,39 @@ class AllOrdersListingFragment(
 
 
             for (i in 0 until orderData?.orderItems.size){
-                val obj = orderData?.orderItems.get(i)
-                if (obj.itemName.isNotEmpty()){
-                    appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
-                    lineFeed(1)
-
-                    if (obj.orderItemModifiers.isNotEmpty()){
-                        for (j in 0 until obj.orderItemModifiers.size){
-
-                            val objMod = obj.orderItemModifiers.get(j)
-                            appendText("  " + if (objMod.modifier_quantity == 1) {
-                                "   "
-                            } else {
-                                "" + objMod.modifier_quantity + "x "
-                            } + objMod.name.uppercase())
-
+                data.printerCategories.toCollection(arrayListOf()).forEach {
+                    if (it.id == orderData?.orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
+                        val obj = orderData?.orderItems.get(i)
+                        if (obj.itemName.isNotEmpty()) {
+                            appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
                             lineFeed(1)
+
+                            if (obj.orderItemModifiers.isNotEmpty()) {
+                                for (j in 0 until obj.orderItemModifiers.size) {
+
+                                    val objMod = obj.orderItemModifiers.get(j)
+                                    appendText(
+                                        "  " + if (objMod.modifier_quantity == 1) {
+                                            "   "
+                                        } else {
+                                            "" + objMod.modifier_quantity + "x "
+                                        } + objMod.name.uppercase()
+                                    )
+
+                                    lineFeed(1)
+                                }
+
+                            }
+
+
+                            if (obj.note.isNotEmpty()) {
+
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
                         }
-
                     }
 
-
-                    if (obj.note.isNotEmpty()){
-
-                        appendText("  Note:" + obj.note)
-                        lineFeed(1)
-                    }
 
 
 

@@ -834,6 +834,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
                         viewModel.cartModel!!.discountPrice = orderDiscount
+                        viewModel.totalDiscount = orderDiscount
                         viewModel.cartModel!!.discountSelectdValue = value
                         viewModel.cartModel!!.discountType = result.discountType
 //                        if (result.id != -1) {
@@ -2793,9 +2794,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
 
+            if (createOrderResponse.data.order.note.isNotEmpty()){
+                lineFeed(1)
+
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(createOrderResponse.data.order.note)
+                lineFeed(1)
+            }
 
 
             if(createOrderResponse.data?.order?.customer != null){
+                setAlignment(0)
                 lineFeed(3)
                 appendText("Customer Details")
                 lineFeed(1)
@@ -2824,14 +2835,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            if (createOrderResponse.data.order.note.isNotEmpty()){
-                lineFeed(1)
-
-                setAlignment(1)
-                appendText("Order Note")
-                lineFeed(1)
-                appendText(createOrderResponse.data.order.note)
-            }
 
             lineFeed(6)
             cutPaper(true)

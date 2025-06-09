@@ -1678,7 +1678,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 for (i in 1 until limit) {
                     var filteredList: List<DineInModel> = arrayListOf()
                     filteredList = dineInTableAdapter.getList()
-                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                        .filter { item ->
+                            if (item.title?.substringAfter("Guest ")?.contains("0") == true) {
+                                item.title?.substringAfter("Guest 0") == i.toString()
+                            } else {
+                                item.title?.substringAfter("Guest ") == i.toString()
+                            }
+                        }
                         ?: arrayListOf()
                     if (filteredList.isEmpty()) {
                         availableName.add(i)
@@ -1694,7 +1700,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             0,
                             false,
                             0,
-                            "Guest ${availableName[i - 1]}",
+                            "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}",
                             floorPlanTable = cartList!!.dineInList!![0].floorPlanTable
 
                         )
@@ -7400,7 +7406,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(guestSubTotal - discountPriceForGuest),
+                                        "$" + MethodUtils.roundOffAmountString(subTotalGuest),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -10989,54 +10995,96 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }")
 
 
+//            listItemWithGuest.forEach { guest ->
+//
+//                lineFeed(1)
+//                appendText("------------------------")
+//                lineFeed(1)
+//
+//                appendText(guest.key.substringBefore("name:"))
+//                lineFeed(1)
+//                appendText("------------------------")
+//                lineFeed(1)
+//
+//                guest.value.forEach {obj->
+//                    data.printerCategories.forEach {
+//                        if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+//
+//
+//                            appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+//                            lineFeed(1)
+//
+//                            if (obj.modifiers.isNotEmpty()){
+//
+//
+//                                for (j in 0 until obj.modifiers.size) {
+//                                    val modifierObj = obj.modifiers.get(j)
+//                                    appendText(
+//                                        "  " + "" + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
+//                                    )
+//                                    lineFeed(1)
+//
+//                                }
+//
+//
+//                            }
+//
+//                            if (obj.note.isNotEmpty()) {
+//
+//                                appendText("  Note:" + obj.note)
+//                                lineFeed(1)
+//                            }
+//
+//                            lineFeed(1)
+//
+//                        }
+//                    }
+//
+//                }
+//
+//            }
+
             listItemWithGuest.forEach { guest ->
 
-                lineFeed(1)
-                appendText("------------------------")
-                lineFeed(1)
-
-                appendText(guest.key.substringBefore("name:"))
-                lineFeed(1)
-                appendText("------------------------")
-                lineFeed(1)
-
-                guest.value.forEach {obj->
-                    data.printerCategories.forEach {
-                        if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
-
-
-                            appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
-                            lineFeed(1)
-
-                            if (obj.modifiers.isNotEmpty()){
-
-
-                                for (j in 0 until obj.modifiers.size) {
-                                    val modifierObj = obj.modifiers.get(j)
-                                    appendText(
-                                        "  " + "" + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
-                                    )
-                                    lineFeed(1)
-
-                                }
-
-
-                            }
-
-                            if (obj.note.isNotEmpty()) {
-
-                                appendText("  Note:" + obj.note)
-                                lineFeed(1)
-                            }
-
-                            lineFeed(1)
-
-                        }
+                val hasItemsToPrint = guest.value.any { obj ->
+                    data.printerCategories.any { cat ->
+                        cat.id == obj.categoryId && cat.printerEnable && cat.categoryActive
                     }
-
                 }
 
+                if (hasItemsToPrint) {
+                    lineFeed(1)
+                    appendText("------------------------")
+                    lineFeed(1)
+                    appendText(guest.key.substringBefore("name:"))
+                    lineFeed(1)
+                    appendText("------------------------")
+                    lineFeed(1)
+
+                    guest.value.forEach { obj ->
+                        data.printerCategories.forEach { cat ->
+                            if (cat.id == obj.categoryId && cat.printerEnable && cat.categoryActive) {
+
+                                appendText("${obj.itemQuantity} ${obj.name.uppercase()}")
+                                lineFeed(1)
+
+                                obj.modifiers.forEach { modifier ->
+                                    appendText("  ${modifier.modifier_quantity}x ${modifier.name.uppercase()}")
+                                    lineFeed(1)
+                                }
+
+                                if (obj.note.isNotEmpty()) {
+                                    appendText("  Note: ${obj.note}")
+                                    lineFeed(1)
+                                }
+
+                                lineFeed(1)
+                            }
+                        }
+                    }
+                }
             }
+
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true) {
                 lineFeed(2)
@@ -11065,8 +11113,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         val list = dineInTableAdapter.getList()
 
                         updateFireItemsForPrinterQueue.printerQueueFilteredList.forEach { index ->
-                            list[index].item?.isFired = true
-                            Log.e("DATA ", Gson().toJson(list[index]))
+                            if (index in list.indices) {
+                                list[index].item?.isFired = true
+                                Log.e("DATA ", Gson().toJson(list[index]))
+                            }
                         }
 
 
@@ -12124,8 +12174,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     getOrderDetailsResponse?.payments?.forEach {
                                         paidTax += it.taxAmount
                                     }
-//                                    getOrderDetailsResponse?.totalTaxAmount ?:
-                                    val taxAmountToPrint = (finalTaxAmt) - paidTax
+
+
+                                    val taxAmountToPrint = if (subTotalDInin != 0.0) {
+                                        (getOrderDetailsResponse?.totalTaxAmount ?: finalTaxAmt) - paidTax
+                                    } else {
+                                        0.0
+                                    }
+
                                     
                                     if (viewModel.totalTaxAmount != null) {
 
@@ -12133,7 +12189,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(taxAmountToPrint),
+                                                "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -12190,23 +12246,23 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print Tips
                                      */
 
-                                    if (getOrderDetailsResponse?.totalTips != 0.0) {
-
-
-                                        val tipsToPrint =
-                                            padLine(
-                                                "Tips",
-                                                "$" + getOrderDetailsResponse?.totalTips?.let {
-                                                    MethodUtils.roundOffAmountString(
-                                                        it
-                                                    )
-                                                },
-                                               48
-                                            ).toString()
-
-                                        printLeft(tipsToPrint)
-                                        lineBreak()
-                                    }
+//                                    if (getOrderDetailsResponse?.totalTips != 0.0) {
+//
+//
+//                                        val tipsToPrint =
+//                                            padLine(
+//                                                "Tips",
+//                                                "$" + getOrderDetailsResponse?.totalTips?.let {
+//                                                    MethodUtils.roundOffAmountString(
+//                                                        it
+//                                                    )
+//                                                },
+//                                               48
+//                                            ).toString()
+//
+//                                        printLeft(tipsToPrint)
+//                                        lineBreak()
+//                                    }
 
                                     lineBreak()
 

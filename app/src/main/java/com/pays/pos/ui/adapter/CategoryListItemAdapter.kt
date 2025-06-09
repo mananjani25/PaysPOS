@@ -1,6 +1,5 @@
 package com.pays.pos.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbItem
 import com.pays.pos.databinding.ViewAssignItemToCategoryBinding
+import com.pays.pos.data.remote.Constants.ADD_VALUE
+import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
+import com.pays.pos.data.remote.Constants.SELL_CARD
 
 class CategoryListItemAdapter :
     RecyclerView.Adapter<CategoryListItemAdapter.MyViewHolder>() {
@@ -72,7 +74,12 @@ class CategoryListItemAdapter :
     }
 
     fun add(inventory: List<TbItem?>) {
-        this.inventory = inventory as ArrayList<TbItem>
+        val filteredList = inventory.filterNot {
+            it?.name == SELL_CARD || it?.name == BALANCE_INQUIRY || it?.name == ADD_VALUE
+        }
+//        this.inventory = inventory as ArrayList<TbItem>
+        this.inventory = ArrayList(filteredList.filterNotNull())
+
     }
 
     fun categoryName(categoryName: String){
