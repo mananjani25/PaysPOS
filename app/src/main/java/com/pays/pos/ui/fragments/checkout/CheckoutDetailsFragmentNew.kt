@@ -3051,7 +3051,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             0.0
         } else {
             MethodUtils.getLatestCashDiscountOrSurCharge(
-                if (isAmountWiseSplit) amountWiseSplit else (WholetotalPrice / isSelectedCount) ,
+                if (isAmountWiseSplit) amountWiseSplit else (WholetotalPrice) ,
                 prefProvider,
                 requireContext()
             ) / isSelectedCount
