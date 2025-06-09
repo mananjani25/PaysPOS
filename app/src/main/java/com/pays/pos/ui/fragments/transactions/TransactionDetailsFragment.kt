@@ -122,6 +122,7 @@ import java.io.OutputStream
 import java.io.StringReader
 import java.io.UnsupportedEncodingException
 import java.lang.ref.WeakReference
+import java.time.Instant
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
@@ -421,33 +422,43 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.tvtipadd.setOnClickListener {
-
-            if (paymentDetailsResponse.data.payment_type == "External") {
+            val instant = Instant.parse(paymentDetailsResponse.data.order.created_at)
+            val hoursPassed = (System.currentTimeMillis() - instant.toEpochMilli()) / (1000 * 60 * 60)
+            if (hoursPassed > 24) {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
-                    "Tip cannot be adjusted for this transaction."
+                    "Cannot add a tip after 24 hours."
                 ) { _, _ ->
                 }
-            } else {
-                if (this::paymentDetailsResponse.isInitialized) {
-                    if (!paymentDetailsResponse.data.payable_type.equals(
-                            "GiftCard",
-                            true
-                        ) && !paymentDetailsResponse.data.payable_type.equals(
-                            "Invoice", true
-                        )
-                    ) {
-                        val bundle = Bundle()
-                        bundle.putDouble("totalTip", paymentDetailsResponse.data.tips)
-                        bundle.putBoolean("isFromTransaction", true)
-                        paymentDetailsResponse.data.amount.let { bundle.putDouble("totalPrice", it) }
-                        findNavController().navigate(
-                            R.id.action_transactionDetailsFragment_to_tipdialog,
-                            bundle
-                        )
+
+            }  else{
+                Log.e(TAG, "hoursPassed: ${paymentDetailsResponse.data.payment_type}", )
+                if (paymentDetailsResponse.data.payment_type == "External") {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        "Tip cannot be adjusted for this transaction."
+                    ) { _, _ ->
+                    }
+                } else {
+                    if (this::paymentDetailsResponse.isInitialized) {
+                        if (!paymentDetailsResponse.data.payable_type.equals(
+                                "GiftCard",
+                                true
+                            ) && !paymentDetailsResponse.data.payable_type.equals(
+                                "Invoice", true
+                            )
+                        ) {
+                            val bundle = Bundle()
+                            bundle.putDouble("totalTip", paymentDetailsResponse.data.tips)
+                            bundle.putBoolean("isFromTransaction", true)
+                            paymentDetailsResponse.data.amount.let { bundle.putDouble("totalPrice", it) }
+                            findNavController().navigate(
+                                R.id.action_transactionDetailsFragment_to_tipdialog,
+                                bundle
+                            )
+                        }
                     }
                 }
-
             }
         }
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
