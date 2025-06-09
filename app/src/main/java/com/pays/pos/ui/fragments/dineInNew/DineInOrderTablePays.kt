@@ -11107,8 +11107,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         val list = dineInTableAdapter.getList()
 
                         updateFireItemsForPrinterQueue.printerQueueFilteredList.forEach { index ->
-                            list[index].item?.isFired = true
-                            Log.e("DATA ", Gson().toJson(list[index]))
+                            if (index in list.indices) {
+                                list[index].item?.isFired = true
+                                Log.e("DATA ", Gson().toJson(list[index]))
+                            }
                         }
 
 
