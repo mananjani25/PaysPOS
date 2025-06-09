@@ -3928,10 +3928,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     putDouble("totalprice", ((paymentAmount)))
                     putDouble("amountToDisplay", ((paymentAmount)))
                 }
-                findNavController().navigate(
-                    R.id.action_paymentBoldPosFragment_to_customAmountFragment,
-                    bundleVal
-                )
+                if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                    findNavController().navigate(
+                        R.id.action_paymentBoldPosFragment_to_customAmountFragment,
+                        bundleVal
+                    )
+                }
                 prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
             } else
                 errorDisplay("Please check your Network Connectivity.")
