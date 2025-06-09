@@ -1902,20 +1902,21 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     }
 
-
     private fun sendToTransaction() {
         val bundle = Bundle().apply {
             putInt("orderId", refundData.paymentRefund?.orderId!!)
             putInt("paymentId", refundData.paymentRefund?.paymentId!!)
+            putBoolean("is_refund_success",true)
         }
 
         if (findNavController().currentDestination?.id == R.id.reasonForRefundDialog) {
-            findNavController().navigate(
-                R.id.action_reasonForRefundDialog_to_transactionDetailsFragment, bundle
-            )
+            try {
+                findNavController().navigate(R.id.action_reasonForRefundDialog_to_transactionDetailsFragment, bundle)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
-
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {

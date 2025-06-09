@@ -1112,7 +1112,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                             .post(MessageEvent("${Constants.LINE_BREAK_TAB} ManualSaleNew.kt_MANUAL_CART_MODEL_CLEARED: it1 -> viewModel.deleteCartModel(it1)"))
                                     }
                                     viewModel.manualCartOrderNote=""
-                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+//                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
                                     binding.txtTotal.text = "$0.00"
                                     binding.tvDiscountText.text = "Discount"
@@ -1120,9 +1120,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     binding.txtSubTotal.text = "$0.00"
                                     binding.txtTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"
-                                    clearCustomer()
+//                                    clearCustomer()
                                     reSetTaxBifurcationData()
-                                    redirectToCategoryType()
+                                    binding.layoutHeader.txtHome.performClick()
                                     viewModel.boldPosNeedToRefresh = true
                                 }
                                 negativeButton(R.string.tv_cancel) {
@@ -1135,6 +1135,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
 
                         R.id.menu_order_note -> {
+                            if (viewModel.cartModel?.note?.isNotEmpty() == true){
+                                viewModel.manualCartOrderNote = viewModel.cartModel?.note
+                            }
                             findNavController().navigate(
                                 R.id.action_manualSaleNew_to_addNoteDialog,
                                 bundleOf("isOrderNote" to true, "isFromManual" to true)
@@ -1442,11 +1445,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ids += it.cartItemId
         }
         return ids
-    }
-
-    private fun redirectToCategoryType() {
-        binding.layoutHeader.txtHome.performClick()
-
     }
 
     private fun getTaxBifurcationList(list1: List<TaxData>?, list2: List<TaxData>?): List<TaxData> {
@@ -1840,6 +1838,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val isOrderNote = bundle.getBoolean("isOrderNote")
             if (isOrderNote) {
                 viewModel.manualCartOrderNote=note.toString()
+                viewModel.cartModel?.note = note.toString()
                 manualCartModel?.let {
                     manualCartModel?.note = note.toString()
                     prefProvider.setValue(

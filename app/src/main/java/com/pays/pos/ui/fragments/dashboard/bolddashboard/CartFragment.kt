@@ -156,6 +156,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -254,7 +255,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     private val TAG = "CartFragment"
 
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
-
+    private var lastTaxListData: ArrayList<TaxData>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -404,8 +405,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     }
                                                     else {
                                                         if (!isFromPayment) {
-                                                            binding.checkloylaty.isChecked = false
-                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                           if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                                binding.checkloylaty.isChecked = true
+//                                                                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                            }
+//                                                            binding.checkloylaty.isChecked = false
+//                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
 //                                                            prefProvider.setValueboolean( Constants.LOYALTY_ADDED, false )
 //                                                            prefProvider.setValueboolean( Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
                                                         }
@@ -1576,6 +1581,46 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
+        // Avoid redundant calls if data hasn't changed
+        if (taxlistData == lastTaxListData) return
+        lastTaxListData = ArrayList(taxlistData) // defensive copy
+
+        updateInfoLayoutHeight()
+        taxClickable = false
+        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+
+        if (taxlistData.isNotEmpty()) {
+            Log.d(TAG, "addObserver: ${taxlistData.size}")
+            setupTaxAdapter()
+
+            binding.imgDropdown.visible()
+            Log.e(TAG, "checkListBeforeUpdate ${Gson().toJson(taxlistData)}")
+
+            // Optional: Add DiffUtil check here if using it in your adapter
+            taxBirfurcationAdapter.setList(taxlistData)
+
+            binding.relativeDynamicTax.gone()
+        } else {
+            binding.imgDropdown.gone()
+            binding.relativeDynamicTax.gone()
+        }
+    }
+
+    private fun updateInfoLayoutHeight() {
+        val newHeight = when {
+            viewModel.order_note.isNotEmpty() -> resources.getDimension(R.dimen._70sdp).toInt()
+            binding.relativeLoylatyPoints.isVisible() -> resources.getDimension(R.dimen._70sdp).toInt()
+            else -> resources.getDimension(R.dimen._50sdp).toInt()
+        }
+
+        val currentHeight = binding.liinearInfoLayout.layoutParams.height
+        if (currentHeight != newHeight) {
+            binding.liinearInfoLayout.layoutParams.height = newHeight
+            binding.liinearInfoLayout.requestLayout()
+        }
+    }
+
+    /*fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
@@ -1623,7 +1668,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.relativeDynamicTax.gone()
             taxClickable = false
         }
-    }
+    }*/
 
     fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
@@ -4395,6 +4440,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
 
                             if (viewModel.cartModel != null) {
+                                bundle.putInt("selectedDiscountId", viewModel.cartModel?.discountId ?: -1)
                                 bundle.putDouble(
                                     "orderDiscountPrice", viewModel.cartModel?.discountPrice ?: 0.0
                                 )

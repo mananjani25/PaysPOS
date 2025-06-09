@@ -1467,6 +1467,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         putInt("orderId", it.orderDetails.id)
                         putInt("paymentId", it.id)
                         putBoolean("isFromTrans", true)
+                        putString("customerName",(it.customer?.firstName ?: "") + " " + (it.customer?.lastName ?: ""))
                         putInt(
                             "selectedorderType",
                             binding.includeView.spOrders.selectedItemPosition

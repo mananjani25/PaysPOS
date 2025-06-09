@@ -1077,7 +1077,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
-                                    .styleMagnification(MagnificationParameter(1, 1))
+                                    .styleMagnification(MagnificationParameter(2, 2))
                                     .actionPrintText(
                                         if (kitchenSettingModel.showOrderType)
                                             orderData.data?.orderType ?: ""
@@ -1102,6 +1102,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(MagnificationParameter(2, 2))
                                     .actionPrintText(
                                         "Employee:${
                                             PrefProvider(applicationContext).getValue(
@@ -1115,6 +1116,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(MagnificationParameter(2, 2))
                                     .actionPrintText(
                                         Constants.getReceiptFormatDateFromUTCServer(
                                             applicationContext,
