@@ -1906,6 +1906,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         val bundle = Bundle().apply {
             putInt("orderId", refundData.paymentRefund?.orderId!!)
             putInt("paymentId", refundData.paymentRefund?.paymentId!!)
+            putBoolean("is_refund_success",true)
         }
 
         if (findNavController().currentDestination?.id == R.id.reasonForRefundDialog) {

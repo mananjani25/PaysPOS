@@ -581,6 +581,17 @@ class PrintSunmiUtils {
 //            SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
+        fun printTextApiCenter(value: String) {
+
+          //  normalTextCenter(value)
+
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            setFontSize()
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
         fun deliveryType(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(true)

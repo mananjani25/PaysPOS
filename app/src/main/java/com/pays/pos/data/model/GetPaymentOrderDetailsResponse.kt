@@ -52,6 +52,7 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("is_loyalty_applied") val is_loyalty_applied: Boolean?,
         @SerializedName("order") val order: Order,
         @SerializedName("guest_count") val guestCount: Int?,
+        @SerializedName("print_automated_receipt") val print_automated_receipt: Boolean?,
         @SerializedName("global_uniq_id")
         var global_uniq_id: String = "",
         @SerializedName("ext_data")
