@@ -1678,7 +1678,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 for (i in 1 until limit) {
                     var filteredList: List<DineInModel> = arrayListOf()
                     filteredList = dineInTableAdapter.getList()
-                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                        .filter { item ->
+                            if (item.title?.substringAfter("Guest ")?.contains("0") == true) {
+                                item.title?.substringAfter("Guest 0") == i.toString()
+                            } else {
+                                item.title?.substringAfter("Guest ") == i.toString()
+                            }
+                        }
                         ?: arrayListOf()
                     if (filteredList.isEmpty()) {
                         availableName.add(i)
@@ -1694,7 +1700,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             0,
                             false,
                             0,
-                            "Guest ${availableName[i - 1]}",
+                            "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}",
                             floorPlanTable = cartList!!.dineInList!![0].floorPlanTable
 
                         )

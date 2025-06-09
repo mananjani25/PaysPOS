@@ -103,7 +103,6 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -1382,7 +1381,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     0,
                     false,
                     0,
-                    "Guest $i",
+                    "Guest ${if (i > 9) i else "0"+i}",
                     floorPlanTable = orderFloorDetails,
 
                     )
@@ -3694,7 +3693,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     for (i in 1 until limit) {
                         var filteredList: List<DineInModel> = arrayListOf()
                         filteredList = dineInCartAdapter.getList()
-                            .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                            .filter { item ->
+                                if (item.title?.substringAfter("Guest ")?.contains("0") == true) {
+                                    item.title?.substringAfter("Guest 0") == i.toString()
+                                } else {
+                                    item.title?.substringAfter("Guest ") == i.toString()
+                                }
+                            }
                             ?: arrayListOf()
                         if (filteredList.isEmpty()) {
                             availableName.add(i)
@@ -3709,7 +3714,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
                         try {
                             var commonDineInModel =
-                                cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
+                                cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}" }
                             if (commonDineInModel != null) {
                                 commonDineInModel.isDestroy = false
                                 dineInList.add(commonDineInModel)
@@ -3720,7 +3725,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     0,
                                     false,
                                     0,
-                                    "Guest ${availableName[i - 1]}",
+                                    "Guest ${if (availableName[i - 1] > 9) availableName[i - 1] else "0" + availableName[i - 1]}",
                                     floorPlanTable = cartModelsList[0].dineInList!![0].floorPlanTable
 
                                 )
