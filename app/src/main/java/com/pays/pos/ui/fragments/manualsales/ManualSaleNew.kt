@@ -221,6 +221,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
                     viewModel.cartModel = null
                     viewModel.manualCartOrderNote=""
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                        viewModel.deleteManualSaleItemsFromCartItems()
+                    }
                     findNavController().popBackStack()
                 }
             }
@@ -415,6 +418,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 viewModel.cartModel = null
                 viewModel.manualCartOrderNote=""
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    viewModel.deleteManualSaleItemsFromCartItems()
+                }
                 findNavController().navigateUp()
             } catch (e: Exception) {
                 e.printStackTrace()
