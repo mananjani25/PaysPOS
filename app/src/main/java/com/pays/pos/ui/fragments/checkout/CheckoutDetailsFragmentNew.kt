@@ -6788,6 +6788,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.view3.setBackgroundColor(resources.getColor(R.color.backgroundColor))
         isSplitScreen = true
         isPaymentScreen = false
+        binding.enteredSplitAmount.text?.clear()
         binding.paymentLinearLayout.visibility = View.GONE
         binding.splitAmountLayout.visibility = View.GONE
         binding.splitLinearLayout.visibility = View.VISIBLE
@@ -6817,6 +6818,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.view3.setBackgroundColor(resources.getColor(R.color.backgroundColor))
         isPaymentScreen = true
         isSplitScreen = false
+        binding.enteredSplitAmount.text?.clear()
         binding.paymentLinearLayout.visibility = View.VISIBLE
         binding.splitAmountLayout.visibility = View.GONE
         binding.splitLinearLayout.visibility = View.GONE
