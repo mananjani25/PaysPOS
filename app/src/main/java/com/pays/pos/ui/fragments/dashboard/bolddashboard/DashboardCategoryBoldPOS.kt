@@ -836,9 +836,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         viewModel.cartModel!!.discountPrice = orderDiscount
                         viewModel.cartModel!!.discountSelectdValue = value
                         viewModel.cartModel!!.discountType = result.discountType
-                        if (result.id != -1) {
+//                        if (result.id != -1) {
                             viewModel.cartModel!!.discountId = result.id
-                        }
+//                        }
 
                         viewModel.updateCartModel(viewModel.cartModel!!)
 

@@ -4440,6 +4440,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
 
                             if (viewModel.cartModel != null) {
+                                bundle.putInt("selectedDiscountId", viewModel.cartModel?.discountId ?: -1)
                                 bundle.putDouble(
                                     "orderDiscountPrice", viewModel.cartModel?.discountPrice ?: 0.0
                                 )

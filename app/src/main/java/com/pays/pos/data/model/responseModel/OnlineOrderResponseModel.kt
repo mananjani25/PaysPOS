@@ -39,6 +39,8 @@ data class OnlineOrderResponseModel(
         val deliveryType: String,
         @SerializedName("discount_type_id")
         val discountTypeId: Any,
+        @SerializedName("discount_id")
+        val discountId: Int?,
         @SerializedName("dynamic_discount_id")
         val dynamicDiscountId: Any,
         @SerializedName("edit_order_count")
