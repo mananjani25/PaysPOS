@@ -596,9 +596,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.getAmountToBePaid()?.let {
                 totalPrice = it
 
-                MethodUtils.setPriceTextView(
-                    txtTotalAmount, it
-                )
+
+                if (prefProvider.getValue(Constants.ORDER_TYPE, "") != Constants.DINE_IN) {
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount, it
+                    )
+                }
             }
         }
         Log.d(TAG, "setcheckedLoyaltyApply: " + redeemLoyaltyInfo.needToApplyLoyalty)
@@ -5259,8 +5262,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         checkAppliedLoyaltyProgram(
                             selectedCustomer, amountToBePaid, txtTotalAmount
                         )
-                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                            totalPrice = it
+                        if (prefProvider.getValue(Constants.ORDER_TYPE, "") != Constants.DINE_IN) {
+                            redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                                totalPrice = it
+                            }
                         }
                     }
 
