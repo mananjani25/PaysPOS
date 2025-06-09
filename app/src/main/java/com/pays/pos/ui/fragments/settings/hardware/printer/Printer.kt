@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.ComponentName
 import android.content.Context
@@ -20,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -133,6 +135,7 @@ import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
@@ -408,6 +411,25 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             break
                         }
                     }
+
+//                    /**
+//                    * The inner loop is reversed (downTo 0), so removing items by index is safe.
+//                    * Used notifyItemRemoved(index) after removal instead of notifyItemChanged(index) for proper RecyclerView update.
+//                    */
+//                    for (it in kitchenAdapter.dataList) {
+//                        if (it.modelName.equals(printer.information?.model?.name, ignoreCase = true)) {
+//                            found = true
+//                            // Iterate backwards to safely remove items without ConcurrentModificationException
+//                            for (index in availableNetworkAdapter.dataList.size - 1 downTo 0) {
+//                                val item = availableNetworkAdapter.dataList[index]
+//                                if (item.modelName.equals(printer.information?.model?.name, ignoreCase = true)) {
+//                                    availableNetworkAdapter.dataList.removeAt(index)
+//                                    availableNetworkAdapter.notifyItemRemoved(index)
+//                                }
+//                            }
+//                            break
+//                        }
+//                    }
 
                     if (!found) {
                         var flagFound = false
@@ -887,10 +909,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    activity?.let { ProgressUtils.showProgressDialog(it) }
                 }
             }
-
         }
         getAllKitchenPrintersListFromDB()
         /* lifecycleScope.launch {
@@ -1048,60 +1069,73 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     @SuppressLint("MissingPermission")
     private fun searchBluetooth() {
+        val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+        val adapter = bluetoothManager?.adapter
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (mBluetoothAdapter?.isEnabled == true) {
+        if (adapter == null) {
+            showRestartHint("Bluetooth not available. Please restart your device.")
+            Log.e(TAG, "BluetoothAdapter is null")
+            return
+        }
 
-            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+        if (!adapter.isEnabled) {
+            Toast.makeText(requireContext(), "Bluetooth is turned off. Please enable Bluetooth.", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "Bluetooth is disabled.")
+            return
+        }
 
-            for (i in availableDevices) {
+        try {
+            val bondedDevices = adapter.bondedDevices
 
-                var isAdded: Boolean = false
-                for (j in 0 until allPrinterlist.size) {
-                    if (allPrinterlist.get(j).deviceModel?.macAddress == i.address) {
-                        isAdded = true
-                        break
-                    } else {
-                        isAdded = false
+            if (bondedDevices.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), "No paired devices found. Try pairing a printer.", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "No bonded devices found.")
+                return
+            }
 
-                    }
+            bondedDevices.forEach { device ->
+                val isAdded = allPrinterlist.any { it.deviceModel?.macAddress == device.address }
 
-                }
-
-                Log.e(TAG, "checkAdded  ${isAdded}")
-                if (isAdded == false) {
-
+                if (!isAdded) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        LogUtil.logE(TAG, "BluetoothPrinteralias:  ${i.alias}")
+                        Log.e(TAG, "BluetoothPrinter alias: ${device.alias}")
                     }
 
                     availableNetworkAdapter.addItem(
                         PrinterListModel(
-                            printerName = i.name,
+                            printerName = device.name,
                             connectionType = BLUETOOTH,
                             deviceModel = DeviceInfo(
                                 DevType.BLUETOOTH,
-                                i.address,
-                                i.name,
-                                i.address,
-                                i.address
+                                device.address,
+                                device.name,
+                                device.address,
+                                device.address
                             ),
                             type = AVAILABLE,
                             uuid = UUID.randomUUID(),
-                            modelName = i.name
-
+                            modelName = device.name
                         )
                     )
                 }
-                if (i.name == "TM-m30_030295") {
-                    mmDevice = i
+
+                if (device.name == "TM-m30_030295") {
+                    mmDevice = device
                 }
-
-
             }
+
+        } catch (e: TimeoutException) {
+            Log.e(TAG, "BluetoothAdapter.getBondedDevices() timed out", e)
+            showRestartHint("Bluetooth system not responding. Please restart your device.")
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error accessing Bluetooth bonded devices", e)
+            showRestartHint("Unexpected Bluetooth error. Try restarting your device.")
         }
     }
 
+    private fun showRestartHint(message: String) {
+        AlertUtils.showCustomAlert(requireContext(), message)
+    }
 
     override fun onStop() {
         super.onStop()

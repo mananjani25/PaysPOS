@@ -11,6 +11,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.model.responseModel.GetTransactionListResponse
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GIFT_CARD_AMOUNT_TAB
@@ -123,7 +124,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             itemBinding.txtCustomerName.text = (model.customer?.firstName
                 ?: "") + " " + (model.customer?.lastName ?: "")
 
-            itemBinding.txtTeamName?.text = model.employeeName
+            
 
             if (model.refundedAmount != 0.0) {
                 itemBinding.txtTip.isEnabled = false
@@ -160,6 +161,19 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 //            } else {
 //                itemBinding.txtTransactionId.visibility = View.GONE
 //            }
+
+
+            if (model.employeeName != null){
+                if (model.orderDetails.orderTypeName.equals("Kiosk TakeOut")){
+                    itemBinding.txtTeamName?.text =
+                        prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+                }else{
+                    itemBinding.txtTeamName?.text = model.employeeName
+                }
+            }else{
+                itemBinding.txtTeamName?.text = ""
+            }
+
 
 
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {

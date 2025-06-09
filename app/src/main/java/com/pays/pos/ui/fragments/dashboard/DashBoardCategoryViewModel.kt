@@ -163,6 +163,7 @@ import java.util.Random
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.math.ceil
+import kotlin.math.log
 
 
 @HiltViewModel
@@ -229,6 +230,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
     val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
+
+    private val _isLoyaltyPointShowObservable = MutableLiveData<Event<Boolean>>()
+    val isLoyaltyPointShowObservable : LiveData<Event<Boolean>> = _isLoyaltyPointShowObservable
 
     private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
     val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
@@ -489,6 +493,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         _updateCartFooterObservable.postValue(Event(value))
     }
 
+    fun isLoyaltyPointVisible(value: Boolean) {
+        _isLoyaltyPointShowObservable.postValue(Event(value))
+    }
+
     fun changeCustomerDispSignButtonTitle(value: String) {
         _changeCustDispSignInButtonTitle.postValue(value)
     }
@@ -596,9 +604,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.getAmountToBePaid()?.let {
                 totalPrice = it
 
-                MethodUtils.setPriceTextView(
-                    txtTotalAmount, it
-                )
+
+                if (prefProvider.getValue(Constants.ORDER_TYPE, "") != Constants.DINE_IN) {
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount, it
+                    )
+                }
             }
         }
         Log.d(TAG, "setcheckedLoyaltyApply: " + redeemLoyaltyInfo.needToApplyLoyalty)
@@ -5106,9 +5117,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 CoroutineScope(Dispatchers.IO).async {
                     cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
-                    if (cartModel == null && getAllCartModels() != null && !getAllCartModels().isEmpty()) {
-                        cartModel = getAllCartModels().get(0)
+
+                    if (cartModel == null && getAllCartModels().isNotEmpty()) {
+                        cartModel = getAllCartModels().firstOrNull()
                     }
+
                 }.await()
             }
 
@@ -5257,8 +5270,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         checkAppliedLoyaltyProgram(
                             selectedCustomer, amountToBePaid, txtTotalAmount
                         )
-                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                            totalPrice = it
+                        if (prefProvider.getValue(Constants.ORDER_TYPE, "") != Constants.DINE_IN) {
+                            redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                                totalPrice = it
+                            }
                         }
                     }
 
@@ -7191,6 +7206,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
+            customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1).toString()
 
             /**
              *  currentDineInItems keeps track of all dine in Items even if they are destroyed

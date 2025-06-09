@@ -1739,7 +1739,8 @@ class AllOrdersListingFragment(
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
-
+                
+                updatedCartModel.discountId = order.discountId
                 /*---------------BIS-4189---------------*/
                 if (updatedCartModel.discountSelectdValue.isNaN()){
                     updatedCartModel.discountSelectdValue=0.0
@@ -2341,11 +2342,15 @@ class AllOrdersListingFragment(
 
             "CANCEL" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
+
+                   var data:OnlineOrderResponseModel.Data = adapter.getItem(pos)
                     val bundle = Bundle().apply {
                         /* putParcelable("refundData", refundData)
                          putDouble("refundAmount", subTotalPrice)*/
 
                         putInt("orderId", order.id)
+                        putParcelable("data",data)
+                        putParcelable("kitchen_settings",kitchenSettingModel)
                         putString("startDate", viewModel.startDate.value.toString())
                         putString("endDate", viewModel.endDate.value.toString())
                     }
@@ -2574,10 +2579,10 @@ class AllOrdersListingFragment(
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
-                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
-                                landiPrinter.openDevice(1)
+                                val landiPrinter = omniDriver?.getPrinter(Bundle())
+                                landiPrinter?.openDevice(1)
 
-                                val pWidth: Int = landiPrinter.getValidWidth()
+//                                val pWidth: Int? = landiPrinter?.getValidWidth()
 
                                 try  {
 
@@ -2613,12 +2618,12 @@ class AllOrdersListingFragment(
                                         try {
 
                                             if(Build.DISPLAY.contains("RL")) {
-                                                landiPrinter.addImage(venueUrlByteArray, Align.RIGHT, 0)
+                                                landiPrinter?.addImage(venueUrlByteArray, Align.RIGHT, 0)
                                             } else {
-                                                landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+                                                landiPrinter?.addImage(venueUrlByteArray, Align.CENTER, 0)
                                             }
 
-                                            landiPrinter.startPrint(object : OnPrintListener {
+                                            landiPrinter?.startPrint(object : OnPrintListener {
                                                 override fun onSuccess() {
 
                                                 }
@@ -2707,7 +2712,7 @@ class AllOrdersListingFragment(
                                         order?.orderType.trim().equals(
                                             PHONE_ORDER, true)
                                     ) {
-                                        printCenter(order?.deliveryType, isBold = true, fontSize = FONT_SIZE_4X)
+                                        printCenter(order?.deliveryType, isBold = true, fontSize = FONT_SIZE_5X)
                                         lineBreak()
                                         lineBreak()
                                     }
@@ -3060,6 +3065,28 @@ class AllOrdersListingFragment(
                                             }
 
                                         }
+                                    }
+
+                                    if (printType == Constants.PRINT_UNPAID){
+                                        if (customerSettingModel.showTipLineForCash) {
+                                            lineBreak()
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                printBoldLeft("Tip       _____________")
+                                                lineBreak()
+                                            } else {
+                                                printBoldLeft("Tip                               _____________")
+                                                lineBreak()
+                                            }
+
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                printBoldLeft("Total     _____________")
+                                                lineBreak()
+                                            } else {
+                                                printBoldLeft("Total                             _____________")
+                                            }
+
+                                        }
+
                                     }
 
                                     /**
@@ -4172,6 +4199,72 @@ class AllOrdersListingFragment(
                 )
             }
 
+            if (printType == Constants.PRINT_UNPAID) {
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        "Tip",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addFeedLine(1)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        "Total",
+                        if (customerSettingModel.showTipLineForCash) {
+                            "_____________"
+                        } else {
+                            ""
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
 
             if (customerSettingModel.showTipSuggestion) {
                 builder.addFeedLine(1)
@@ -5039,7 +5132,40 @@ class AllOrdersListingFragment(
 
             }
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            if ( printType == Constants.PRINT_UNPAID) {
+
+
+                if (customerSettingModel.showTipLineForCash) {
+
+                    SunmiPrinterApi.getInstance().lineWrap(2)
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+
+                        PrintSunmiUtils.tips("Tip       _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.tips("Tip                                _____________")
+
+                    }
+
+
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+
+                        PrintSunmiUtils.tips("Total     _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.tips("Total                              _____________")
+                    }
+
+                }
+
+            }
+
+
+            if (printType != Constants.PRINT_UNPAID){
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -5578,7 +5704,7 @@ class AllOrdersListingFragment(
     }
 
     // To get connected kitchen printers
-    private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data) {
+    private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data,isCancelOrder:Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
             var it = viewModel.getKitchenPrinterList()
 
@@ -5598,7 +5724,8 @@ class AllOrdersListingFragment(
                         initKitchenPrinter(
                             it,
                             Constants.KITCHEN,
-                            data
+                            data,
+                            isCancelOrder
                         )
 
                     }
@@ -5655,7 +5782,8 @@ class AllOrdersListingFragment(
     private fun initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderResponseModel.Data
+        orderData: OnlineOrderResponseModel.Data,
+        isCancelOrder: Boolean=false
     ) {
         if (data.name.startsWith(SUNMI_PRINTER,true) && data.printer_type == WIFI){
 
@@ -5723,32 +5851,39 @@ class AllOrdersListingFragment(
 
 
             for (i in 0 until orderData?.orderItems.size){
-                val obj = orderData?.orderItems.get(i)
-                if (obj.itemName.isNotEmpty()){
-                    appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
-                    lineFeed(1)
-
-                    if (obj.orderItemModifiers.isNotEmpty()){
-                        for (j in 0 until obj.orderItemModifiers.size){
-
-                            val objMod = obj.orderItemModifiers.get(j)
-                            appendText("  " + if (objMod.modifier_quantity == 1) {
-                                "   "
-                            } else {
-                                "" + objMod.modifier_quantity + "x "
-                            } + objMod.name.uppercase())
-
+                data.printerCategories.toCollection(arrayListOf()).forEach {
+                    if (it.id == orderData?.orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
+                        val obj = orderData?.orderItems.get(i)
+                        if (obj.itemName.isNotEmpty()) {
+                            appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
                             lineFeed(1)
+
+                            if (obj.orderItemModifiers.isNotEmpty()) {
+                                for (j in 0 until obj.orderItemModifiers.size) {
+
+                                    val objMod = obj.orderItemModifiers.get(j)
+                                    appendText(
+                                        "  " + if (objMod.modifier_quantity == 1) {
+                                            "   "
+                                        } else {
+                                            "" + objMod.modifier_quantity + "x "
+                                        } + objMod.name.uppercase()
+                                    )
+
+                                    lineFeed(1)
+                                }
+
+                            }
+
+
+                            if (obj.note.isNotEmpty()) {
+
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
                         }
-
                     }
 
-
-                    if (obj.note.isNotEmpty()){
-
-                        appendText("  Note:" + obj.note)
-                        lineFeed(1)
-                    }
 
 
 
@@ -5901,7 +6036,7 @@ class AllOrdersListingFragment(
                                 Log.d("tracking printers", "In IF")
                                 CoroutineScope(Dispatchers.Main).launch {
 
-                                    initKitchenPrinter(data, type, orderData)
+                                    initKitchenPrinter(data, type, orderData,isCancelOrder)
                                 }
                             }
 
@@ -5912,7 +6047,7 @@ class AllOrdersListingFragment(
                         })
                 } else {
                     Log.d("tracking printers", "In Else")
-                    generateKitchenReceiptSunmi(data, type, orderData)
+                    generateKitchenReceiptSunmi(data, type, orderData,isCancelOrder)
                 }
 
             } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
@@ -5943,7 +6078,7 @@ class AllOrdersListingFragment(
 
                             if (!oneItemPerReceipt) {
                                 orderData.orderItems.forEach { item ->
-                                    data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                    data.printerCategories.toCollection(arrayListOf()).forEach {
                                         if (it?.id == item.categoryId) {
                                             if (it.categoryActive && it.printerEnable) {
                                                 for (singularity in 1..item.quantity) {
@@ -8186,11 +8321,17 @@ class AllOrdersListingFragment(
     private fun generateKitchenReceiptSunmi(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
-        orderData: OnlineOrderResponseModel.Data
+        orderData: OnlineOrderResponseModel.Data,
+        isCancelOrder: Boolean = false
     ) {
 
         try {
 
+
+
+            if (isCancelOrder) {
+                PrintSunmiUtils.orderIdLarge("***** CANCELLED *****")
+            }
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().lineWrap(2)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
@@ -8978,6 +9119,53 @@ class AllOrdersListingFragment(
                 }
 
             }
+
+            if (printType == Constants.PRINT_UNPAID) {
+
+
+                if (customerSettingModel.showTipLineForCash) {
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ){
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Tip       _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Tip                               _____________")
+                        }
+                    } else {
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Tip       _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Tip                               _____________")
+                        }
+                    }
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ){
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Total     _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Total                             _____________")
+                        }
+                    } else {
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Total     _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Total                             _____________")
+                        }
+                    }
+                }
+
+            }
+
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 

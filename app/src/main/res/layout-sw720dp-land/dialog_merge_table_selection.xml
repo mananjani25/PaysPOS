@@ -117,14 +117,14 @@
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@+id/txtFloorPlanLabel"
-                        android:gravity="end"
-                        android:paddingVertical="@dimen/_2sdp">
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentEnd="true"-->
+<!--                        android:layout_centerVertical="true"-->
+<!--                        android:layout_toEndOf="@+id/txtFloorPlanLabel"-->
+<!--                        android:gravity="end"-->
+<!--                        android:paddingVertical="@dimen/_2sdp">-->
 
 <!--                        <androidx.appcompat.widget.AppCompatSpinner-->
 <!--                            android:id="@+id/spnFloorName"-->
@@ -139,6 +139,12 @@
 <!--                            android:spinnerMode="dialog"-->
 <!--                            android:textColor="@color/color96"-->
 <!--                            android:textSize="@dimen/_5mdpi" />-->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:paddingVertical="@dimen/_2sdp">
 
                         <Spinner
                             android:id="@+id/dropdownSpinnerFloor"
@@ -146,9 +152,11 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="@dimen/_5sdp"
-                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_5sdp"
                             android:spinnerMode="dialog"
                             app:srcCompat="@drawable/ic_down_solid_arrow" />
+
+                    </LinearLayout>
 
 <!--                        <androidx.appcompat.widget.AppCompatSpinner-->
 <!--                            android:id="@+id/dropdownSpinnerFloor"-->
@@ -160,7 +168,7 @@
 <!--                            android:layout_marginEnd="@dimen/_10sdp"-->
 <!--                            app:srcCompat="@drawable/ic_down_solid_arrow" />-->
 
-                    </LinearLayout>
+<!--                    </LinearLayout>-->
                 </RelativeLayout>
 
                 <RelativeLayout
