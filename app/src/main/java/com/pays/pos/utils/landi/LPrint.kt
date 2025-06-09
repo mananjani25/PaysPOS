@@ -391,10 +391,19 @@ final object LPrint {
 
                 if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
 
+                    var isPaid = ""
+                    try {
+                        dineInList[i].isPaid.let {
+                            if (it)
+                                isPaid = "(Paid) \n"
+                        }
+                    }catch (e:Exception) {}
+
+
                     if (dineInList[i]?.customer == null) {
 
                         dineInList[i]?.title?.let {
-                            printCenter(it)
+                            printCenter(isPaid+it)
                             lineBreak()
                         }
 
@@ -407,7 +416,7 @@ final object LPrint {
                                     } else {
                                         ""
                                     }
-                        printCenter(tableName)
+                        printCenter(isPaid+tableName)
                         lineBreak()
 
                     }
@@ -468,8 +477,8 @@ final object LPrint {
 
 
                     if (item.note.isNotEmpty()) {
-                        lineBreak()
                         printLeft("   Note: " + item.note)
+                        lineBreak()
                         lineBreak()
                     }
 
@@ -630,6 +639,7 @@ final object LPrint {
                             printText("  Note:" + obj.note)
                         }
 
+                        lineBreak()
                         lineBreak()
 
                         builder.add(obj.orderItemId.toString())

@@ -1,5 +1,7 @@
 package com.pays.pos.data.model.responseModel
 
+import android.annotation.SuppressLint
+import android.os.Parcel
 import android.os.Parcelable
 import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
@@ -19,6 +21,7 @@ data class OnlineOrderResponseModel(
     val type: String
 ) {
 
+    @SuppressLint("ParcelCreator")
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,
@@ -128,7 +131,7 @@ data class OnlineOrderResponseModel(
         @SerializedName("refund_detail")
         val refundDetails: RefundDetails
         //@SerializedName("order_type_name") val order_type_name: String,
-    ) {
+    ) : Parcelable {
         data class OrderItem(
             @SerializedName("category_id")
             val categoryId: Int,
@@ -516,6 +519,14 @@ data class OnlineOrderResponseModel(
             @SerializedName("updated_at")
             val updatedAt: String
         )
+
+        override fun describeContents(): Int {
+            TODO("Not yet implemented")
+        }
+
+        override fun writeToParcel(p0: Parcel, p1: Int) {
+            TODO("Not yet implemented")
+        }
     }
 
 }

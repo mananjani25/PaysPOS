@@ -156,6 +156,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -254,7 +255,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     private val TAG = "CartFragment"
 
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
-
+    private var lastTaxListData: ArrayList<TaxData>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -404,8 +405,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     }
                                                     else {
                                                         if (!isFromPayment) {
-                                                            binding.checkloylaty.isChecked = false
-                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                           if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                                                binding.checkloylaty.isChecked = true
+//                                                                viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
+                                                            }
+//                                                            binding.checkloylaty.isChecked = false
+//                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
 //                                                            prefProvider.setValueboolean( Constants.LOYALTY_ADDED, false )
 //                                                            prefProvider.setValueboolean( Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
                                                         }
@@ -1576,6 +1581,46 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
+        // Avoid redundant calls if data hasn't changed
+        if (taxlistData == lastTaxListData) return
+        lastTaxListData = ArrayList(taxlistData) // defensive copy
+
+        updateInfoLayoutHeight()
+        taxClickable = false
+        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+
+        if (taxlistData.isNotEmpty()) {
+            Log.d(TAG, "addObserver: ${taxlistData.size}")
+            setupTaxAdapter()
+
+            binding.imgDropdown.visible()
+            Log.e(TAG, "checkListBeforeUpdate ${Gson().toJson(taxlistData)}")
+
+            // Optional: Add DiffUtil check here if using it in your adapter
+            taxBirfurcationAdapter.setList(taxlistData)
+
+            binding.relativeDynamicTax.gone()
+        } else {
+            binding.imgDropdown.gone()
+            binding.relativeDynamicTax.gone()
+        }
+    }
+
+    private fun updateInfoLayoutHeight() {
+        val newHeight = when {
+            viewModel.order_note.isNotEmpty() -> resources.getDimension(R.dimen._70sdp).toInt()
+            binding.relativeLoylatyPoints.isVisible() -> resources.getDimension(R.dimen._70sdp).toInt()
+            else -> resources.getDimension(R.dimen._50sdp).toInt()
+        }
+
+        val currentHeight = binding.liinearInfoLayout.layoutParams.height
+        if (currentHeight != newHeight) {
+            binding.liinearInfoLayout.layoutParams.height = newHeight
+            binding.liinearInfoLayout.requestLayout()
+        }
+    }
+
+    /*fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
@@ -1623,7 +1668,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.relativeDynamicTax.gone()
             taxClickable = false
         }
-    }
+    }*/
 
     fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
@@ -3040,18 +3085,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                     val guestCount = dineInCartAdapter.getList().count {
                         it.isHeader == 0
-                    }
+                    } - 1
 
 //                    viewModel.serviceChargesList =
 //                        ArrayList(viewModel.cartModel?.serviceCharge ?: arrayListOf())
 
-                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount - 1)
+                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount)
 
 
 
                     serviceChargesList.forEach {
                         if(it.min_guest_count!=null && it.max_guest_count!=null)
-                            if (it.max_guest_count >= guestCount - 1 && it.min_guest_count <= guestCount - 1)
+                            if (it.max_guest_count >= guestCount  && it.min_guest_count <= guestCount)
                                 serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
                         }
                     }
@@ -3512,11 +3557,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             Log.d(TAG, "onHeaderSelected: header position : $position")
             viewModel.dineInHeaderPosition = position
             viewModel.currentSelectedHeaderDineIn = position
-        } else
+        } else {
             AlertUtils.showCustomAlert(
                 requireContext(),
                 "Cannot change guest as already updating another item"
             )
+
+            dineInCartAdapter.setHeaderPosition(viewModel.dineInHeaderPosition)
+
+        }
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {
@@ -3624,9 +3673,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
             return
         } else {
+            var isTableMerged = cartModelsList[0].dineInList?.get(0)?.floorPlanTable?.status?.contains("Merged") ?: false
             var existing_count = dineInCartAdapter.getList().size - 1
             var total_count = existing_count + count
-            if (total_count <= 15) {
+
+            if (total_count <= 15 || (isTableMerged && total_count <= 30)) {
                 var existinglist: ArrayList<DineInModel> = arrayListOf()
                 cartModelsList[0].dineInList?.forEach {
                     if (!it.isDestroy) {
@@ -3636,9 +3687,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                 val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
                 if (existinglist.isNotEmpty()) {
+
+                    val limit = if(isTableMerged) 31 else 16
                     // List of available counts from list to add new guest
                     var availableName: ArrayList<Int> = arrayListOf()
-                    for (i in 1 until 16) {
+                    for (i in 1 until limit) {
                         var filteredList: List<DineInModel> = arrayListOf()
                         filteredList = dineInCartAdapter.getList()
                             .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
@@ -3679,8 +3732,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 cartModelsList[0].dineInList = existinglist.toList()
                 viewModel.addGuestFromDashBoard(cartModelsList)
             } else {
+
+                val count = if(isTableMerged) 30 else 15
+
                 AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(), "You can't add more than 15 Guest in an order."
+                    requireContext(), "You can't add more than $count Guest in an order."
                 ) { _, _ ->
                 }
             }
@@ -5487,78 +5543,80 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
-        if (this::presentation.isInitialized) {
-            presentation.show()
-            presentation.onLogOutOrClockOutWithApiService(apiService)
-        }
+        try {
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.onLogOutOrClockOutWithApiService(apiService)
+            }
 
-        val model = orderTypeAdapter?.getItem(pos)
+            val model = orderTypeAdapter?.getItem(pos)
 
 
-        model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
-        model?.name?.let { prefProvider.setValue(ORDER_TYPE_NAME, it) }
+            model?.id?.let { prefProvider.setValueInt(ORDER_TYPE_ID, it) }
+            model?.name?.let { prefProvider.setValue(ORDER_TYPE_NAME, it) }
 
-        model?.id?.let {
-            CoroutineScope(Dispatchers.IO).async {
-                try {
-                    var orderTypeBackup = OrderTypeBackup()
-                    orderTypeBackup.orderType = it
-                    orderTypeBackup.employeeId = prefProvider.employeeId()
-                    orderTypeBackup.orderTypeName = model.name
-                    viewModel.insertOrderTypeBackup(orderTypeBackup)
-                } catch (e: Exception) {
+            model?.id?.let {
+                CoroutineScope(Dispatchers.IO).async {
+                    try {
+                        var orderTypeBackup = OrderTypeBackup()
+                        orderTypeBackup.orderType = it
+                        orderTypeBackup.employeeId = prefProvider.employeeId()
+                        orderTypeBackup.orderTypeName = model.name
+                        viewModel.insertOrderTypeBackup(orderTypeBackup)
+                    } catch (e: Exception) {
+                    }
                 }
             }
-        }
 
-        Log.e(TAG, "checkOrderType  ${model?.orderType}")
+            Log.e(TAG, "checkOrderType  ${model?.orderType}")
 
-        //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
-        try {
-            if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
+            //  prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+            try {
+                if (model!!.orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)) {
+                    prefProvider.setValue(DELIVERY_TYPE, "")
+                } else {
+                    prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
+                }
+            } catch (e: Exception) {
                 prefProvider.setValue(DELIVERY_TYPE, "")
-            } else {
-                prefProvider.setValue(DELIVERY_TYPE, PICK_UP)
             }
-        } catch (e: Exception) {
-            prefProvider.setValue(DELIVERY_TYPE, "")
-        }
 
-        prefProvider.setValue(Constants.REDIRECT_FROM, "")
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
-        if (model?.orderType == DINE_IN) {
-            Log.e(TAG, "InsideDine inNew")
-            checkOrderType()
-            dineInCallback?.onDineInClickListener()
-        } else if (model?.orderType == PHONE_ORDER) {
+            if (model?.orderType == DINE_IN) {
+                Log.e(TAG, "InsideDine inNew")
+                checkOrderType()
+                dineInCallback?.onDineInClickListener()
+            } else if (model?.orderType == PHONE_ORDER) {
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
-            )
-            model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_phoneOrderFragment
+                )
+                model.orderType.let { prefProvider.setValue(ORDER_TYPE, it) }
 
-        } else {
-            Log.e(TAG, "InsideDine inNoDine")
-            model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
+            } else {
+                Log.e(TAG, "InsideDine inNoDine")
+                model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
 
+                viewModelPayment.preAuthData = null
+                checkOrderType()
+
+                addObserver()
+
+                DashboardCategoryBoldPOS.newInstance().keypadShow(true)
+                increaseOnGoingOrderCounter()
+            }
+
+            //CLEAR PREAUTH DATA
+            prefProvider.setValue(PRE_AUTH_DETAILS, "")
+    //        viewModel.apply {
+    //            paymentAttributes = null
+    //            authPaymentResponse = null
+    //            allOrderResponse = null
+    //        }
+    //
             viewModelPayment.preAuthData = null
-            checkOrderType()
-
-            addObserver()
-
-            DashboardCategoryBoldPOS.newInstance().keypadShow(true)
-            increaseOnGoingOrderCounter()
-        }
-
-        //CLEAR PREAUTH DATA
-        prefProvider.setValue(PRE_AUTH_DETAILS, "")
-//        viewModel.apply {
-//            paymentAttributes = null
-//            authPaymentResponse = null
-//            allOrderResponse = null
-//        }
-//
-        viewModelPayment.preAuthData = null
+        }catch(e:Exception){}
     }
 
     // PRE AUTHORISE CARD

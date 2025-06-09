@@ -493,6 +493,8 @@ class CheckoutDineInFragmentNew : Fragment,
             custom_paymentAmount = 0.0
         }
 
+
+        binding.linearTab3.gone()
     }
 
     @SuppressLint("InflateParams")
@@ -1345,6 +1347,17 @@ class CheckoutDineInFragmentNew : Fragment,
                                 arrayListOf()
                             )
                         )
+
+                        if(prefProvider.getValue(ORDER_TYPE,TAKEOUT) == DINE_IN) {
+                            dineInDataModel.dineInOrderDetails.apply {
+                                val empId = prefProvider.employeeId()
+                                this?.employeeId = empId
+                                if(this?.payments?.isNotEmpty() == true) {
+                                    this.payments?.last()?.employeeId = empId
+                                }
+                            }
+                        }
+
                         bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
 
                         Log.e("PRINT_DATA_DINE_IN",Gson().toJson(dineInDataModel.dineInOrderDetails))
@@ -4393,6 +4406,13 @@ class CheckoutDineInFragmentNew : Fragment,
                             "splitChange", String.format("%.2f", splitChange).toDouble()
                         )
                         remainingValue = wholePrice - (custom_paymentAmount - splitChange)
+
+                        if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                            remainingValue = 0.0
+                        } else {
+                            remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                        }
+
                         bundle.putDouble(
                             "remainingAmount",
                             remainingValue
@@ -4401,6 +4421,13 @@ class CheckoutDineInFragmentNew : Fragment,
                         if (custom_paymentAmount >= wholePrice) {
                             remainingValue =
                                 custom_paymentAmount - wholePrice
+
+                            if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                                remainingValue = 0.0
+                            } else {
+                                remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                            }
+
                             bundle.putDouble(
                                 "remainingAmount",
                                 remainingValue
@@ -4408,6 +4435,13 @@ class CheckoutDineInFragmentNew : Fragment,
                         } else {
                             remainingValue =
                                 wholePrice - custom_paymentAmount
+
+                            if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                                remainingValue = 0.0
+                            } else {
+                                remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                            }
+
                             bundle.putDouble(
                                 "remainingAmount",
                                 remainingValue
@@ -4420,10 +4454,15 @@ class CheckoutDineInFragmentNew : Fragment,
                         Constants.WHOLE_AMOUNT,
                         String.format("%.2f", remainingValue).toString()
                     )
-                } else
-                {
+                } else {
 
                     remainingValue = wholePrice - paymentAmount
+
+                    if (remainingValue <= 0.0 || remainingValue < 0.01 ) {
+                        remainingValue = 0.0
+                    } else {
+                        remainingValue = MethodUtils.roundOffAmountDouble(remainingValue)
+                    }
 
                     bundle.putDouble(
                         "remainingAmount",

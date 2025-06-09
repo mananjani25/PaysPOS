@@ -276,6 +276,11 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
         return list.get(0).selectedPosition
     }
 
+    fun setHeaderPosition(headerPosition:Int) {
+        list.get(0).selectedPosition = headerPosition
+        notifyDataSetChanged()
+    }
+
     fun getItem(position: Int): DineInModel {
         return list.get(position)
     }

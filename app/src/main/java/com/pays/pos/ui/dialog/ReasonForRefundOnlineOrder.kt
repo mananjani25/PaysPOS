@@ -1080,7 +1080,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         val display: Display = window?.windowManager?.defaultDisplay!!
         display.getSize(size)
         val width: Int = size.x
-        window.setLayout((width * 0.50).toInt(), WindowManager.LayoutParams.MATCH_PARENT)
+        window.setLayout((width * 0.50).toInt(), size.y)
         window.setGravity(Gravity.CENTER)
     }
 

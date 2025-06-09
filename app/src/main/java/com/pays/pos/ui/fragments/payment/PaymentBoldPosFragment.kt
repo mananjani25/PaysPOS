@@ -176,7 +176,9 @@ class PaymentBoldPosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         getServiceCharges()
-
+        prefProvider.setValueInt("selected_tip_id", -1)
+        prefProvider.setValueboolean("save_button_clicked",false)
+        prefProvider.setValueInt("save_button_clicked_id", -1)
         viewModel.setTipAmount(0.0)
         if (prefProvider.getValue(
                 ORDER_TYPE,
@@ -352,7 +354,10 @@ class PaymentBoldPosFragment : Fragment() {
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnSingleClickListener {
             onBackPress()
-            AddTipsDialog.clearSavedTip(requireContext())//Added By Rahul Pandit to solve PA1-I792
+            prefProvider.setValueInt("selected_tip_id", -1)
+            prefProvider.setValueboolean("save_button_clicked",false)
+            prefProvider.setValueInt("save_button_clicked_id", -1)
+//            AddTipsDialog.clearSavedTip(requireContext())//Added By Rahul Pandit to solve PA1-I792
         }
 
         listeners()
@@ -388,6 +393,11 @@ class PaymentBoldPosFragment : Fragment() {
             prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
             prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
 
+
+
+            if(prefProvider.getValue(ORDER_TYPE,TAKEOUT)==DINE_IN){
+                viewModel.dineInTableNeedToBeRestart.value = true
+            }
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER || prefProvider.getValue(
                     ORDER_TYPE, TAKEOUT) == KIOSK_OPEN_ORDER) {
@@ -478,6 +488,9 @@ class PaymentBoldPosFragment : Fragment() {
         viewModel.tipBeforeEnabled = false
         viewModel.paymentInProgress.value = false
 
+        prefProvider.setValueInt("selected_tip_id", -1)
+        prefProvider.setValueboolean("save_button_clicked",false)
+        prefProvider.setValueInt("save_button_clicked_id", -1)
 
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {

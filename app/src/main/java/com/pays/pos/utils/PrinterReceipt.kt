@@ -2687,17 +2687,18 @@ fun addTipsListInnerLandi(
     for (i in 0 until list.size) {
         val obj = list.get(i)
 
+        val tipAmount = calculateTipAmt(
+            obj.rate,
+            totalAmt
+        )
 
         val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) + "%)"
 
-        val price = "(Tip $" + calculateTipAmt(
-            obj.rate,
-            totalAmt
-        ) + " Total $" + MethodUtils.roundOffAmountString(
-            (totalAmt + calculateTipAmt(
+        val price = "(Tip $" + tipAmount + " Total $" + MethodUtils.roundOffAmountString(
+            (totalAmt + tipAmount/*+ calculateTipAmt(
                 obj.rate,
                 totalAmt
-            ))
+            )*/)
         ) + ")"
 
         val str = padLine(
