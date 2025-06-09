@@ -2793,9 +2793,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
 
+            if (createOrderResponse.data.order.note.isNotEmpty()){
+                lineFeed(1)
+
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(createOrderResponse.data.order.note)
+                lineFeed(1)
+            }
 
 
             if(createOrderResponse.data?.order?.customer != null){
+                setAlignment(0)
                 lineFeed(3)
                 appendText("Customer Details")
                 lineFeed(1)
@@ -2824,14 +2834,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            if (createOrderResponse.data.order.note.isNotEmpty()){
-                lineFeed(1)
-
-                setAlignment(1)
-                appendText("Order Note")
-                lineFeed(1)
-                appendText(createOrderResponse.data.order.note)
-            }
 
             lineFeed(6)
             cutPaper(true)
