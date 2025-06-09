@@ -22,6 +22,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
@@ -358,31 +359,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     if (resource.data?.isNotEmpty() == true) {
                                         resource.data.forEach {
                                             if (it.isEnable && !it.isDeleted) {
-                                                var data: TbCustomer? =
-                                                    prefProvider.getCustomerData()
+                                                var data: TbCustomer? = prefProvider.getCustomerData()
                                                 if (data != null) {
                                                     if (viewModel.loyaltyPointCondition(data) && cartModelsList.isNotEmpty()) {
 
-                                                        binding.liinearInfoLayout.layoutParams.height =
-                                                            resources.getDimension(R.dimen._70sdp)
-                                                                .toInt()
+                                                        binding.liinearInfoLayout.layoutParams.height = resources.getDimension(R.dimen._70sdp).toInt()
 
-                                                        if (prefProvider.getValue(
-                                                                ORDER_TYPE,
-                                                                ""
-                                                            ) != DINE_IN
-                                                        )
-                                                            binding.relativeLoylatyPoints.visibility =
-                                                                View.VISIBLE
-                                                        binding.lblLoyaltyPoints.visibility =
-                                                            View.VISIBLE
-                                                        binding.lblLoyaltyBalance.visibility =
-                                                            View.VISIBLE
-                                                        LogUtil.logE(TAG, "InsideLoyalty")
-                                                        LogUtil.logE(
-                                                            TAG,
-                                                            Gson().toJson(viewModel.redeemLoyaltyInfo)
-                                                        )
+                                                        if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN){
+                                                            viewModel.isLoyaltyPointVisible(true)
+                                                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                                        }
+                                                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                                        binding.lblLoyaltyBalance.visibility = View.VISIBLE
+                                                        Log.d(TAG, "getLoyaltyPointListObserver: InsideLoyalty")
+                                                        Log.d(TAG, "getLoyaltyPointListObserver: ${Gson().toJson(viewModel.redeemLoyaltyInfo)}")
                                                         binding.txtLoyaltyAmount.text = "- $${
                                                             String.format(
                                                                 "%.2f",
@@ -398,8 +388,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                                 viewModel.redeemLoyaltyInfo.availablePoints
                                                             }
                                                         }"
-                                                        binding.checkloylaty.isChecked =
-                                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                                        binding.checkloylaty.isChecked = viewModel.redeemLoyaltyInfo.needToApplyLoyalty
 
                                                     }
                                                     else {
@@ -418,6 +407,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 return@breaking
                                             } else {
                                                 if (!isFromPayment) {
+                                                    viewModel.isLoyaltyPointVisible(false)
                                                     binding.relativeLoylatyPoints.gone()
                                                     binding.lblLoyaltyPoints.gone()
                                                     binding.lblLoyaltyBalance.gone()
@@ -427,6 +417,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                         }
                                     } else {
                                         if (!isFromPayment) {
+                                            viewModel.isLoyaltyPointVisible(false)
                                             binding.relativeLoylatyPoints.gone()
                                             binding.lblLoyaltyPoints.gone()
                                             binding.lblLoyaltyBalance.gone()
@@ -444,6 +435,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                     Status.ERROR -> {
                         if (!isFromPayment) {
+                            viewModel.isLoyaltyPointVisible(false)
                             binding.relativeLoylatyPoints.gone()
                             binding.lblLoyaltyPoints.gone()
                             binding.lblLoyaltyBalance.gone()
@@ -469,6 +461,27 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     }
                 }
             })
+    }
+
+    private fun updateLoyaltyPointVisibility() {
+        viewModel.isLoyaltyPointShowObservable.observe(viewLifecycleOwner,
+            Observer { event ->
+                 event?.getContentIfNotHandled()?.let {
+                     if (it) {
+                         Log.d(TAG, "updateLoyaltyPointVisibility: Show Loyalty Checkbox")
+                         if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
+                     } else {
+                         Log.d(TAG, "updateLoyaltyPointVisibility: Don't Show Loyalty Checkbox")
+                         binding.relativeLoylatyPoints.visibility = View.GONE
+                         binding.lblLoyaltyPoints.visibility = View.GONE
+                         binding.lblLoyaltyBalance.visibility = View.GONE
+                     }
+                 }
+            }
+        )
     }
 
     fun enablePreAuth() {
@@ -958,6 +971,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         setupTaxAdapter()
         getOrderTypes()
         getLoyaltyPointListObserver(view)
+        updateLoyaltyPointVisibility()
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
             ?.observe(viewLifecycleOwner) {
@@ -1095,16 +1109,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
             totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
             if (viewModel.activeLoyaltyProgram?.amount != null && totalAmount >= viewModel.activeLoyaltyProgram?.amount!! && totalAmount != 0.00) {
+                viewModel.isLoyaltyPointVisible(true)
                 binding.checkloylaty.visible()
                 binding.txtLoyaltyAmount.visible()
                 binding.txtLoyaltyPoints.visible()
                 binding.txtlabelloyaltyPoints.visible()
             } else {
-              binding.checkloylaty.gone()
-              binding.checkloylaty.isChecked =false
-              binding.txtLoyaltyAmount.gone()
-              binding.txtLoyaltyPoints.gone()
-              binding.txtlabelloyaltyPoints.gone()
+                viewModel.isLoyaltyPointVisible(false)
+                binding.checkloylaty.gone()
+                binding.checkloylaty.isChecked = false
+                binding.txtLoyaltyAmount.gone()
+                binding.txtLoyaltyPoints.gone()
+                binding.txtlabelloyaltyPoints.gone()
             }
 
         }
@@ -1203,7 +1219,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         }
     }
 
-
     private fun setupLoyalytyPoints() {
         binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
             viewModel.setcheckedLoyaltyApply(p1, binding.txtTotal)
@@ -1266,7 +1281,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
         }
     }
-
 
     private fun getDineInData() {
         if (updateBundle != null) {
@@ -1777,16 +1791,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             if (isFromPayment) {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._50sdp).toInt()
+                                viewModel.isLoyaltyPointVisible(false)
                                 binding.relativeLoylatyPoints.visibility = View.GONE
-
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                                 binding.lblLoyaltyBalance.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
 
-                                if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                                if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
+                                    viewModel.isLoyaltyPointVisible(true)
                                     binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                }
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyBalance.visibility = View.VISIBLE
                                 LogUtil.logE(TAG, "InsideLoyalty")
@@ -1810,8 +1826,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
                         }
                     } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
+                        binding.liinearInfoLayout.layoutParams.height = resources.getDimension(R.dimen._50sdp).toInt()
+                        viewModel.isLoyaltyPointVisible(false)
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
                         binding.lblLoyaltyBalance.visibility = View.GONE
@@ -1835,10 +1851,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtDiscountText?.text = "Discount"
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
-                    if (prefProvider.getValue(
-                            OPTION_TYPE, "CashDiscount"
-                        ) == "CashDiscount"
-                    ) {
+                    if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
                         binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
                         binding.txtNoncashAdj.text = "-" + MethodUtils.roundOffAmount(0.00)
                     } else {
@@ -1850,26 +1863,23 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     var data: TbCustomer? = prefProvider.getCustomerData()
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._70sdp).toInt()
-                            if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                            binding.liinearInfoLayout.layoutParams.height = resources.getDimension(R.dimen._70sdp).toInt()
+                            if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
+                                viewModel.isLoyaltyPointVisible(true)
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            }
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
-
                         } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._50sdp).toInt()
+                            binding.liinearInfoLayout.layoutParams.height = resources.getDimension(R.dimen._50sdp).toInt()
+                            viewModel.isLoyaltyPointVisible(false)
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
 
-
                         }
                     }
-
-
                 }
 
                 //prefProvider.setValue(REDIRECT_FROM, "")
@@ -2278,7 +2288,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             } else {
                                                 binding.relativeOrderNotes?.visibility = View.GONE
                                             }
-
+                                            viewModel.isLoyaltyPointVisible(false)
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
@@ -2317,6 +2327,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeOrderNotes?.visibility = View.GONE
                                             binding.liinearInfoLayout.layoutParams.height =
                                                 resources.getDimension(R.dimen._50sdp).toInt()
+                                            viewModel.isLoyaltyPointVisible(false)
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
@@ -2746,6 +2757,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 binding.relativeOrderNotes?.visibility = View.GONE
                                             }
 
+                                            viewModel.isLoyaltyPointVisible(false)
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
@@ -2784,6 +2796,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeOrderNotes?.visibility = View.GONE
                                             binding.liinearInfoLayout.layoutParams.height =
                                                 resources.getDimension(R.dimen._50sdp).toInt()
+                                            viewModel.isLoyaltyPointVisible(false)
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3285,8 +3298,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
-                            if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                            if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
+                                viewModel.isLoyaltyPointVisible(true)
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            }
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
@@ -3313,6 +3328,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
+                            viewModel.isLoyaltyPointVisible(false)
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3339,18 +3355,22 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._70sdp).toInt()
-                        if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                        if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
+                            viewModel.isLoyaltyPointVisible(true)
                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        }
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
                         var totalAmount = binding.txtTotal.text.toString().replace(Regex("[^0-9.]"), "").toDouble()
                         totalAmount += viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                         if (totalAmount >= viewModel.activeLoyaltyProgram?.amount!! && totalAmount != 0.00) {
+                            viewModel.isLoyaltyPointVisible(true)
                             binding.checkloylaty.visible()
                             binding.txtLoyaltyAmount.visible()
                             binding.txtLoyaltyPoints.visible()
                             binding.txtlabelloyaltyPoints.visible()
                         } else {
+                            viewModel.isLoyaltyPointVisible(false)
                             binding.checkloylaty.gone()
                             binding.checkloylaty.isChecked = false
                             binding.txtLoyaltyAmount.gone()
@@ -3418,6 +3438,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 //                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                 }
             } else {
+                viewModel.isLoyaltyPointVisible(false)
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3459,8 +3480,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 if (viewModel.loyaltyPointCondition(data)) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
-                    if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                    if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
+                        viewModel.isLoyaltyPointVisible(true)
                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                    }
                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
                     binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
@@ -3470,6 +3493,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 } else {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._50sdp).toInt()
+                    viewModel.isLoyaltyPointVisible(false)
                     binding.relativeLoylatyPoints.visibility = View.GONE
                     binding.lblLoyaltyPoints.visibility = View.GONE
                     binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3478,6 +3502,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             } else {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
+                viewModel.isLoyaltyPointVisible(false)
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3512,14 +3537,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         }
     }
 
-
     private fun clearUpdateFlag() {
         isOrderUpdate = false
         prefProvider.setValueboolean(Constants.IS_ORDER_UPDATE, value = false)
         requireArguments().remove("update")
 
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -3594,7 +3617,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
-        LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
+        Log.d(TAG, "onCustomerClicked  ${isRemoved}")
         viewModel.dineInHeaderPosition = position
         if (isRemoved) {
             if (cartModelsList.isEmpty())
@@ -4104,7 +4127,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.assignCustomer = null
         binding.liinearInfoLayout.layoutParams.height =
             resources.getDimension(R.dimen._50sdp).toInt()
-
+        viewModel.isLoyaltyPointVisible(false)
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE

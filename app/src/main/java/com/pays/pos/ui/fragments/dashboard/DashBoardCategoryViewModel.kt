@@ -163,6 +163,7 @@ import java.util.Random
 import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.math.ceil
+import kotlin.math.log
 
 
 @HiltViewModel
@@ -229,6 +230,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
     val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
+
+    private val _isLoyaltyPointShowObservable = MutableLiveData<Event<Boolean>>()
+    val isLoyaltyPointShowObservable : LiveData<Event<Boolean>> = _isLoyaltyPointShowObservable
 
     private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
     val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
@@ -487,6 +491,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun callUpdateCartFooter(value: Boolean) {
         _updateCartFooterObservable.postValue(Event(value))
+    }
+
+    fun isLoyaltyPointVisible(value: Boolean) {
+        _isLoyaltyPointShowObservable.postValue(Event(value))
     }
 
     fun changeCustomerDispSignButtonTitle(value: String) {
