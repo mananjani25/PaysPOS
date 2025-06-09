@@ -1468,8 +1468,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         putInt("paymentId", it.id)
                         putBoolean("isFromTrans", true)
                         putString("customerName",(it.customer?.firstName ?: "") + " " + (it.customer?.lastName ?: ""))
-                        putString("customer_first_name", it.customer.firstName ?: "")
-                        putString("customer_last_name", it.customer.lastName ?: "")
                         Log.e(TAG, "PaymentType: ${it.paymentType}")
                         putInt(
                             "selectedorderType",
