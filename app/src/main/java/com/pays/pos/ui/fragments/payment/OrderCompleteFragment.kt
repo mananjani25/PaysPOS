@@ -2312,7 +2312,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     orderID,
                     IS_GIFT_CARD_TYPE
                 )
-
+                binding.tvMessage.text =
+                    getString(R.string.how_would_the_customer_like_their_receipt)
 
             }
 
