@@ -6454,7 +6454,7 @@ class TransactionDetailsFragment : Fragment() {
                     addTipsList(
                         builder,
                         tipsList,
-                        paymentDetailsResponse.data.order.total_amount,
+                        paymentDetailsResponse.data.amount,
                         customerSettingModel.fonts
                     )
 
@@ -7249,7 +7249,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipList(
                         tipsList,
-                        paymentDetailsResponse.data.order.total_amount,
+                        paymentDetailsResponse.data.amount,
                         customerSettingModel.fonts
                     )
                 }
@@ -7909,7 +7909,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (tipsList.isNotEmpty()) {
                         addTipsListInnerNew(
                             tipsList,
-                            paymentDetailsResponse.data.order.total_amount,
+                            paymentDetailsResponse.data.amount,
                             customerSettingModel.fonts
                         )
                     }
@@ -7917,7 +7917,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (tipsList.isNotEmpty()) {
                         PrintSunmiUtils.addTipListInner(
                             tipsList,
-                            paymentDetailsResponse.data.order.total_amount,
+                            paymentDetailsResponse.data.amount,
                             customerSettingModel.fonts
                         )
                     }
@@ -8590,7 +8590,7 @@ class TransactionDetailsFragment : Fragment() {
                                         if (tipsList.isNotEmpty()) {
                                             val tipsToPrint = addTipsListInnerLandi(
                                                 tipsList,
-                                                totalAmt,
+                                                paymentDetailsResponse.data.amount,
                                                 customerSettingModel.fonts
                                             )
 
