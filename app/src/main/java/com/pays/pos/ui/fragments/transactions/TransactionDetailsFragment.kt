@@ -8387,9 +8387,6 @@ class TransactionDetailsFragment : Fragment() {
 
                                     var subTotalToPrint = ""
 
-
-
-
                                     if(order.order.order_type_name.lowercase(Locale.ROOT) == "dine in"/* && order.payable_type == "Guest" || order.payable_type == "Order"*/) {
 
                                         val totalAmount = order.order.sub_total.let {
@@ -8406,24 +8403,13 @@ class TransactionDetailsFragment : Fragment() {
                                                     48
                                                 }
                                             ).toString()
-
                                     } else {
-
                                         //other Order types than dine in
-
-                                               subTotalToPrint =  padLine(
-                                                    "Sub Total",
-                                                    "$" + order.sub_total.let {
-                                                        MethodUtils.roundOffAmountString(
-                                                            it
-                                                        )
-                                                    },
-                                                    if (customerSettingModel.fonts == Constants.LARGE) {
-                                                        23
-                                                    } else {
-                                                        48
-                                                    }
-                                                ).toString()
+                                        subTotalToPrint =  padLine(
+                                            "Sub Total",
+                                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total),
+                                            if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                                        ).toString()
                                     }
 
 
