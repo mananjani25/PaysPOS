@@ -12190,23 +12190,23 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                      * Print Tips
                                      */
 
-                                    if (getOrderDetailsResponse?.totalTips != 0.0) {
-
-
-                                        val tipsToPrint =
-                                            padLine(
-                                                "Tips",
-                                                "$" + getOrderDetailsResponse?.totalTips?.let {
-                                                    MethodUtils.roundOffAmountString(
-                                                        it
-                                                    )
-                                                },
-                                               48
-                                            ).toString()
-
-                                        printLeft(tipsToPrint)
-                                        lineBreak()
-                                    }
+//                                    if (getOrderDetailsResponse?.totalTips != 0.0) {
+//
+//
+//                                        val tipsToPrint =
+//                                            padLine(
+//                                                "Tips",
+//                                                "$" + getOrderDetailsResponse?.totalTips?.let {
+//                                                    MethodUtils.roundOffAmountString(
+//                                                        it
+//                                                    )
+//                                                },
+//                                               48
+//                                            ).toString()
+//
+//                                        printLeft(tipsToPrint)
+//                                        lineBreak()
+//                                    }
 
                                     lineBreak()
 
