@@ -195,6 +195,8 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var isFromOnlineOrderRefund: Boolean = false
+    private var customerFirstName: String = ""
+    private var customerLastName: String = ""
     private var isRefundSuccess: Boolean = false
 
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
@@ -272,6 +274,8 @@ class TransactionDetailsFragment : Fragment() {
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
+        customerFirstName = arguments?.getString("customer_first_name")!!
+        customerLastName = arguments?.getString("customer_last_name")!!
         isRefundSuccess = arguments?.getBoolean("is_refund_success")?:false
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
@@ -2324,15 +2328,33 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvTipLabel.text = "Tip (0%)"
                 }
 
-                if (it.data.order.customer != null) {
-                    binding.tvCustomerName.text = if (customerName.isNotBlank()) {
-                        customerName
-                    }else {
-                        it.data.order.customer.firstName + " " + it.data.order.customer.lastName
+                if (it.data.order.customer != null ) {
+                    val pervious = it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                    val latested = customerFirstName + " " + customerLastName
+                    if (pervious == latested){
+                        binding.tvCustomerName.text =
+                            it .data.order.customer.firstName + " " + it.data.order.customer.lastName
+                    }else if (customerFirstName.isNotEmpty()){
+                        binding.tvCustomerName.text =
+                            customerFirstName + " " + customerLastName
                     }
-                } else {
+                } else if (customerFirstName.isNotEmpty()){
+                    binding.tvCustomerName.text =
+                        customerFirstName + " " + customerLastName
+                } else{
                     binding.tvCustomerName.text = ""
+                    binding.tvCustomerName.invisible()
                 }
+//                if (it.data.order.customer != null) {
+//                    binding.tvCustomerName.text = if (customerName.isNotBlank()) {
+//                        customerName
+//                    }else {
+//                        it.data.order.customer.firstName + " " + it.data.order.customer.lastName
+//                    }
+//                } else {
+//                    binding.tvCustomerName.text = ""
+//                }
+
 
                 if (it.data.order.employee != null){
                     if (it.data.order.order_type_name.equals("Kiosk TakeOut")){
