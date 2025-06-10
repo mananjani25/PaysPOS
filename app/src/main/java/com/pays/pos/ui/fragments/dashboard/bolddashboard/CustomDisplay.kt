@@ -1166,8 +1166,8 @@ class CustomDisplay(
                         MethodUtils.roundOffAmount(totalServiceCharge)
                     Log.v("CustomerScreen Amount_2:", totalPrice.toString())
 
-                    binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
-                    binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice)
+                    binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice) + tippedAmount
+                    binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice) + tippedAmount
 
                 } else {
                     binding.txtSubTotalCash?.text = MethodUtils.roundOffAmount(subTotalPrice)
@@ -1230,7 +1230,7 @@ class CustomDisplay(
                                 ?: false
                         ) {
                             binding.txtTotalCash?.text =
-                                dashBoardCategoryViewModel.customerCashAmount.value
+                                dashBoardCategoryViewModel.customerCashAmount.value + tippedAmount
                         } else {
                             if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
                                 if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
@@ -4006,7 +4006,7 @@ class CustomDisplay(
             ) {
                 setupTotalsNew(isDineIn = false)
             } else
-                binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+                binding.txtTotalCash?.text = "$ ${String.format("%.2f", it + tippedAmount)}"
 
         })
 
