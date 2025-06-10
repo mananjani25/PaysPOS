@@ -3200,6 +3200,14 @@ class TransactionDetailsFragment : Fragment() {
                         if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                             add(
                                 PrinterBuilder()
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        "--------------------------------------------"
+                                    )
+                            )
+                            actionFeedLine(1)
+                            add(
+                                PrinterBuilder()
                                     .styleMagnification(
                                         MagnificationParameter(2, 2)
                                     )
@@ -3207,7 +3215,7 @@ class TransactionDetailsFragment : Fragment() {
                                     .styleBold(true)
                                     .actionPrintText(
                                         content = if (paymentDetailsResponse.data.order.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                            "--------------------------------------------\nOrder Note\n "
+                                            "Order Note"
                                         } else ""
                                     )
                             )
@@ -3226,7 +3234,7 @@ class TransactionDetailsFragment : Fragment() {
                                     )
                             )
                         }
-                        actionFeedLine(1)
+                        actionFeedLine(2)
                         if (kitchenSettingModel.showCustomerName && (paymentDetailsResponse.data.order.customer?.firstName != null || paymentDetailsResponse.data.order.customer?.lastName != null)) {
                             add(
                                 PrinterBuilder()
@@ -5517,12 +5525,18 @@ class TransactionDetailsFragment : Fragment() {
                                     )
                                     lineBreak()
                                 }
-
+                                printDashedLineAndBreak()
+                                lineBreak()
 
                                 if (paymentDetailsResponse.data.order.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
+                                    printCenter(
+                                        "Order Note",
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
                                     lineBreak()
-
+                                    lineBreak()
                                     printCenter(
                                         paymentDetailsResponse.data.order.note.toString(),
                                         isBold = true,
@@ -5532,6 +5546,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                 if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                                     if (paymentDetailsResponse.data.order.customer != null) {
+                                        lineBreak()
                                         lineBreak()
                                         printLeft(
                                             "Customer Details", isBold = true,
