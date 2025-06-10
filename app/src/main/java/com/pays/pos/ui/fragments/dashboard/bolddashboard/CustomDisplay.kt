@@ -355,9 +355,13 @@ class CustomDisplay(
 
             Log.e("Total Tip Check ","SPLIT COUNT $it AND WHOLE AMOUNT = $wholeAmount")
 
-
-
             observeActiveTipsList(/*dashBoardCategoryViewModel.totalPrice*/ wholeAmount / it)
+        }
+
+        dashBoardCategoryViewModel.amountWiseSplit.observe(lifecycleOwner) {
+            if(it > 0.00){
+                observeActiveTipsList(it)
+            }
         }
 
     }
@@ -3000,6 +3004,11 @@ class CustomDisplay(
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
             if (dashBoardCategoryViewModel.getSplitCount() == 1) {
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
+                dashBoardCategoryViewModel.amountWiseSplit.observe(lifecycleOwner) {
+                    if(it > 0.00){
+                        observeActiveTipsList(it)
+                    }
+                }
             } else {
                 //    observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
