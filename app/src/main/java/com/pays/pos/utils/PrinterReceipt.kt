@@ -2538,7 +2538,7 @@ fun addOrdersForKitchenCustoemrPrinter(
 
                         }
                     }
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_E)
@@ -2836,7 +2836,7 @@ fun addOrdersForKitchenDineIn(
                         }
                     }
 
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_C)
@@ -2919,7 +2919,7 @@ fun addOrdersForKitchenDineInU220(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_C)
                     //builder.addTextLineSpace(20)
@@ -3000,7 +3000,7 @@ fun addOrdersForKitchenOnlineOrder(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_C)
@@ -3166,7 +3166,7 @@ fun addOrdersForKitchenOnlineOrderU220(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_C)
                     //builder.addTextLineSpace(20)
@@ -3289,7 +3289,7 @@ fun addOrdersForKitchenOnlineOrderSunmi(
                         )
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
             }
@@ -3302,7 +3302,7 @@ fun addOrdersForKitchenOnlineOrderLandi(
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
     lprint: LPrint
 ) {
-    for (i in 0 until list.size) {
+    for (i in list.indices) {
         printerCat?.forEach {
             if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
                 val obj = list.get(i)
@@ -3321,7 +3321,7 @@ fun addOrdersForKitchenOnlineOrderLandi(
                         lineBreak()
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     lprint.printLeft("  Note:" + obj.note, isBold = true, fontSize = FONT_SIZE_5X)
                     lprint.lineBreak()
                 }
@@ -3384,7 +3384,7 @@ fun addOrdersForKitchenOnlineOrderSunmiInner(
                         )
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
             }
@@ -3544,7 +3544,7 @@ fun addOrdersForKitchenDineIn(
 
                         }
                     }
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
                         PrintSunmiUtils.orderTime("  Note:" + obj.note)
 
@@ -3589,7 +3589,7 @@ fun addOrdersForKitchenDineInInner(
 
                 }
             }
-            if (obj.note.isNotEmpty()) {
+            if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
                 PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
 
@@ -3657,7 +3657,7 @@ fun addOrdersForKitchenCustomer(
 
                         }
                     }
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_E)
@@ -3735,7 +3735,7 @@ fun addOrdersForKitchenCustomerNewPrinter(
 
             }
         }
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
             //builder.addTextLineSpace(20)
@@ -3778,7 +3778,7 @@ fun addOrdersForKitchenCustomerNewPrinter(
 //
 //            }
 //        }
-//        if (obj.note.isNotEmpty()) {
+//        if (obj.note.isNotEmpty())  || obj.note.isNotBlank(){
 //
 //            PrintSunmiUtils.orderTime("  Note:" + obj.note)
 //
@@ -3918,7 +3918,7 @@ fun addOrdersForKitchen(
                         builder.addFeedLine(1)
                     }
 
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_C)
@@ -3988,7 +3988,7 @@ fun addOrdersForStarKitchen(
                         }
                     }
 
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 //                        builder.addTextLineSpace(30)
                         items += " "
                         items += "  Note:${obj.note}"
@@ -4045,7 +4045,7 @@ fun addOrdersForStarKitchen(
                         }
                     }
 
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 //                        builder.addTextLineSpace(30)
                         items += " "
                         items += "  Note:${obj.note}"
@@ -4165,7 +4165,7 @@ fun addReprintOrdersForStarKitchen(
                         }
                     }
 
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 //                        builder.addTextLineSpace(30)
                         items += " "
                         items += "  Note:${obj.note}"
@@ -4217,7 +4217,7 @@ fun addReprintTransactionOrdersForStarKitchen(
                         }
                     }
 
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 //                        builder.addTextLineSpace(30)
                         items += " "
                         items += "  Note:${obj.note}"
@@ -4457,7 +4457,7 @@ fun addOrdersForKitchenU220(
 
                         }
                     }
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addFeedLine(1)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_C)
@@ -4522,7 +4522,7 @@ fun addOrdersForKitchen(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
 
@@ -4568,7 +4568,7 @@ fun addOrdersForKitchen(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
 
@@ -4637,7 +4637,7 @@ fun addOrdersForKitchenTransition(
                         }
                         builder.addFeedLine(1)
                     }
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_C)
@@ -4683,7 +4683,7 @@ fun addOrdersForKitchenTransition(
                         )
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -4745,7 +4745,7 @@ fun addOrdersForKitchenTransitionU220(
                             )
                         }
                     }
-                    if (obj.note.isNotEmpty()) {
+                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                         builder.addFeedLine(1)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_C)
@@ -4794,7 +4794,7 @@ fun addOrdersForKitchenTransitionInner(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
 
@@ -4839,7 +4839,7 @@ fun addOrdersForKitchenLandiTransitionInner(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     lprint.printLeft("  Note:" + obj.note,isBold = true,
                         fontSize = FONT_SIZE_5X)
                     lprint.lineBreak()
@@ -4884,7 +4884,7 @@ fun addOrdersForKitchenInner(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
 
@@ -4935,7 +4935,7 @@ fun addOrdersForKitchenLandiInner(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     lprint.printLeft("  Note:" + obj.note,isBold = true,
                         fontSize = FONT_SIZE_5X)
                     lprint.lineBreak()
@@ -4988,7 +4988,7 @@ fun addOrdersForKitchenLandiInnerNew(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     lprint.printLeft("  Note:" + obj.note,isBold = true,
                         fontSize = FONT_SIZE_5X)
                     lprint.lineBreak()
@@ -5035,7 +5035,7 @@ fun addOrdersForKitchenInner(
 
                     }
                 }
-                if (obj.note.isNotEmpty()) {
+                if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
 
@@ -5120,7 +5120,7 @@ fun addOrderItemOpenOrder(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
@@ -5226,7 +5226,7 @@ fun addOrderItemOnlineOrder(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
@@ -5308,7 +5308,7 @@ fun addOrderItemOpenOrderSunmi(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
 
@@ -5376,7 +5376,7 @@ fun addOrderItemOnlineOrderSunmi(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
 
@@ -5445,7 +5445,7 @@ fun addOrderItemOnlineOrderLandi(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             lprint.printLeft("   Note: " + obj.note)
             lprint.lineBreak()
@@ -5509,7 +5509,7 @@ fun addOrderItemOpenOrderSunmiInner(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             PrintSunmiUtils.normalText("   Note: " + obj.note)
 
@@ -5611,7 +5611,7 @@ fun addOrderItemOnlineOrderSunmiInner(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             if (isVersion39) {
                 PrintSunmiUtils.normalText("   Note: " + obj.note)
@@ -5935,7 +5935,7 @@ fun addWholeTbItemToGuestInnerLandi(
 
     }
 
-    if (obj.note.isNotEmpty()) {
+    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
         lPrint.printLeft("   Note: " + obj.note)
         lPrint.lineBreak()
     }
@@ -6141,7 +6141,7 @@ fun addOrderItemForDineIn(
 
     }
 
-    if (obj.note.isNotEmpty()) {
+    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
         builder.addTextLineSpace(30)
         builder.addFeedUnit(30)
         builder.addTextFont(Builder.FONT_E)
@@ -6295,7 +6295,7 @@ fun addOrderItemForDineIn(
 
     }
 
-    if (obj.note.isNotEmpty()) {
+    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
         PrintSunmiUtils.orderTime("   Note: " + obj.note)
     }
 
@@ -6349,7 +6349,7 @@ fun addOrderItemForDineInInnerLandi(
 
     }
 
-    if (obj.note.isNotEmpty()) {
+    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
         lPrint.printLeft("   Note: " + obj.note)
         lPrint.lineBreak()
     }
@@ -6401,7 +6401,7 @@ fun addOrderItemForDineInInnerCommon(
 
     }
 
-    if (obj.note.isNotEmpty()) {
+    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
         printerTasks.add(Pair(PRINTER_ITEM_NOTE,"   Note: " + obj.note))
     }
 
@@ -6452,7 +6452,7 @@ fun addOrderItemForDineInInner(
 
     }
 
-    if (obj.note.isNotEmpty()) {
+    if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
         PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,"   Note: " + obj.note)
     }
 
@@ -6547,7 +6547,7 @@ fun addOrderItems(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
@@ -6616,7 +6616,7 @@ fun addOrderItems(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
 
@@ -6679,7 +6679,7 @@ fun addOrderItemsInner(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             PrintSunmiUtils.normalText("   Note: " + obj.note)
 
@@ -6739,7 +6739,7 @@ fun addOrderItemsInnerNewLandi(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             lprint.lineBreak()
             lprint.printBoldLeft("   Note: " + obj.note)
@@ -6804,7 +6804,7 @@ fun addOrderItemsInnerNew(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
 
             PrintSunmiUtils.boldText("      Note: " + obj.note)
             PrintSunmiUtils.normalText("")
@@ -6893,7 +6893,7 @@ fun addOrderItemsTransaction(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
@@ -6961,7 +6961,7 @@ fun addOrderItemsTransaction(
 
         }
 
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
         }
     }
@@ -7014,7 +7014,7 @@ fun addOrderItemsTransactionInner(
             }
 
         }
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             PrintSunmiUtils.boldText("   Note: " + obj.note)
         }
     }
@@ -7067,7 +7067,7 @@ fun addOrderItemsTransactionInnerNew(
             }
 
         }
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             PrintSunmiUtils.boldTextNew("   Note: " + obj.note)
         }
     }
@@ -7121,7 +7121,7 @@ fun addOrderItemsTransactionInnerLandi(
             }
 
         }
-        if (obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
             printLeft("   Note: " + obj.note , isBold = true)
             lprint.lineBreak()
         }

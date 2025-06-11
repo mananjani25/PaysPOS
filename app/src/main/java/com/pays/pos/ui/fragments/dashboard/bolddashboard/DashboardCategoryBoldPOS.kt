@@ -242,18 +242,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     fun onlineOrderBadgeDisplay(count: Int) {
-        if (count != null) {
-            if (count > 0) {
-                binding.layoutHeader.txtBadgeCount?.visible()
-                binding.layoutHeader.txtBadgeCount.blink()
-                binding.layoutHeader.txtBadgeCount?.text = count.toString()
-            } else {
-                binding.layoutHeader.txtBadgeCount.clearAnimation()
-                binding.layoutHeader.txtBadgeCount?.gone()
-            }
+        Log.d(TAG, "onlineOrderBadgeDisplay: $count")
+        if (count > 0) {
+            binding.layoutHeader.txtBadgeCount.visible()
+            binding.layoutHeader.txtBadgeCount.blink()
+            binding.layoutHeader.txtBadgeCount.text = count.toString()
         } else {
             binding.layoutHeader.txtBadgeCount.clearAnimation()
-            binding.layoutHeader.txtBadgeCount?.gone()
+            binding.layoutHeader.txtBadgeCount.gone()
         }
     }
 

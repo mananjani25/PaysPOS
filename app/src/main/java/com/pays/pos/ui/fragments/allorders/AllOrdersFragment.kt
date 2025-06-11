@@ -165,7 +165,7 @@ class AllOrdersFragment : Fragment() {
                     tab.text = "Online ($onlinePendingCount)"
                 }
                 4 -> {
-                    tab.text = "3rd Party ($thirdPartyPendingCount)"
+                    tab.text = "Third Party ($thirdPartyPendingCount)"
                 }
             }
 

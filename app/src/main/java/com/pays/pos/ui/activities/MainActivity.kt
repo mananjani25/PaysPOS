@@ -772,14 +772,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
-    var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
+    private var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             LogUtil.logE(TAG, "GetOnlineOrderDataNoti")
-            var count = intent?.getStringExtra("count")
-            count?.toInt()
-                ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
+            val count = intent?.getStringExtra("count")
+            Log.d(TAG, "onReceive count: $count")
+            count?.toInt()?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
             if (navController?.currentDestination?.id == R.id.allOrdersFragment) {
-                var intent = Intent()
+                val intent = Intent()
                 intent.putExtra("refresh", true)
                 intent.action = Constants.ONLINE_ORDER_REFRESH
                 sendBroadcast(intent)
@@ -3615,7 +3615,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 }
 
-
 //                runBlocking {
 
                 CoroutineScope(Dispatchers.IO).launch {
@@ -3624,15 +3623,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         syncInventoryModule(true, isMigrationOn = true)
                         syncSettingModule()
 
-
-                        val orderTypes =
-                            CoroutineScope(Dispatchers.IO).async { fetchOrderTypesFromServer() }
-                                .await()
+                        val orderTypes = CoroutineScope(Dispatchers.IO).async { fetchOrderTypesFromServer() }.await()
 
                         orderTypes.data?.data?.let { orderTypes ->
                             addOrderTypesToDatabase(orderTypes)
                         }
-
 
                         allOrderCounts("", "")
                     }
@@ -3716,10 +3711,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     lastSyncTime = System.currentTimeMillis()
 
                     if (it.asJsonObject.has("location_id"))
-                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
-                                "location_id"
-                            ).asInt
-                        ) {
+                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) {
                             Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
                             handleUpdatedData(it)
                         }
@@ -3768,35 +3760,23 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         try {
             if (it.asJsonObject.has("setting_data")) {
 
-                val setting_data = it.asJsonObject.get("setting_data")
+                val settingData = it.asJsonObject.get("setting_data")
                 Log.e(TAG2, "call setting_data API")
                 try {
-
-                    if (setting_data.toString() == "true") {
-                        Handler(mainLooper).post(object : Runnable {
-                            override fun run() {
-                                dashboardViewModel.autoSyncEnabled.value = false
-                            }
-                        })
+                    if (settingData.toString() == "true") {
+                        Handler(mainLooper).post(Runnable { dashboardViewModel.autoSyncEnabled.value = false })
 
                         //  PrefProvider(mContext).setValueInt(Constants.CAT_ID_SELECTED, 0)
                         dashboardViewModel.syncSettingModule()
 
                         if (com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
-
                             updatePrinter?.updatePrinters()
-
                             Log.e(TAG2, "Setting DATA TRUE")
-
-
                         } else {
                             com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
                         }
-
                     } else {
-
                         if (it.asJsonObject.has("message")) {
-
                             sendNotification(it.asJsonObject.get("message").asString)
                         }
                     }
@@ -3806,9 +3786,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
 
             if (it.asJsonObject.has("inventory_sync")) {
-                val inventory_sync_data = it.asJsonObject.get("inventory_sync")
+                val inventorySyncData = it.asJsonObject.get("inventory_sync")
 
-                if (inventory_sync_data.toString() == "true") {
+                if (inventorySyncData.toString() == "true") {
                     val intent2 = Intent()
                     intent2.action = Constants.SYNC_NOTIFICATION
                     mContext.sendBroadcast(intent2)
@@ -3829,18 +3809,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 //                    DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
                 } else {
-
                     if (it.asJsonObject.has("message")) {
-
                         sendNotification(it.asJsonObject.get("message").asString)
                     }
                 }
             }
 
             if (it.asJsonObject.has(Constants.SYNC_NOTIFICATION)) {
-                val sync_data = it.asJsonObject.get(Constants.SYNC_NOTIFICATION)
+                val syncData = it.asJsonObject.get(Constants.SYNC_NOTIFICATION)
 
-                if (sync_data.toString() == "true") {
+                if (syncData.toString() == "true") {
                     DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
                 } else {
 
@@ -3869,13 +3847,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 EventBus.getDefault().post(SyncDineInEvent(true, "RefreshDineIn"))
             }
 
-
             // Added to refresh online orders
             if (it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
 
-
                 val orderTypeName = it.asJsonObject.get("order_type").toString()
-
+                val orderCount = it.asJsonObject.get("all_count").toString()
+                Log.d(TAG2, "handleUpdatedData orderCount: $orderCount")
                 if (it.asJsonObject.has("new_order")) {
                     if (orderTypeName.equals(
                             "\"KioskOpenorder\"",
@@ -3883,14 +3860,22 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) || orderTypeName.equals(
                             "\"OnlineWebOrder\"",
                             true
-                        ) || orderTypeName.equals("\"OnlineOrder\"", true)
+                        ) || orderTypeName.equals(
+                            "\"OnlineOrder\"",
+                            true
+                        ) || orderTypeName.equals(
+                            "\"ThirdPartyOrder\"",
+                            true
+                        )
                     ) {
                         setSoundForOnlineOrder()
                     }
                 }
 
+
                 val intent = Intent()
                 intent.putExtra("message", "refresh")
+                intent.putExtra("count", orderCount)
                 intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
             } else {
