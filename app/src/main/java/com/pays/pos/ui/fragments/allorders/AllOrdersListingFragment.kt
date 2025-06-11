@@ -5797,7 +5797,7 @@ class AllOrdersListingFragment(
             setAlignment(0)
 
 
-            for (i in 0 until orderData?.orderItems.size){
+            for (i in 0 until orderData?.orderItems.size) {
                 data.printerCategories.toCollection(arrayListOf()).forEach {
                     if (it.id == orderData?.orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
                         val obj = orderData?.orderItems.get(i)
@@ -5817,75 +5817,75 @@ class AllOrdersListingFragment(
                                         } + objMod.name.uppercase()
                                     )
 
-                            lineFeed(1)
-                        }
-                    }
-
-                    if (obj.note.isNotEmpty() || obj.note.isNotBlank()){
-                        appendText("  Note:" + obj.note)
-                        lineFeed(1)
-                    }
-                }
-            }
-
-             if (orderData.note.isNotEmpty() && kitchenSettingModel.showOrderNote) {
-                 lineFeed(2)
-                 setAlignment(1)
-                 appendText("Order Note")
-                 lineFeed(1)
-                 appendText(orderData.note)
-                 lineFeed(2)
-
-
-             }
-
-            lineFeed(1)
-
-            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
-
-                try{
-
-                    if (orderData?.customer != null){
-
-                        setAlignment(0)
-                        appendText("Customer Details")
-                        lineFeed(1)
-                        appendText("------------------------")
-                        lineFeed(1)
-                        if (kitchenSettingModel.showCustomerName) {
-
-
-                            appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
-                            lineFeed(1)
-                        }
-                        try{
-                            if (kitchenSettingModel.showCustomerPhone) {
-
-                                if (orderData?.customer?.phones?.isNotEmpty()) {
-
-                                    orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                        appendText(
-                                            MethodUtils.formatPhoneNumber(it)
-                                        )
-                                        lineFeed(1)
-                                    }
+                                    lineFeed(1)
                                 }
                             }
-                        }catch (e:Exception){
 
+                            if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
                         }
+                    }
 
-                        try{
-                            if (kitchenSettingModel.showCustomerAddress) {
+                    if (orderData.note.isNotEmpty() && kitchenSettingModel.showOrderNote) {
+                        lineFeed(2)
+                        setAlignment(1)
+                        appendText("Order Note")
+                        lineFeed(1)
+                        appendText(orderData.note)
+                        lineFeed(2)
 
-                                if (orderData?.orderType.trim()
-                                        .lowercase() == "Open Order".trim()
-                                        .lowercase() && orderData?.deliveryType.trim()
-                                        .lowercase() == "Pickup".trim()
-                                        .lowercase()
-                                ) {
 
-                                } else if (orderData?.customer?.addresses?.isNotEmpty()) {
+                    }
+
+                    lineFeed(1)
+
+                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
+
+                        try {
+
+                            if (orderData?.customer != null) {
+
+                                setAlignment(0)
+                                appendText("Customer Details")
+                                lineFeed(1)
+                                appendText("------------------------")
+                                lineFeed(1)
+                                if (kitchenSettingModel.showCustomerName) {
+
+
+                                    appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
+                                    lineFeed(1)
+                                }
+                                try {
+                                    if (kitchenSettingModel.showCustomerPhone) {
+
+                                        if (orderData?.customer?.phones?.isNotEmpty()) {
+
+                                            orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                                appendText(
+                                                    MethodUtils.formatPhoneNumber(it)
+                                                )
+                                                lineFeed(1)
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+
+                                }
+
+                                try {
+                                    if (kitchenSettingModel.showCustomerAddress) {
+
+                                        if (orderData?.orderType.trim()
+                                                .lowercase() == "Open Order".trim()
+                                                .lowercase() && orderData?.deliveryType.trim()
+                                                .lowercase() == "Pickup".trim()
+                                                .lowercase()
+                                        ) {
+
+                                        } else if (orderData?.customer?.addresses?.isNotEmpty()) {
 
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -5895,53 +5895,56 @@ class AllOrdersListingFragment(
 //                            }
 
 //                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                        ?.forEach {
+                                            orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                                ?.forEach {
 
-                                            if (it.typeOfAddress.equals(
-                                                    SHIPPING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                appendText(
-                                                    it.fullAddress
-                                                )
-                                                lineFeed(1)
-                                            }
+                                                    if (it.typeOfAddress.equals(
+                                                            SHIPPING_ADDRESS,
+                                                            ignoreCase = true
+                                                        )
+                                                    ) {
+                                                        appendText(
+                                                            it.fullAddress
+                                                        )
+                                                        lineFeed(1)
+                                                    }
+                                                }
+
+
                                         }
-
+                                    }
+                                } catch (e: Exception) {
 
                                 }
+
                             }
-                        }catch (e:Exception){
 
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-
                     }
 
-                }
-                catch (e:Exception){
-                    e.printStackTrace()
+
+
+
+                    lineFeed(6)
+                    cutPaper(true)
+
+
+
+                    Log.e(TAG, "PushContent ${data.ipAddress}")
+                    Log.e(
+                        "checkKey", "pushContent: checkSN:${data.ipAddress} ${
+                            pushContent(
+                                trade_no =
+                                String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                                "${data.ipAddress}", 1, 1, "您有新的订单", 0
+                            )
+                        }"
+                    )
                 }
             }
-
-
-
-
-            lineFeed(6)
-            cutPaper(true)
-
-
-
-            Log.e(TAG,"PushContent ${data.ipAddress}")
-            Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
-            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
-                "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
-
-
-
-        }
-        else {
+        } else {
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
                 try {
                     SunmiPrinterApi.getInstance()
