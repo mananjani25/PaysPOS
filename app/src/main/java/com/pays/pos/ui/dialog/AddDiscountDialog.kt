@@ -50,6 +50,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var itemOrderDiscount: Double = 0.0
     private var itemPrice: Double = 0.0
     private var orderDiscountType: String = ""
+    private var selectedDiscountId: Int? = null
     private var orderDiscountPrice: Double = 0.0
     private var totalOrderPrice: Double = 0.0
     private var itemQuantity: Int = 0
@@ -93,6 +94,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         isOrderDiscount = requireArguments().getBoolean("isOrderDiscount", false)
         if (isOrderDiscount) {
+            selectedDiscountId = requireArguments().getInt("selectedDiscountId",-1)
             totalOrderPrice = requireArguments().getDouble("totalPrice", 0.0)
             orderDiscountPrice = requireArguments().getDouble("orderDiscountPrice", 0.0)
             orderDiscountType = requireArguments().getString("orderDiscountType").toString()
@@ -281,6 +283,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         binding.llKeypad.txt10.setOnClickListener {
 
+            discountAdapter.clearSelectedItem()
             val discount = TbDiscount(
                 "",
                 selectedCurrency,
@@ -292,8 +295,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             )
 
             calculationDiscount(discount, -1)
+
+            binding.edtAmount.setText("10.00")
         }
         binding.llKeypad.txt20.setOnClickListener {
+
+            discountAdapter.clearSelectedItem()
 
             val discount = TbDiscount(
                 "",
@@ -306,8 +313,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             )
 
             calculationDiscount(discount, -1)
+            binding.edtAmount.setText("20.00")
+
         }
         binding.llKeypad.txt30.setOnClickListener {
+
+            discountAdapter.clearSelectedItem()
             val discount = TbDiscount(
                 "",
                 selectedCurrency,
@@ -319,6 +330,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             )
 
             calculationDiscount(discount, -1)
+            binding.edtAmount.setText("30.00")
+
         }
     }
 
@@ -437,6 +450,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 discountAdapter.setList(it.data)
                 discountAdapter.setListner(this)
                 discountAdapter.setSelected(defaultModel.discountId)
+                discountAdapter.setSelected(selectedDiscountId)
             }
 
 
@@ -457,8 +471,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
         binding.imgBack.setOnClickListener {
             if (discountModel == null) {
-                discountModel = TbDiscount("", "", -1, 0, "", 0.0, "")
-                dashBoardViewModel.cartModel?.discountSelectdValue = 0.0
+                discountModel = TbDiscount("", "", selectedDiscountId ?: -1, 0, "", 0.0, "")
+//                dashBoardViewModel.cartModel?.discountSelectdValue = 0.0
             }
             findNavController().navigateUp()
 
@@ -469,8 +483,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if(!dashBoardViewModel.discountNeedToUpdate)
                 dashBoardViewModel.cartFooterNeedToBeUpdated = false
 
-            if (binding.edtAmount.text.toString().trim()
-                    .isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()
+            if (binding.edtAmount.text.toString().trim().isNotEmpty()
+                && binding.edtAmount.text.toString().trim().isNotBlank()
+                && binding.edtAmount.text.toString().trim().toDouble() != 0.0
             ) {
                 addDiscount()
             } else {
@@ -721,7 +736,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.edtAmount.removeTextChangedListener(this)
-        binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
+        if(pos == -1){
+            binding.edtAmount.setText("0.00")
+        }else{
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
+        }
+//        binding.edtAmount.setText(MethodUtils.roundOffAmountString(discount))
         binding.edtAmount.addTextChangedListener(this)
         selectedListPos = pos
     }

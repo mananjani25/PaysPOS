@@ -1424,10 +1424,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setCharacterSize(2, 2)
 
-        if (isOrderUpdated == true) {
+        /*if (isOrderUpdated == true) {
             appendText("***** UPDATED *****")
             lineFeed(2)
-        }
+        }*/
 
         if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
             appendText("OrderID:${receiptModel?.order?.custom_order_id}")
@@ -2312,7 +2312,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     orderID,
                     IS_GIFT_CARD_TYPE
                 )
-
+                binding.tvMessage.text =
+                    getString(R.string.how_would_the_customer_like_their_receipt)
 
             }
 
@@ -2344,6 +2345,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             bundle.putDouble("divideCashDiscount", totalDiscount)
             bundle.putDouble("totalTax", totalTaxAmount)
             prefProvider.setValueInt(PAYMENT_ID, 0)
+            prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
             if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
@@ -2368,6 +2370,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             LogUtil.logE(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
             //  saveDataInPrefrences()
             prefProvider.setValueInt(PAYMENT_ID, 0)
+            prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
             if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
@@ -7881,7 +7884,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
                                     var subTotalAmount = if(splitAmount != 0.0)
-                                        "$("+MethodUtils.roundOffAmountString(splitAmount)+")"
+                                        "($"+MethodUtils.roundOffAmountString(splitAmount)+") "
                                     else ""
 
                                     val subTotalToPrint = padLine(
@@ -10002,6 +10005,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.deleteValue(Constants.DO_PRINT)
         prefProvider.setValue(Constants.DELIVERY_TYPE, "")
         prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 0)
+        prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
         viewModelDashBoard.customerCardAmount.value = ""
         viewModelDashBoard.customerCashAmount.value = ""
         if (isSpilt) {
@@ -18109,6 +18113,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
         private fun backpress() {
+            prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
             MethodUtils.hideKeyboard(requireActivity())
             binding.edtPhoneNo.text?.clear()
             binding.edtEmail.text?.clear()
@@ -18140,7 +18145,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValue(SPLIT_DINEIN_MODEL, "")
             prefProvider.setValue(SPLIT_IS_GUESTPAY, "")
             prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, "")
-
+            prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
 
         }
 

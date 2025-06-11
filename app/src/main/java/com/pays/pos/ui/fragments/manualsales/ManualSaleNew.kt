@@ -191,8 +191,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getTaxList() {
         viewModel.taxList.observe(requireActivity()) {
-            if (it.data != null)
-                taxList = it.data
+             if (viewModel.currentCartItems.isNotEmpty()) {
+                 taxList = it.data?.filter { newTax ->
+                 viewModel.currentCartItems[0].taxes!!.any { existingTax -> existingTax.id == newTax.id }
+                }
+            } else {
+                    if (it.data != null) {
+                        taxList = it.data.filter { it.isDeleted == false }
+                        Log.e(TAG, "getTaxList: ${taxList?.size}", )
+                    }
+            }
         }
     }
 
@@ -221,6 +229,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
                     viewModel.cartModel = null
                     viewModel.manualCartOrderNote=""
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                        viewModel.deleteManualSaleItemsFromCartItems()
+                    }
                     findNavController().popBackStack()
                 }
             }
@@ -415,6 +426,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 viewModel.cartModel = null
                 viewModel.manualCartOrderNote=""
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    viewModel.deleteManualSaleItemsFromCartItems()
+                }
                 findNavController().navigateUp()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -970,6 +984,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, true)
             /*Added by Rahul to solve the custom item not printing issue - END*/
 
+            viewModel.cartModel?.taxlistDynamic = emptyList()
             if (cartItemsList?.isNotEmpty() == true) {
 
                 viewModel.getAllCartItems(
@@ -2481,6 +2496,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     taxData.totalTaxTypePrice = 0.0
                 }
             }
+
+
+//            tabCartItemModel.taxes?.forEach { taxData ->
+//                            taxData.subTotalAmount = 0.0
+//                            taxData.totalTaxTypePrice = 0.0
+//            }
+
             viewModel.manualSaleCartLogicNew(cartItemsList, model, Constants.UPDATE)
             if(prefProvider.getValue(ORDER_TYPE,TAKEOUT)!=DINE_IN)
                 viewModel.boldPosNeedToRefresh = true

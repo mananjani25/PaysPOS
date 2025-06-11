@@ -55,8 +55,8 @@ class CashLogAdapter(val context: Context?, val prefProvider: PrefProvider) :
                 item.createdAt, context
             )
 
-
-            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false) && !item.reason.contains("Gift card")) {
+            //order id for change amount and paid amount are different in Cash Logs -> PA1-I884
+            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false) /*&& !item.reason.contains("Gift card")*/) {
                 binding.txtOrderId.text = item.custom_order_id.toString()
             } else {
                 binding.txtOrderId.text = item.orderId.toString()

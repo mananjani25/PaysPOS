@@ -27,7 +27,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
     private var list: ArrayList<DineInModel> = arrayListOf()
     private var itemList: ArrayList<TbCartItem> = arrayListOf()
     private lateinit var listner: DineInCallback
-    private lateinit var itemAdapter: com.pays.pos.ui.adapter.boldpos.CartAdapter
+    private lateinit var itemAdapter: CartAdapter
     private val TAG = "DineInAdapter"
     private var isFromPay = false
 
@@ -74,6 +74,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
                 binding.txtCrtNewCustomer.setText(binding.root.resources.getString(R.string.assign_customer))
             }
             if (layoutPosition == list.get(0).selectedPosition) {
+                listner.onHeaderSelected(list.get(0).selectedPosition)
                 binding.rvCart.visibility = View.VISIBLE
                 binding.constraintHeader.setBackground(binding.root.context.getDrawable(R.color.btnColorDark))
                 binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.white))

@@ -11,6 +11,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.model.responseModel.GetTransactionListResponse
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GIFT_CARD_AMOUNT_TAB
@@ -26,6 +27,7 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.pays.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.pays.pos.utils.callback.ItemCallback
+import java.time.Instant
 import java.util.Locale
 
 class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: PrefProvider) :
@@ -122,7 +124,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
             itemBinding.txtCustomerName.text = (model.customer?.firstName
                 ?: "") + " " + (model.customer?.lastName ?: "")
 
-            itemBinding.txtTeamName?.text = model.employeeName
+            
 
             if (model.refundedAmount != 0.0) {
                 itemBinding.txtTip.isEnabled = false
@@ -159,6 +161,19 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 //            } else {
 //                itemBinding.txtTransactionId.visibility = View.GONE
 //            }
+
+
+            if (model.employeeName != null){
+                if (model.orderDetails.orderTypeName.equals("Kiosk TakeOut")){
+                    itemBinding.txtTeamName?.text =
+                        prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+                }else{
+                    itemBinding.txtTeamName?.text = model.employeeName
+                }
+            }else{
+                itemBinding.txtTeamName?.text = ""
+            }
+
 
 
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
@@ -209,17 +224,38 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
             itemBinding.executePendingBindings()
 
+            val instant = Instant.parse(filterList[position].createdAt)
+            val hoursPassed = (System.currentTimeMillis() - instant.toEpochMilli()) / (1000 * 60 * 60)
             itemBinding.txtTip.setOnClickListener {
 //                (filterList[position].paymentType == "Card" && filterList[position].tips > 0) ||
-                if (filterList[position].paymentType == "External" || (filterList[position].tips > 0.0 && ( MethodUtils.roundOffAmountDouble(filterList[position].refundedAmount + filterList[position].tips)) ==  MethodUtils.roundOffAmountDouble(filterList[position].totalAmount))) {
+                if (hoursPassed > 24) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         context,
-                        "Tip cannot be adjusted for this transaction."
+                        "Tip cannot be adjusted for this transaction 24."
                     ) { _, _ ->
                     }
-                } else
+
+                } else {
+                    if (filterList[position].paymentType == "External" || (filterList[position].tips > 0.0
+                                && (MethodUtils.roundOffAmountDouble(
+                            filterList[position].refundedAmount
+                                    + filterList[position].tips
+                        )) == MethodUtils.roundOffAmountDouble(filterList[position].totalAmount))
+                    ) {
+                        // Block the action
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            context,
+                            "Tip cannot be adjusted for this transaction."
+                        ) { _, _ ->
+                        }
+                    } else
+                        println("You can still add a tip.")
+                    // Proceed
                     mCallback?.onItemClickListener(it, position)
+                }
+
             }
+
         }
     }
 

@@ -11,6 +11,7 @@ import com.pays.pos.databinding.ViewDialogDiscountListUpdateBinding
 
 class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter.MyViewHolder>() {
     var selectedPosition = -1
+    private var previousSelectedPosition = -1
     private lateinit var listner: DiscountInterface
 
     inner class MyViewHolder(private val binding: ViewDialogDiscountListUpdateBinding) :
@@ -48,9 +49,13 @@ class DialogDiscountListAdapter : RecyclerView.Adapter<DialogDiscountListAdapter
 
         init {
             binding.root.setOnClickListener {
+                previousSelectedPosition = selectedPosition
                 selectedPosition = layoutPosition
+                if(previousSelectedPosition == selectedPosition){
+                    selectedPosition = -1
+                }
                 notifyDataSetChanged()
-                listner.selectedItem(discountList[layoutPosition], layoutPosition)
+                listner.selectedItem(discountList[layoutPosition], selectedPosition)
             }
         }
     }
