@@ -2338,14 +2338,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 if (it.data.order.customer != null ) {
-                    val pervious = it .data.order.customer.firstName + " " + it.data.order.customer.lastName
-                    val latested = customerName
-                    if (pervious == latested){
-                        binding.tvCustomerName.text =
-                            it .data.order.customer.firstName + " " + it.data.order.customer.lastName
-                    }else if (customerName.isNotBlank()){
-                        binding.tvCustomerName.text = customerFirstName + " " + customerLastName
-                    }
+                        binding.tvCustomerName.text = customerName
                 } else {
                     binding.tvCustomerName.text = ""
                     binding.tvCustomerName.invisible()
