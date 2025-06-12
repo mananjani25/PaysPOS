@@ -8699,7 +8699,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                             if (customerSettingModel.showCustomerName) {
 
-                                                printLeft(paymentDetailsResponse?.data.order?.customer.firstName + " " + paymentDetailsResponse?.data.order?.customer.lastName)
+                                                printLeft(customerName)
                                                 lineBreak()
                                             }
 
