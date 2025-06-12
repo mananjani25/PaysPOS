@@ -3243,7 +3243,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
 
 
                                     if (kitchenSettingModel.showTeamMember) {
-                                        printLeft("Employee:" + receiptModel?.employee?.name, isBold = true, fontSize = FONT_SIZE_5X)
+                                        printLeft("Employee:" + prefProvider.getValue(EMPLOYEE_NAME, ""), isBold = true, fontSize = FONT_SIZE_5X)
                                     }
                                     lineBreak()
 
