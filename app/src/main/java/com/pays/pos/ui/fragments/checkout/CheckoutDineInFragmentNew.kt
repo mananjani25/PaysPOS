@@ -26,6 +26,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.magtek.mobile.android.mtlib.IMTCardData
@@ -52,6 +55,7 @@ import com.pays.payments.design.TransactionType
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.RedeemLoyaltyInfo
+import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.model.CheckOutDineInDataModel
@@ -135,6 +139,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONException
+import org.json.JSONObject
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
@@ -229,6 +235,8 @@ class CheckoutDineInFragmentNew : Fragment,
     var ECRRefNumber = ""
     var PAXtoken = ""
     var ExtData = ""
+
+    var customerDetails: TbCustomer? = null
 
     private var cartList: CartModel? = null
     private var splitModel: DineInOrderPayment? = null
@@ -465,9 +473,20 @@ class CheckoutDineInFragmentNew : Fragment,
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
+//        customerDetails = prefProvider.getCustomerData()
+
+
         initDynamicPayment()
 
         getDataFromPref()
+
+        if (isGuestPay) {
+            if (customerDetails?.isTokenized == true) {
+                binding.llSavedCard.visible()
+            } else {
+                binding.llSavedCard.gone()
+            }
+        }
         if(!dineInDataModel.isClearTable) {
             dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner, object : Observer<Double> {
                 override fun onChanged(price: Double?) {
@@ -2096,6 +2115,139 @@ class CheckoutDineInFragmentNew : Fragment,
             listOf(guestPaymentAttributes)
     }
 
+    private fun makeDejavooCaptureRequestForTokenization() {
+
+        val cardToken = customerDetails?.cardToken
+
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                showProgressDialog(requireActivity())
+            }
+        })
+
+        val url: java.lang.StringBuilder =
+            if (!Constants.paymentLive)
+                StringBuilder("https://payment.ipospays.tech/api/v1/iposTransact")
+            else
+                StringBuilder("https://payment.ipospays.com/api/v1/iposTransact") //Place Live URL Here
+
+        val payload = JSONObject()
+        try {
+            // Adding "merchantAuthentication"
+            val merchantAuthentication = JSONObject()
+            merchantAuthentication.put("merchantId", "659324491704") // Add merchantId
+            val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
+            merchantAuthentication.put(
+                "transactionReferenceId",
+                transactionReferenceId
+            ) // Add transactionReferenceId
+
+            // Adding "transactionRequest"
+            val transactionRequest = JSONObject()
+            transactionRequest.put(
+                "transactionType",
+                1
+            ) // Example: 2 for void, adjust as needed
+            transactionRequest.put("amount", (paymentAmount*100).toInt()) // Replace with the actual RRN
+            transactionRequest.put("cardToken", cardToken)
+            transactionRequest.put("applySteamSettingTipFeeTax", false) // Example: 10$ as 10 x 100
+
+            val preferences = JSONObject()
+            preferences.put("eReceipt", false)
+            preferences.put("customerName", ((customerDetails?.first_name + " " + customerDetails?.last_name)
+                ?: ""))
+            preferences.put("customerEmail", (customerDetails?.email ?: ""))
+            preferences.put("customerMobile", "")
+
+
+
+
+
+            // Adding objects to the main payload
+            payload.put("merchantAuthentication", merchantAuthentication)
+            payload.put("transactionRequest", transactionRequest)
+            payload.put("preferences", preferences)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+
+
+        Log.d("DEJAVOO:", "payloadToDejavoo(): ${payload}")
+
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url.toString(),
+            payload,
+            com.android.volley.Response.Listener<JSONObject> { response ->
+                Log.d("DEJAVOO:", "onSuccessResponse(): ${response}")
+                onSuccess(Gson().toJson(response))
+
+                dismissProgressDialog()
+            },
+            com.android.volley.Response.ErrorListener { error -> // Handle the error
+                Log.d("DEJAVOO:", "onErrorResponse(): ${error}")
+                onFailure(Gson().toJson(error))
+                dismissProgressDialog()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers: MutableMap<String, String> = HashMap()
+                headers["token"] = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
+                Log.d("DEJAVOO:", "getHeaders(): ${prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")}")
+//                  headers["accept"] = "application/json"
+//                   headers["content-type"] = "application/json"
+                return headers
+            }
+        }
+
+
+        val timeoutMs = 100000 // 10 seconds
+        val maxRetries = 1 // Number of retry attempts
+        val backoffMultiplier = 1.5f // Multiplier for backoff
+
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            timeoutMs,
+            maxRetries,
+            backoffMultiplier
+        )
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(jsonObjectRequest)
+
+    }
+
+    private fun onFailure(toJson: String?) {
+
+    }
+
+    private fun onSuccess(toJson: String?) {
+
+        try {
+            val jsonObject = JSONObject(toJson ?: "")
+            val nameValuePair = jsonObject.optJSONObject("nameValuePairs")
+            val iposResponse = nameValuePair?.optJSONObject("iposhpresponse")
+            val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
+
+            val rrn = nameValuePair1?.optString("rrn") ?: ""
+            val transactionReferenceId = nameValuePair1?.optString("transactionReferenceId") ?: ""
+
+            Log.d("DEJAVOO", "RRN: $rrn, RefID: $transactionReferenceId")
+
+//            makePaymentCreditCardDejavoo(transactionReferenceId, rrn)
+
+            RefNumber = transactionReferenceId
+            paymentviewModel.dejavooRefTxnId=transactionReferenceId
+
+            makePaymentCreditCard(rrn,Constants.DEJAVOO)
+
+            dismissProgressDialog()
+
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Log.e("DEJAVOO", "Invalid JSON: ${toJson}")
+        }
+    }
+
     private fun paymentClick() {
         binding.llCreditCard.setOnSingleClickListener {
 
@@ -2179,6 +2331,144 @@ class CheckoutDineInFragmentNew : Fragment,
             dashboardViewModel.paymentType = "card"
 
         }
+
+        binding.llSavedCard.setOnSingleClickListener {
+
+
+            if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
+                restrictTvCashClicks()
+
+                subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener dashboardViewModel.subTotalPrice-> ${
+                            Gson().toJson(dashboardViewModel.subTotalPrice)
+                        } , isSelectedCount-> ${isSelectedCount}", true
+                    )
+                )
+
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
+                totalServiceCharge =
+                    String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+                totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+                totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                cashDiscountSurcharge =
+                    MethodUtils.getLatestCashDiscountOrSurCharge(
+                        WholetotalPrice,
+                        prefProvider,
+                        requireContext()
+                    ) / isSelectedCount
+//                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+//                        0.0
+//                    } else {
+//                        MethodUtils.getLatestCashDiscountOrSurCharge(
+//                            WholetotalPrice,
+//                            prefProvider,
+//                            requireContext()
+//                        ) / isSelectedCount
+//                    }
+                paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
+                                Gson().toJson(paymentAmount)
+                            }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
+                                Gson().toJson(
+                                    isSelectedCount
+                                )
+                            }", true
+                        )
+                    )
+                }
+
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
+
+                if (cashDiscountType == "SurCharge") {
+                    paymentAmount =
+                        String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+                }
+
+//        paymentviewModel.tipOnAmount = paymentAmount
+                //        Above code is commented, because the split amount was not changing, below code is the solution
+                try {
+                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3)
+                        .toDouble()
+                } catch (e: Exception) {
+                    try {
+                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
+                            .toDouble()
+                    } catch (e: Exception) {
+                        try {
+                            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                                .substring(
+                                    0,
+                                    dashboardViewModel.totalPrice.toString().indexOf(".") + 1
+                                )
+                                .toDouble()
+                        } catch (e: Exception) {
+                            try {
+                                paymentviewModel.tipOnAmount =
+                                    dashboardViewModel.totalPrice.toString()
+                                        .substring(
+                                            0,
+                                            dashboardViewModel.totalPrice.toString().indexOf(".")
+                                        )
+                                        .toDouble()
+                            } catch (e: Exception) {
+                            }
+                        }
+                    }
+                }
+//                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+//                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+
+                /**
+                 * Added to check tip details
+                 * **/
+
+                dashboardViewModel.apply {
+                    totalAmount = paymentAmount
+                    paymentTypeForTip = "card"
+                }
+
+
+//                tipAmountToPaymentDevice = tipAmount + MethodUtils.calculateCashDiscount(
+//                    tipAmount ,
+//                    prefProvider,
+//                    requireContext()
+//                )
+//
+//                paymentAmount += tipAmountToPaymentDevice
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
+
+                if (paymentAmount != 0.0) {
+
+                    if (isGuestPay) {
+
+                        if (prefProvider.getValue(Constants.DEJAVOO_AUTH_KEY, "").isNotEmpty()) {
+                            if (customerDetails?.isTokenized == true) {
+                                makeDejavooCaptureRequestForTokenization()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
@@ -2961,6 +3251,8 @@ class CheckoutDineInFragmentNew : Fragment,
         future_delivery_date = formatterdate.format(date)
         future_delivery_time = formattertime.format(date)
 
+        customerDetails = prefProvider.getCustomerData()
+
     }
 
     // To set different cash payment options and total amount values
@@ -3183,21 +3475,51 @@ class CheckoutDineInFragmentNew : Fragment,
 //        //TODO - remove this line for split payment
 //        binding.linearTab2.gone()
 
-        if(isGuestPay)
+        if(isGuestPay) {
+            if (customerDetails?.isTokenized == true) {
+                binding.llSavedCard.visible()
+            } else {
+                binding.llSavedCard.gone()
+            }
             binding.linearTab2.gone()
-        else binding.linearTab2.setOnSingleClickListener {
-            if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
-                AlertUtils.showCustomAlertWithListenerWithOKCancel(
-                    requireContext(),
-                    "If you are going to do split payment then existing tip will be removed."
-                ) { _, _ ->
-                    PaymentBoldPosFragment.newInstance().addTipHideShow(true)
-                    tipAmount = 0.0
-                    viewModel.setTipAmount(0.0)
-                    dashboardViewModel.customerGivenTip.value = false
-                    prefProvider.setValueboolean(Constants.TIP_ADDED, false)
-                    dashboardViewModel.employeeGivenTip = false
+        } else {
+            binding.linearTab2.setOnSingleClickListener {
+                if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
+                    AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                        requireContext(),
+                        "If you are going to do split payment then existing tip will be removed."
+                    ) { _, _ ->
+                        PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+                        tipAmount = 0.0
+                        viewModel.setTipAmount(0.0)
+                        dashboardViewModel.customerGivenTip.value = false
+                        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                        dashboardViewModel.employeeGivenTip = false
 
+                        loadSplitLayout()
+                        binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                        binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+                        binding.tvCustom.text = "Custom"
+                        isSelectedCount = 1
+                        tipsetupGlobal(tipAmount, isSelectedCount)
+                        binding.tvFullAMounttxt.visibility = View.VISIBLE
+                        binding.tvwaysplit?.visibility = View.INVISIBLE
+
+                        getDataFromPref()
+                    }
+                } else {
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                     binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -3219,30 +3541,7 @@ class CheckoutDineInFragmentNew : Fragment,
                     binding.tvFullAMounttxt.visibility = View.VISIBLE
                     binding.tvwaysplit?.visibility = View.INVISIBLE
 
-                    getDataFromPref()
                 }
-            } else {
-                loadSplitLayout()
-                binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-                binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
-                binding.tvCustom.text = "Custom"
-                isSelectedCount = 1
-                tipsetupGlobal(tipAmount, isSelectedCount)
-                binding.tvFullAMounttxt.visibility = View.VISIBLE
-                binding.tvwaysplit?.visibility = View.INVISIBLE
-
             }
 
         }

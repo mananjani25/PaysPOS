@@ -76,24 +76,46 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
+                        android:id="@+id/txtPersonalInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/personal_information"
                         android:textAllCaps="true"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <TextView
-                        android:id="@+id/txtEdit"
-                        style="@style/CustomFontSemiBold"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:text="@string/edit"
-                        android:textAllCaps="true"
-                        android:textColor="@color/txt_color_blue"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:layout_centerVertical="true"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/txtAddCard"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:background="@color/txt_color_blue"
+                            android:text="@string/add_card"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_4mdpi" />
+
+                        <TextView
+                            android:id="@+id/txtEdit"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/edit"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txt_color_blue"
+                            android:textSize="@dimen/_6mdpi" />
+                    </LinearLayout>
 
 
                 </RelativeLayout>

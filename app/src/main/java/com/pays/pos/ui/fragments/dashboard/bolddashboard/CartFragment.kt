@@ -156,7 +156,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
-import kotlin.math.log
 
 
 @AndroidEntryPoint
@@ -361,6 +360,23 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             if (it.isEnable && !it.isDeleted) {
                                                 var data: TbCustomer? = prefProvider.getCustomerData()
                                                 if (data != null) {
+
+                                                    if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) != DINE_IN) {
+                                                        if (data.isTokenized) {
+                                                            binding.preAuthOption?.apply {
+                                                                visible()
+                                                                text = "Auth"
+                                                                setBackgroundColor(
+                                                                    Color.parseColor(
+                                                                        "#4CAF50"
+                                                                    )
+                                                                )
+                                                            }
+                                                        } else {
+                                                            binding.preAuthOption?.invisible()
+                                                        }
+                                                    }
+
                                                     if (viewModel.loyaltyPointCondition(data) && cartModelsList.isNotEmpty()) {
 
                                                         binding.liinearInfoLayout.layoutParams.height = resources.getDimension(R.dimen._70sdp).toInt()
@@ -4719,6 +4735,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             prefProvider.setValue(Constants.TAX_CHARGE, "")
                             prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                             viewModel.setTipAmount(0.0)
+
                             if (isOrderUpdate) {
                                 var bundle: Bundle = Bundle()
                                 bundle.putInt("orderId", orderId!!)
@@ -5756,10 +5773,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         coroutineScope {
                             Log.e("PRE AUTH DATA ", Gson().toJson(response.ExtData))
 
-                            binding.preAuthOption?.apply {
-                                isChecked = true
-                                isEnabled = false
-                                setTextColor(Color.GREEN)
+                            if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != DINE_IN) {
+                                binding.preAuthOption?.apply {
+                                    isChecked = true
+                                    isEnabled = false
+                                    setTextColor(Color.GREEN)
+                                }
                             }
 
                             val paymentAttributes = PaymentAttributes()
@@ -5810,10 +5829,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     try {
 
-                                        binding.preAuthOption?.apply {
-                                            isChecked = false
-                                            isEnabled = true
-                                            setTextColor(Color.RED)
+                                        if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != DINE_IN) {
+                                            binding.preAuthOption?.apply {
+                                                isChecked = false
+                                                isEnabled = true
+                                                setTextColor(Color.RED)
+                                            }
                                         }
 
                                         p0?.dismiss()

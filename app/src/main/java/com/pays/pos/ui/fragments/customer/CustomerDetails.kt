@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.customer
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,8 +12,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.pays.pos.R
-import com.pays.pos.data.entities.*
+import com.pays.pos.data.entities.CartModel
+import com.pays.pos.data.entities.Modifier
+import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbAddress
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.entities.TbPhones
+import com.pays.pos.data.entities.TbServiceCharge
+import com.pays.pos.data.entities.VariationsAttribute
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.orderhistory.Orders
 import com.pays.pos.data.remote.Constants
@@ -21,6 +32,7 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.databinding.FragmentCustomerDetailsBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.GiftCardOrderHistoryAdapter
 import com.pays.pos.ui.adapter.OrderHistoryAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -29,12 +41,8 @@ import com.pays.pos.utils.EventObserver
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.isVisible
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.visible
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
@@ -50,6 +58,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private val viewModel by viewModels<CustomerListViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val editViewModel by viewModels<AddCustomerViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -191,6 +200,15 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             )!!
         isFromSearch = requireArguments().getBoolean("isFromSearch")
 
+        if (customerModel.isTokenized) {
+            binding.txtAddCard?.apply {
+                text = "Saved Card"
+                setBackgroundColor(Color.parseColor("#4CAF50"))
+                isEnabled = false
+
+            }
+        }
+
         if (customerModel.birth_date?.isNotEmpty() == true) {
             try {
                 val inputFormat = SimpleDateFormat("MM/dd/yyyy")
@@ -211,6 +229,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             Log.d(TAG, "initControls: customerdata : " + Gson().toJson(customerModel))
             val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
+        }
+
+        binding.txtAddCard?.setOnClickListener {
+            context?.let { it1 -> viewModel.makeDejavooPaymentRequest(it1, customerModel) }
         }
 
 
@@ -290,6 +312,21 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 }
             }
         }
+
+        viewModel.token.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    binding.txtAddCard?.apply {
+                        text = context.getString(R.string.saved_card)
+                        setBackgroundColor(Color.parseColor("#4CAF50"))
+                        isEnabled = false
+                    }
+                } else {
+
+                }
+            }
+        }
+
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
                 observerServiceCharge()

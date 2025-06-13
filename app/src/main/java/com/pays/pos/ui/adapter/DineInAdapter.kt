@@ -2,6 +2,7 @@ package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,6 @@ import com.pays.pos.databinding.ViewDineInItemBinding
 import com.pays.pos.ui.activities.SwipeHelper
 import com.pays.pos.ui.adapter.boldpos.CartAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.gone
@@ -63,11 +63,16 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
             }
 
             if (list.get(layoutPosition).customer != null) {
+
                 binding.txtTableName.setText(
                     list.get(layoutPosition).customer?.first_name + " " + list.get(
                         layoutPosition
                     ).customer?.last_name
                 )
+
+                if (list.get(layoutPosition).customer?.isTokenized == true) {
+                    binding.imgProfile.setBackgroundColor(Color.parseColor("#4CAF50"))
+                }
                 binding.txtCrtNewCustomer.setText(binding.root.resources.getString(R.string.remove_customer))
             } else {
                 binding.txtTableName.setText(list.get(layoutPosition).title)
@@ -124,6 +129,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
             binding.txtCrtNewCustomer.setOnClickListener {
                 if (list.get(layoutPosition).customer != null) {
                     //list.get(layoutPosition).customer = null
+                    binding.imgProfile.background = null
                     dashBoardCategoryViewModel?.order_note = dashBoardCategoryViewModel?.cartModel?.note ?: ""
                     listner.onCustomerClicked(layoutPosition, true)
                     binding.llCustomerDialog.visibility = View.GONE
@@ -147,6 +153,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
 
                             if (list.get(layoutPosition).customer != null) {
                                 //list.get(layoutPosition).customer = null
+                                binding.imgProfile.background = null
                                 dashBoardCategoryViewModel?.order_note = dashBoardCategoryViewModel?.cartModel?.note ?: ""
                                 listner.onCustomerClicked(layoutPosition, true)
                                 binding.llCustomerDialog.visibility = View.GONE
