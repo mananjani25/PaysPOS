@@ -1,6 +1,9 @@
 package com.pays.pos.data.model.responseModel
 
 
+import android.annotation.SuppressLint
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,6 +19,7 @@ data class GetKitchenReceiptSettingsResponse(
     @SerializedName("type")
     val type: String
 ) {
+    @SuppressLint("ParcelCreator")
     @Keep
 @Entity(tableName = "TbKitchenSettings")
     data class Data(
@@ -46,5 +50,13 @@ data class GetKitchenReceiptSettingsResponse(
         val showTeamMember: Boolean=false,
         @SerializedName("updated_at")
         val updatedAt: String=""
-    )
+    ) : Parcelable {
+        override fun describeContents(): Int {
+            TODO("Not yet implemented")
+        }
+
+        override fun writeToParcel(p0: Parcel, p1: Int) {
+            TODO("Not yet implemented")
+        }
+    }
 }

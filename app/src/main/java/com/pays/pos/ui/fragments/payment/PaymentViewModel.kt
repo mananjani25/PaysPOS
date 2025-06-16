@@ -861,7 +861,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
@@ -1268,7 +1268,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
@@ -1528,7 +1528,7 @@ open class PaymentViewModel @Inject constructor(
 
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
 
@@ -1795,7 +1795,7 @@ open class PaymentViewModel @Inject constructor(
             )
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
@@ -1991,7 +1991,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
-        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+        if (cartModel.discountId != null /*&& cartModel.discountId != -1*/) orderAttributeRequestModel.discount_id =
             cartModel.discountId
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge

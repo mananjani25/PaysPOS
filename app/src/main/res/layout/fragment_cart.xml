@@ -654,7 +654,8 @@
                         android:paddingLeft="@dimen/_5sdp"
                         android:paddingRight="@dimen/_5sdp"
                         android:paddingTop="@dimen/_10sdp"
-                        android:paddingBottom="@dimen/_10sdp"                        android:text="Pay $0.00"
+                        android:paddingBottom="@dimen/_10sdp"
+                        android:text="Pay $0.00"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
 

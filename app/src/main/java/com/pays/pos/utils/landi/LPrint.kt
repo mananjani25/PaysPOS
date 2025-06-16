@@ -461,7 +461,7 @@ final object LPrint {
                                     "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name),
                                     getModifierItemPriceToShow(
                                         modifierObj.price,
-                                        modifierObj.modifier_quantity * modifierObj.itemQuantity
+                                        modifierObj.modifier_quantity * item.itemQuantity
                                     ),
                                     48
                                 )

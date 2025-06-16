@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase.releaseMemory
@@ -16,6 +17,7 @@ import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -832,11 +834,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
                         viewModel.cartModel!!.discountPrice = orderDiscount
+                        viewModel.totalDiscount = orderDiscount
                         viewModel.cartModel!!.discountSelectdValue = value
                         viewModel.cartModel!!.discountType = result.discountType
-                        if (result.id != -1) {
+//                        if (result.id != -1) {
                             viewModel.cartModel!!.discountId = result.id
-                        }
+//                        }
 
                         viewModel.updateCartModel(viewModel.cartModel!!)
 
@@ -2791,9 +2794,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
 
+            if (createOrderResponse.data.order.note.isNotEmpty()){
+                lineFeed(1)
+
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(createOrderResponse.data.order.note)
+                lineFeed(1)
+            }
 
 
             if(createOrderResponse.data?.order?.customer != null){
+                setAlignment(0)
                 lineFeed(3)
                 appendText("Customer Details")
                 lineFeed(1)
@@ -2822,14 +2835,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            if (createOrderResponse.data.order.note.isNotEmpty()){
-                lineFeed(1)
-
-                setAlignment(1)
-                appendText("Order Note")
-                lineFeed(1)
-                appendText(createOrderResponse.data.order.note)
-            }
 
             lineFeed(6)
             cutPaper(true)
@@ -7578,23 +7583,46 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     @SuppressLint("MissingPermission")
     private fun searchBluetooth() {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (mBluetoothAdapter?.isEnabled == true) {
+        try {
+            val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+            mBluetoothAdapter = bluetoothManager?.adapter
 
-            val availableDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.bondedDevices
+            if (mBluetoothAdapter == null) {
+                showRestartHint("Bluetooth is unavailable. Please restart your device.")
+                Log.e(TAG, "BluetoothAdapter is null (via BluetoothManager)")
+                binding.maskLayout?.gone()
+                return
+            }
 
-            val innerPrinterModel: PrinterListModel
+            if (!mBluetoothAdapter!!.isEnabled) {
+                Toast.makeText(requireContext(), "Please enable Bluetooth to search for printers.", Toast.LENGTH_LONG).show()
+                binding.maskLayout?.gone()
+                return
+            }
 
-            val filteredPrintersList =
-                availableDevices.filter {
-                    it.name.startsWith(SUNMI_INNER_PRINTER, true) || it.name.startsWith(
-                        LANDI_INNER_PRINTER, true
-                    )
-                }
+            val bondedDevices: Set<BluetoothDevice>? = try {
+                mBluetoothAdapter!!.bondedDevices
+            } catch (e: Exception) {
+                Log.e(TAG, "Error accessing bonded devices: ${e.message}")
+                showRestartHint("Bluetooth access failed. Please restart your device.")
+                binding.maskLayout?.gone()
+                return
+            }
+
+            if (bondedDevices.isNullOrEmpty()) {
+                Log.w(TAG, "No bonded devices found.")
+                binding.maskLayout?.gone()
+                return
+            }
+
+            val filteredPrintersList = bondedDevices.filter {
+                it.name?.startsWith(SUNMI_INNER_PRINTER, true) == true ||
+                        it.name?.startsWith(LANDI_INNER_PRINTER, true) == true
+            }
 
             if (filteredPrintersList.isNotEmpty()) {
                 val foundPrinter = filteredPrintersList[0]
-                innerPrinterModel = PrinterListModel(
+                val innerPrinterModel = PrinterListModel(
                     printerName = foundPrinter.name,
                     connectionType = Constants.BLUETOOTH,
                     deviceModel = DeviceInfo(
@@ -7607,22 +7635,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     type = Constants.AVAILABLE,
                     uuid = UUID.randomUUID()
                 )
-                CoroutineScope(Dispatchers.IO).launch {
 
-                    if (ordertypelist.isNotEmpty() && innerPrinterCreated ==false) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (ordertypelist.isNotEmpty() && !innerPrinterCreated) {
                         innerPrinterCreated = true
                         setupInnerPrinterAttributes(innerPrinterModel)
                     }
                 }
 
             } else {
+                Log.i(TAG, "No internal printer found.")
                 binding.maskLayout?.gone()
             }
 
-        } else {
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error during Bluetooth search: ${e.message}")
+            showRestartHint("An unexpected error occurred with Bluetooth. Please restart your device.")
             binding.maskLayout?.gone()
         }
     }
+
+    private fun showRestartHint(message: String) {
+        AlertUtils.showCustomAlert(requireContext(), message)
+    }
+
 
     private fun setupInnerPrinterAttributes(innerPrinterModel: PrinterListModel) {
         val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()

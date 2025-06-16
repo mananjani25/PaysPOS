@@ -807,12 +807,12 @@
                             android:textSize="@dimen/text_size_medium" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/edtEmployeeName"
                             style="@style/CustomFontMediumStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
-                            android:text="@{orderDetails.data.order.employee}"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>
