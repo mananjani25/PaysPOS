@@ -23,6 +23,7 @@ import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -382,7 +383,7 @@ public class CustomerListViewModel @Inject constructor(
                 ),
                 paymentType = "Credit",
                 transType = "Sale",
-                amount = "1.00",
+                amount = "0.50",
                 tip = "",
                 refId = "Ref${System.currentTimeMillis()}",
                 printReceipt = false,
@@ -454,11 +455,16 @@ public class CustomerListViewModel @Inject constructor(
                         }
 
                         submit(iPOSToken, true, customerModel)
-                        _token.value = Event(true)
+//                        _token.value = Event(true)
                     },
                     onFailure = { errorMessage ->
                         Log.e("Dejavoo: ", errorMessage)
                         _token.value = Event(false)
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            context, errorMessage
+                        ) { _, _ ->
+
+                        }
 
                     }
                 )
@@ -467,8 +473,8 @@ public class CustomerListViewModel @Inject constructor(
     }
 
     fun submit(
-        iPOSToken: String,
-        isTokenize:Boolean,
+        iPOSToken: String = "",
+        isTokenize:Boolean = false,
         customerModel: TbCustomer
     ) {
 
@@ -549,6 +555,12 @@ public class CustomerListViewModel @Inject constructor(
                                             isSelcted = true,
                                         )
 
+                                        if (customerListReposne.data.isTokenized) {
+                                            _token.value = Event(true)
+                                        } else {
+                                            _token.value = Event(false)
+                                        }
+
 
 
                                         Log.d(
@@ -557,7 +569,7 @@ public class CustomerListViewModel @Inject constructor(
                                         )
 
                                     }
-                                    _token.value = Event(true)
+
                                 } else {
                                     _snackbarText.value = Event(resource.message)
                                     _token.value = Event(false)

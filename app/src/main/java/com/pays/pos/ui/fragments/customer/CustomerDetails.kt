@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -40,7 +42,9 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.EventObserver
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
@@ -207,6 +211,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 isEnabled = false
 
             }
+            binding.imgOrderMenu?.visible()
+        } else {
+            binding.imgOrderMenu?.invisible()
         }
 
         if (customerModel.birth_date?.isNotEmpty() == true) {
@@ -233,6 +240,32 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         binding.txtAddCard?.setOnClickListener {
             context?.let { it1 -> viewModel.makeDejavooPaymentRequest(it1, customerModel) }
+        }
+
+        binding.imgOrderMenu?.setOnClickListener {
+            val popupMenu = PopupMenu(requireContext(), it)
+            popupMenu.menuInflater.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+            popupMenu.menu.findItem(R.id.menu_edit).isVisible = false
+            popupMenu.menu.findItem(R.id.menu_hide).isVisible = false
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.menu_delete -> {
+                        alert(
+                            getString(R.string.app_name),
+                            "Are you sure, you want to delete this Customer Card?"
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                viewModel.submit("", false, customerModel)
+                            }
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
+                            }
+                        }
+                    }
+                }
+                true
+            }
+            popupMenu?.show()
         }
 
 
@@ -321,8 +354,14 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         setBackgroundColor(Color.parseColor("#4CAF50"))
                         isEnabled = false
                     }
+                    binding.imgOrderMenu?.visible()
                 } else {
-
+                    binding.txtAddCard?.apply {
+                        text = context.getString(R.string.add_card)
+                        setBackgroundColor(ContextCompat.getColor(context, R.color.txt_color_blue))
+                        isEnabled = true
+                    }
+                    binding.imgOrderMenu?.invisible()
                 }
             }
         }

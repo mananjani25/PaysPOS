@@ -4198,24 +4198,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         val payload = JSONObject()
         try {
-            // Adding "merchantAuthentication"
             val merchantAuthentication = JSONObject()
             merchantAuthentication.put("merchantId", "659324491704") // Add merchantId
             val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
             merchantAuthentication.put(
                 "transactionReferenceId",
                 transactionReferenceId
-            ) // Add transactionReferenceId
+            )
 
-            // Adding "transactionRequest"
             val transactionRequest = JSONObject()
             transactionRequest.put(
                 "transactionType",
                 1
-            ) // Example: 2 for void, adjust as needed
-            transactionRequest.put("amount", (paymentAmount*100).toInt()) // Replace with the actual RRN
+            )
+            transactionRequest.put("amount", (paymentAmount*100).toInt())
             transactionRequest.put("cardToken", cardToken)
-            transactionRequest.put("applySteamSettingTipFeeTax", false) // Example: 10$ as 10 x 100
+            transactionRequest.put("applySteamSettingTipFeeTax", false)
 
             val preferences = JSONObject()
             preferences.put("eReceipt", false)
@@ -4224,10 +4222,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             preferences.put("customerEmail", (customerDetails?.email ?: ""))
             preferences.put("customerMobile", "")
 
-
-
-
-            // Adding objects to the main payload
             payload.put("merchantAuthentication", merchantAuthentication)
             payload.put("transactionRequest", transactionRequest)
             payload.put("preferences", preferences)
