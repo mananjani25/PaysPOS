@@ -7206,12 +7206,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
-
-            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-            if (customerId != -1) {
-                customer_id = "" + customerId
-            }
-
+            customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1).toString()
 
             /**
              *  currentDineInItems keeps track of all dine in Items even if they are destroyed
