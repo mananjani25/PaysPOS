@@ -4224,7 +4224,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             payload.put("merchantAuthentication", merchantAuthentication)
             payload.put("transactionRequest", transactionRequest)
-            payload.put("preferences", preferences)
+//            payload.put("preferences", preferences)
         } catch (e: JSONException) {
             e.printStackTrace()
         }

@@ -2166,7 +2166,7 @@ class CheckoutDineInFragmentNew : Fragment,
             // Adding objects to the main payload
             payload.put("merchantAuthentication", merchantAuthentication)
             payload.put("transactionRequest", transactionRequest)
-            payload.put("preferences", preferences)
+//            payload.put("preferences", preferences)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
