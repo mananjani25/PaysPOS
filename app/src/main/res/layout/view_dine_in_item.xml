@@ -50,6 +50,22 @@
                 app:layout_constraintStart_toEndOf="@+id/imgProfile"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tokenIcon"
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_10sdp"
+                android:background="@drawable/ic_credit_card"
+                android:backgroundTint="@color/colorGreen"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imgOrderMenu"
+                app:layout_constraintHorizontal_bias="1.0"
+                android:layout_marginEnd="@dimen/_5sdp"/>
+
+
+
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgOrderMenu"
                 android:layout_width="@dimen/_15sdp"

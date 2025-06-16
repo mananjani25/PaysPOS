@@ -363,17 +363,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                                     if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) != DINE_IN) {
                                                         if (data.isTokenized) {
-                                                            binding.preAuthOption?.apply {
-                                                                visible()
-                                                                text = "Auth"
-                                                                setBackgroundColor(
-                                                                    Color.parseColor(
-                                                                        "#4CAF50"
-                                                                    )
-                                                                )
-                                                            }
+                                                            binding.tokenIcon?.visible()
                                                         } else {
-                                                            binding.preAuthOption?.invisible()
+                                                            binding.tokenIcon?.gone()
                                                         }
                                                     }
 
@@ -4442,6 +4434,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 viewModel.changeCustomerDispSignButtonTitle(getString(R.string.sign_up_or_check_in))
 
                             }
+
+                            binding.tokenIcon?.gone()
 
 
                         }
