@@ -3076,13 +3076,13 @@ class ReasonForCancelOrderDialog : DialogFragment() {
             )
 
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+            if (prefProvider.isOldSunmiFrameworkVersion()){
                 PrintSunmiUtils.addHorizontalInnerNew()
             }else{
                 PrintSunmiUtils.addHorizontalInner()
             }
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+            if (prefProvider.isOldSunmiFrameworkVersion()){
                 PrintSunmiUtils.normalText("\n")
             }
 
@@ -3174,12 +3174,14 @@ class ReasonForCancelOrderDialog : DialogFragment() {
 
                 }
             } catch (e: Exception) {
+                Log.e("CancelledOrder", "Something went wrong", e)
             }
 
             PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {
             // printerDialog.dismiss()
-            e.printStackTrace()
+            Log.e("CancelledOrder Print", Log.getStackTraceString(e))
+
         }
 
 
