@@ -2135,7 +2135,7 @@ class CheckoutDineInFragmentNew : Fragment,
         try {
             // Adding "merchantAuthentication"
             val merchantAuthentication = JSONObject()
-            merchantAuthentication.put("merchantId", "659324491704") // Add merchantId
+            merchantAuthentication.put("merchantId", prefProvider.getValue(Constants.DEJAVOO_TPN, "")) // Add merchantId
             val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
             merchantAuthentication.put(
                 "transactionReferenceId",

@@ -4199,7 +4199,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val payload = JSONObject()
         try {
             val merchantAuthentication = JSONObject()
-            merchantAuthentication.put("merchantId", "659324491704") // Add merchantId
+            merchantAuthentication.put("merchantId", prefProvider.getValue(Constants.DEJAVOO_TPN, ""))
             val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
             merchantAuthentication.put(
                 "transactionReferenceId",
