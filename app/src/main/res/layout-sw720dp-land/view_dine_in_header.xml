@@ -109,11 +109,11 @@
 
                     <TextView
                         android:id="@+id/tokenIcon"
-                        android:layout_width="@dimen/_20sdp"
-                        android:layout_height="@dimen/_20sdp"
-                        android:background="@drawable/ic_token_logo"
+                        android:layout_width="@dimen/_16sdp"
+                        android:layout_height="@dimen/_16sdp"
+                        android:background="@drawable/ic_credit_card"
+                        android:backgroundTint="@color/colorGreen"
                         android:gravity="center"
-                        android:text="T"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_10mdpi"
                         android:visibility="invisible"/>
