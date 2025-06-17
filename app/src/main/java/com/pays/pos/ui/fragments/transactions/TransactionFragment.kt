@@ -624,9 +624,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             transactionRequest.put("transactionType", 7)
             transactionRequest.put("rrn", singleTransaction?.ext_data?.let { Regex("\\d+").find(it)?.value }
                 ?: "")
-            (singleTransaction?.totalAmount?.plus(tipAmount))?.times(
-                100
-            )?.let { transactionRequest.put("amount", it.toInt()) }
+            transactionRequest.put("amount", (tipAmount*100).toInt())
 
             payload.put("merchantAuthentication", merchantAuthentication)
             payload.put("transactionRequest", transactionRequest)

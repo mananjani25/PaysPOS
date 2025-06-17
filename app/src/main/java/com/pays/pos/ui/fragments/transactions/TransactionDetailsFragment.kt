@@ -74,6 +74,8 @@ import com.pax.poslink.ReportRequest
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
+import com.pays.pos.data.model.dejavoo.DejavooErrorResponse
+import com.pays.pos.data.model.dejavoo.DejavooResponse
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.model.valor.ValorTransactionsList
@@ -355,6 +357,7 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var selectedorderType = arguments?.getInt("selectedorderType")
@@ -603,9 +606,13 @@ class TransactionDetailsFragment : Fragment() {
                                             if (paymentDetailsResponse.data.ref_num.isNullOrEmpty()) {
                                                 startRefund()
                                             } else {
-                                                checkIfDejavooTransactionEligibleForVoid(
-                                                    paymentDetailsResponse
-                                                )
+                                                if (Regex("\\d+").find(paymentDetailsResponse.data.ext_data)?.value?.length != 12) {
+                                                    checkIfDejavooTransactionEligibleForVoid(
+                                                        paymentDetailsResponse
+                                                    )
+                                                } else {
+                                                    refundViaDejavooUsingTransactApi()
+                                                }
                                             }
                                             p0?.dismiss()
                                         }
@@ -777,7 +784,7 @@ class TransactionDetailsFragment : Fragment() {
             val transactionRequest = JSONObject()
             transactionRequest.put("transactionType", 7)
             transactionRequest.put("rrn", Regex("\\d+").find(paymentDetailsResponse.data.ext_data)?.value ?: "")
-            transactionRequest.put("amount", ((paymentDetailsResponse.data.amount.toDouble() + tipAmount.toDouble())*100).toInt())
+            transactionRequest.put("amount", (tipAmount*100).toInt())
 
             payload.put("merchantAuthentication", merchantAuthentication)
             payload.put("transactionRequest", transactionRequest)
@@ -1134,6 +1141,108 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 //            }
+        }
+    }
+
+    private fun refundViaDejavooUsingTransactApi() {
+
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            var rrnValue =  if (Regex("\\d+").find(paymentDetailsResponse.data.ext_data)?.value?.length != 12) {
+                ((paymentDetailsResponse.data.ext_data.substring(paymentDetailsResponse.data.ext_data.indexOf("RRN="))
+                    .substring(4, paymentDetailsResponse.data.ext_data.substring(paymentDetailsResponse.data.ext_data.indexOf("RRN=")).indexOf(','))))
+            } else {
+                Regex("\\d+").find(paymentDetailsResponse.data.ext_data)?.value ?: ""
+            }
+
+            var dejavoo = Dejavoo(
+                registerId =  prefProvider.getValue(
+                    Constants.DEJAVOO_REGISTER_ID,""
+                ),
+                authKey = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_KEY,""
+                ),
+                tpn = prefProvider.getValue(
+                    Constants.DEJAVOO_TPN,""
+                ),
+                amount = (paymentDetailsResponse.data.amount * 100).toInt().toString(),
+                isProd = Constants.paymentLive,
+                paymentType = "Credit",
+                performedBy = "",
+                printReceipt = false,
+                refId = "REFUND${System.currentTimeMillis()}",
+                tip = "",
+                transType = "3",
+                txnType = TransactionType.REFUND,
+                rrn = rrnValue,
+                authToken = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
+            )
+
+            context?.let {
+                (paymentGateway as DejavooPaymentGateway).refundPaymentusingRRN(
+                    it.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<DejavooResponse>(
+                            tResponse,
+                            DejavooResponse::class.java
+                        )
+
+                        transactionJsonResponse.nameValuePairs?.let {
+                            if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals(
+                                    "Success"
+                                )
+                            ) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    refundCall(paymentDetailsResponse.data.amount)
+                                }
+                            } else {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    transactionJsonResponse.respMSG?.replace("%20", " ")
+                                )
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        try {
+                            var errorResponse = Gson().fromJson<DejavooErrorResponse>(
+                                errorMessage,
+                                DejavooErrorResponse::class.java
+                            )
+                            errorResponse.networkResponse?.let {
+                                var errorData = Gson().fromJson<DejavooErrorResponse>(
+                                    MethodUtils.convertAsciiToString(it.data),
+                                    DejavooErrorResponse::class.java
+                                )
+
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    errorData.errors.get(0).message
+                                )
+
+                            }
+
+                        } catch (e: Exception) {
+
+                        }
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                )
+            }
         }
     }
 

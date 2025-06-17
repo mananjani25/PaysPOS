@@ -303,7 +303,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            var rrnValue =  if (!paxExtData.contains("DEJAVOO :")) {
+            var rrnValue =  if (Regex("\\d+").find(paxExtData)?.value?.length != 12) {
                 ((paxExtData.substring(paxExtData.indexOf("RRN="))
                     .substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
             } else {
