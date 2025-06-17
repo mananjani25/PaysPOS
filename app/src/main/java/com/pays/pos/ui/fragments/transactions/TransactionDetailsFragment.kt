@@ -23,6 +23,9 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.pays.pos.R
 import com.pays.pos.data.entities.TaxData
 import com.pays.pos.data.entities.TbServiceCharge
@@ -84,6 +87,7 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.landi.LPrint
 import com.sdksuite.omnidriver.OmniConnection
 import com.sdksuite.omnidriver.OmniDriver
@@ -106,6 +110,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -499,7 +504,13 @@ class TransactionDetailsFragment : Fragment() {
                         adjustValorTips(paymentDetailsResponse)
                     }
                     Constants.DEJAVOO->{
-                        adjustDejavooTips()
+                        if (!paymentDetailsResponse.data.ext_data.contains("DEJAVOO : Amount") && !paymentDetailsResponse.data.order.customer.cardToken.isNullOrEmpty()) {
+
+                            adjustDejavooTokenizedTips()
+
+                        } else {
+                            adjustDejavooTips()
+                        }
                     }else->{
                     if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
                         magtekCall(tipAmount)
@@ -693,7 +704,38 @@ class TransactionDetailsFragment : Fragment() {
                             tResponse,
                             String::class.java
                         )
-                        tipCall(true)
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        val parsedXml =
+                            parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                        var Message = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                }
+                            }
+                        }
+
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (Message.contains("Approved")) {
+                            tipCall(true)
+                        }
 
                     },
                     onFailure = {
@@ -712,6 +754,107 @@ class TransactionDetailsFragment : Fragment() {
             }
         }
     }
+
+    private fun adjustDejavooTokenizedTips() {
+
+        val url: java.lang.StringBuilder =
+            if (!Constants.paymentLive)
+                StringBuilder("https://payment.ipospays.tech/api/v1/iposTransact")
+            else
+                StringBuilder("https://payment.ipospays.com/api/v1/iposTransact") //Place Live URL Here
+
+        val payload = JSONObject()
+        try {
+            val merchantAuthentication = JSONObject()
+            merchantAuthentication.put(
+                "merchantId",
+                prefProvider.getValue(Constants.DEJAVOO_TPN, "")
+            )
+            val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
+            merchantAuthentication.put(
+                "transactionReferenceId",
+                transactionReferenceId
+            )
+
+            val transactionRequest = JSONObject()
+            transactionRequest.put("transactionType", 7)
+            transactionRequest.put("rrn", Regex("\\d+").find(paymentDetailsResponse.data.ext_data)?.value ?: "")
+            transactionRequest.put("amount", ((paymentDetailsResponse.data.amount.toDouble() + tipAmount.toDouble())*100).toInt())
+
+            payload.put("merchantAuthentication", merchantAuthentication)
+            payload.put("transactionRequest", transactionRequest)
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        Log.d("DEJAVOO:", "payloadToDejavoo(): ${payload}")
+
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url.toString(),
+            payload,
+            com.android.volley.Response.Listener<JSONObject> { response ->
+                Log.d("DEJAVOO:", "onSuccessResponse(): ${response}")
+                onSuccess(Gson().toJson(response))
+
+                dismissProgressDialog()
+            },
+            com.android.volley.Response.ErrorListener { error -> // Handle the error
+                Log.d("DEJAVOO:", "onErrorResponse(): ${error}")
+                onFailure(Gson().toJson(error))
+                dismissProgressDialog()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers: MutableMap<String, String> = HashMap()
+                headers["token"] = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
+                Log.d("DEJAVOO:", "getHeaders(): ${prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")}")
+//                  headers["accept"] = "application/json"
+//                   headers["content-type"] = "application/json"
+                return headers
+            }
+        }
+
+
+        val timeoutMs = 100000 // 10 seconds
+        val maxRetries = 1 // Number of retry attempts
+        val backoffMultiplier = 1.5f // Multiplier for backoff
+
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            timeoutMs,
+            maxRetries,
+            backoffMultiplier
+        )
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private fun onFailure(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+
+    }
+
+    private fun onSuccess(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+        val nameValuePair = jsonObject.optJSONObject("nameValuePairs")
+        val iposResponse = nameValuePair?.optJSONObject("iposhpresponse")
+        val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
+        val responseCode = nameValuePair1?.optString("responseCode")
+        val responseMessage = nameValuePair1?.optString("responseMessage")
+        if (responseCode?.toInt() == 200) {
+            tipCall(true)
+        } else {
+            AlertUtils.showCustomAlert(
+                requireContext(),
+                responseMessage
+            )
+        }
+    }
+
+
 
     private fun checkIfValorTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
         paymentCoroutineScope.launch {

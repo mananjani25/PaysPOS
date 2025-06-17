@@ -21,6 +21,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.pays.pos.R
 import com.pays.pos.data.entities.Employee
 import com.pays.pos.data.entities.TbOrderType
@@ -66,17 +69,25 @@ import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONObject
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -334,7 +345,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         adjustValorTips()
                     }
                     Constants.DEJAVOO -> {
-                        adjustDejavooTips()
+                        if (!singleTransaction!!.ext_data.contains("DEJAVOO : Amount")) {
+                            adjustDejavooTokenizedTips()
+                        } else {
+                            adjustDejavooTips()
+                        }
                     }
 
                     else -> {
@@ -532,7 +547,39 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             tResponse,
                             String::class.java
                         )
-                        tipCall(true)
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        val parsedXml =
+                            parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                        var Message = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                }
+                            }
+                        }
+
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (Message.contains("Approved")) {
+                            tipCall(true)
+                        }
+//                        tipCall(true)
 
                     },
                     onFailure = {
@@ -550,6 +597,114 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 /* Process Tip Adjust */
             }
         }
+    }
+
+    private fun adjustDejavooTokenizedTips() {
+
+        val url: java.lang.StringBuilder =
+            if (!Constants.paymentLive)
+                StringBuilder("https://payment.ipospays.tech/api/v1/iposTransact")
+            else
+                StringBuilder("https://payment.ipospays.com/api/v1/iposTransact") //Place Live URL Here
+
+        val payload = JSONObject()
+        try {
+            val merchantAuthentication = JSONObject()
+            merchantAuthentication.put(
+                "merchantId",
+                prefProvider.getValue(Constants.DEJAVOO_TPN, "")
+            )
+            val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
+            merchantAuthentication.put(
+                "transactionReferenceId",
+                transactionReferenceId
+            )
+
+            val transactionRequest = JSONObject()
+            transactionRequest.put("transactionType", 7)
+            transactionRequest.put("rrn", singleTransaction?.ext_data?.let { Regex("\\d+").find(it)?.value }
+                ?: "")
+            (singleTransaction?.totalAmount?.plus(tipAmount))?.times(
+                100
+            )?.let { transactionRequest.put("amount", it.toInt()) }
+
+            payload.put("merchantAuthentication", merchantAuthentication)
+            payload.put("transactionRequest", transactionRequest)
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        Log.d("DEJAVOO:", "payloadToDejavoo(): ${payload}")
+
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url.toString(),
+            payload,
+            com.android.volley.Response.Listener<JSONObject> { response ->
+                Log.d("DEJAVOO:", "onSuccessResponse(): ${response}")
+                onSuccess(Gson().toJson(response))
+
+                dismissProgressDialog()
+            },
+            com.android.volley.Response.ErrorListener { error -> // Handle the error
+                Log.d("DEJAVOO:", "onErrorResponse(): ${error}")
+                onFailure(Gson().toJson(error))
+                dismissProgressDialog()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers: MutableMap<String, String> = HashMap()
+                headers["token"] = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
+                Log.d("DEJAVOO:", "getHeaders(): ${prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")}")
+//                  headers["accept"] = "application/json"
+//                   headers["content-type"] = "application/json"
+                return headers
+            }
+        }
+
+
+        val timeoutMs = 100000 // 10 seconds
+        val maxRetries = 1 // Number of retry attempts
+        val backoffMultiplier = 1.5f // Multiplier for backoff
+
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            timeoutMs,
+            maxRetries,
+            backoffMultiplier
+        )
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private fun onFailure(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+
+    }
+
+    private fun onSuccess(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+        val nameValuePair = jsonObject.optJSONObject("nameValuePairs")
+        val iposResponse = nameValuePair?.optJSONObject("iposhpresponse")
+        val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
+        val responseCode = nameValuePair1?.optString("responseCode")
+        val responseMessage = nameValuePair1?.optString("responseMessage")
+        if (responseCode?.toInt() == 200) {
+            tipCall(true)
+        } else {
+            AlertUtils.showCustomAlert(
+                requireContext(),
+                responseMessage
+            )
+        }
+    }
+
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
     }
 
     private fun cashLogEventCall(bundle: Bundle) {
