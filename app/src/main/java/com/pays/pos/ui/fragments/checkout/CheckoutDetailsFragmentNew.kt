@@ -4275,6 +4275,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun onFailure(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
 
     }
 
@@ -4285,12 +4286,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val nameValuePair = jsonObject.optJSONObject("nameValuePairs")
             val iposResponse = nameValuePair?.optJSONObject("iposhpresponse")
             val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
+            val responseCode = nameValuePair1?.optString("responseCode") ?: ""
+            val responseMessage = nameValuePair1?.optString("responseMessage") ?: ""
             val rrn = nameValuePair1?.optString("rrn") ?: ""
             val transactionReferenceId = nameValuePair1?.optString("transactionReferenceId") ?: ""
 
             Log.d("DEJAVOO", "RRN: $rrn, RefID: $transactionReferenceId")
 
-            makePaymentCreditCardDejavoo(transactionReferenceId, rrn)
+            if (responseCode.toInt() == 200) {
+                makePaymentCreditCardDejavoo(transactionReferenceId, rrn)
+            } else {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    responseMessage)
+            }
 
         } catch (e: JSONException) {
             e.printStackTrace()

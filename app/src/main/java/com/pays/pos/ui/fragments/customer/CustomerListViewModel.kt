@@ -414,6 +414,7 @@ public class CustomerListViewModel @Inject constructor(
                         var ExtData = ""
                         var iPOSToken = ""
                         var rrn = ""
+                        var RespMSG = ""
                         with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
                             for (i in 0 until this.length) {
 
@@ -428,6 +429,13 @@ public class CustomerListViewModel @Inject constructor(
                                     "RefId" -> {
                                         try {
                                             RefId =
+                                                this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                    "RespMSG" -> {
+                                        try {
+                                            RespMSG =
                                                 this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
                                         } catch (e: Exception) {
                                         }
@@ -454,8 +462,13 @@ public class CustomerListViewModel @Inject constructor(
                             }
                         }
 
-                        submit(iPOSToken, true, customerModel)
-//                        _token.value = Event(true)
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            _showProgress.value = Event(false)
+                            AlertUtils.showCustomAlert(context, RespMSG.replace("%20", " "))
+
+                        } else if (Message.contains("Approved")) {
+                            submit(iPOSToken, true, customerModel)
+                        }
                     },
                     onFailure = { errorMessage ->
                         Log.e("Dejavoo: ", errorMessage)
