@@ -462,7 +462,7 @@ public class CustomerListViewModel @Inject constructor(
                             }
                         }
 
-                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                        if (Message.equals("Canceled") || Message.equals("Error") || Message.equals("Declined")) {
                             _showProgress.value = Event(false)
                             AlertUtils.showCustomAlert(context, RespMSG.replace("%20", " "))
 
