@@ -280,8 +280,6 @@ class TransactionDetailsFragment : Fragment() {
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
         isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
-        customerFirstName = arguments?.getString("customer_first_name")!!
-        customerLastName = arguments?.getString("customer_last_name")!!
         isRefundSuccess = arguments?.getBoolean("is_refund_success")?:false
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
@@ -2484,18 +2482,14 @@ class TransactionDetailsFragment : Fragment() {
 
                 if (it.data.order.customer != null ) {
                     val pervious = it .data.order.customer.firstName + " " + it.data.order.customer.lastName
-                    val latested = customerFirstName + " " + customerLastName
+                    val latested = customerName
                     if (pervious == latested){
                         binding.tvCustomerName.text =
                             it .data.order.customer.firstName + " " + it.data.order.customer.lastName
-                    }else if (customerFirstName.isNotEmpty()){
-                        binding.tvCustomerName.text =
-                            customerFirstName + " " + customerLastName
+                    }else if (customerName.isNotBlank()){
+                        binding.tvCustomerName.text = customerFirstName + " " + customerLastName
                     }
-                } else if (customerFirstName.isNotEmpty()){
-                    binding.tvCustomerName.text =
-                        customerFirstName + " " + customerLastName
-                } else{
+                } else {
                     binding.tvCustomerName.text = ""
                     binding.tvCustomerName.invisible()
                 }
@@ -2508,8 +2502,6 @@ class TransactionDetailsFragment : Fragment() {
 //                } else {
 //                    binding.tvCustomerName.text = ""
 //                }
-
-
                 if (it.data.order.employee != null){
                     if (it.data.order.order_type_name.equals("Kiosk TakeOut")){
                         binding.edtEmployeeName.text =
