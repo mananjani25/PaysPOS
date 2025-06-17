@@ -1459,12 +1459,21 @@ class AllOrdersListingFragment(
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
-
                         ordersViewModel.changeTabPosition.value = 2
                     }
                     this.negativeButton("NO") {
                     }
+                }
+            }
 
+            "ReadyForPickup" -> {
+                alert("", "Are you sure, you want to ready for pickup this order ?") {
+                    this.positiveButton("YES") {
+                        updateOrder(adapter.filterList[0].id, status)
+                        ordersViewModel.changeTabPosition.value = 2
+                    }
+                    this.negativeButton("NO") {
+                    }
                 }
             }
 
@@ -1575,8 +1584,6 @@ class AllOrdersListingFragment(
 
                     }
                 }
-
-
             }
 
             "UPDATE" -> {
@@ -2306,7 +2313,7 @@ class AllOrdersListingFragment(
             "CANCEL" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
 
-                   var data:OnlineOrderResponseModel.Data = adapter.getItem(pos)
+                    var data:OnlineOrderResponseModel.Data = adapter.getItem(pos)
                     val bundle = Bundle().apply {
                         /* putParcelable("refundData", refundData)
                          putDouble("refundAmount", subTotalPrice)*/
@@ -2363,15 +2370,9 @@ class AllOrdersListingFragment(
                                 if (it.customerStatus) {
                                     initPrinter(it, Constants.CUSTOMER, order, type)
                                 }
-
-
                             }
                         }
-
-
                     }
-
-
                 }
 
                 Status.ERROR -> {

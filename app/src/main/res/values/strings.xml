@@ -975,6 +975,7 @@
     <!--    DIALOG TITLE-->
     <string name="update_category_image">Update Category Image</string>
     <string name="update_item_image">Update Item Image</string>
+    <string name="ready_for_pickup">Ready For Pickup</string>
 
 </resources>
 

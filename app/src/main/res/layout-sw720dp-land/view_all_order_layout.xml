@@ -191,6 +191,33 @@
                     android:layout_height="wrap_content"
                     />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/orderReadyForPickupButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/readyForPickupImg"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="@dimen/_5sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="@string/ready_for_pickup"
+                    android:fontFamily="@font/sf_pro_display_bold"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="@dimen/_4sdp"
+                    android:textColor="@color/green_pay_total"
+                    android:background="@drawable/whiteborder_with_transparent"
+                    android:layout_height="wrap_content"
+                    />
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/order_completed_button"
                 android:layout_width="0dp"
@@ -251,6 +278,7 @@
                     app:textAllCaps="true" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/order_status_linear"
                 android:layout_width="0dp"

@@ -728,7 +728,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Status.SUCCESS -> {
                         Log.d(TAG, "getAllOrderCounts: ${it.data?.data}")
 
-                        val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
+                        val allOrdersPendingCount = it.data?.data?.allOrders?.pending ?: 0
                         onlineOrderBadgeDisplay(allOrdersPendingCount)
 
                     }
