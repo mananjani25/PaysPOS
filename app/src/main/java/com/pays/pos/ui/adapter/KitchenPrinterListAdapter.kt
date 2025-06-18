@@ -121,7 +121,6 @@ class KitchenPrinterListAdapter : RecyclerView.Adapter<KitchenPrinterListAdapter
                             }
                         } else {
                             // Safe fallback if list is empty or position invalid
-                            buttonView!!.isChecked = false
                             Log.e("KitchenSwitch", "Invalid adapter position or empty list. Prevented crash.")
                             Toast.makeText(buttonView?.context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
                         }
