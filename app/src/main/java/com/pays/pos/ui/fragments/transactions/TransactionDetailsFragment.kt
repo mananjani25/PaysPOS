@@ -1168,7 +1168,7 @@ class TransactionDetailsFragment : Fragment() {
                 tpn = prefProvider.getValue(
                     Constants.DEJAVOO_TPN,""
                 ),
-                amount = (paymentDetailsResponse.data.amount * 100).toInt().toString(),
+                amount = ((paymentDetailsResponse.data.amount + + paymentDetailsResponse.data.tips) * 100).toInt().toString(),
                 isProd = Constants.paymentLive,
                 paymentType = "Credit",
                 performedBy = "",
@@ -1197,7 +1197,7 @@ class TransactionDetailsFragment : Fragment() {
                                 )
                             ) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    refundCall(paymentDetailsResponse.data.amount)
+                                    refundCall(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
                                 }
                             } else {
                                 AlertUtils.showCustomAlert(
