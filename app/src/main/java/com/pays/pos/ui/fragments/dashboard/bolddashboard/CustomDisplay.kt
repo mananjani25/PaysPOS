@@ -3477,6 +3477,8 @@ class CustomDisplay(
 
     private fun adjustDejavooTokenizedTips() {
 
+        dashBoardCategoryViewModel.processingTipForCard.postValue(true)
+
         val url: java.lang.StringBuilder =
             if (!Constants.paymentLive)
                 StringBuilder("https://payment.ipospays.tech/api/v1/iposTransact")
@@ -3554,6 +3556,7 @@ class CustomDisplay(
 
     private fun onFailure(toJson: String?) {
         val jsonObject = JSONObject(toJson ?: "")
+        dashBoardCategoryViewModel.processingTipForCard.postValue(false)
 
     }
 
@@ -3566,9 +3569,11 @@ class CustomDisplay(
         val responseMessage = nameValuePair1?.optString("responseMessage")
         if (responseCode?.toInt() == 200) {
             dashBoardCategoryViewModel.processingTipForCard.postValue(false)
-            mPaymentViewModel.dejavooRefTxnId=null
+            mPaymentViewModel.dejavooRefTxnId = null
+            mPaymentViewModel.extData = ""
             callUpdateTip(mTransactionViewModel)
         } else {
+            dashBoardCategoryViewModel.processingTipForCard.postValue(false)
             AlertUtils.showCustomAlert(
                 context,
                 responseMessage
