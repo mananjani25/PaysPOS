@@ -30,7 +30,7 @@ data class TbOrderType(
     val updatedAt: String,
     @SerializedName("is_deleted")
     var isDeleted: Boolean = false,
-     @SerializedName("primary_order_type")
+    @SerializedName("primary_order_type")
     var primaryOrderType: Boolean = false,
     @SerializedName("is_default")
     var isDefault: Boolean = false,

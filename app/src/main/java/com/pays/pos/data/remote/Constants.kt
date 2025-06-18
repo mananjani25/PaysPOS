@@ -489,7 +489,8 @@ object Constants {
     const val KIOSK_OPEN_ORDER = "KioskOpenorder"
     const val PHONE_ORDER_TAB = "PhoneOrder"
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
-    const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
+
+    const val THIRD_PARTY_ORDER_TAB = /*"OnlineOrder"*/ "ThirdPartyOrder"
     const val taxListDynamic = "taxListDynamic"
     const val discountType = "discountType"
     const val discountSelectedValue = "discountSelectedValue"
@@ -916,6 +917,7 @@ object Constants {
     const val DEJAVOO_REGISTER_ID = "DEJAVOO_REGISTER_ID"
     const val DEJAVOO_TPN = "DEJAVOO_TPN"
     const val DEJAVOO_AUTH_TOKEN = "DEJAVOO_AUTH_TOKEN"
+    const val DEJAVOO_TRANSACTION_REFERENCE_ID = "DEJAVOO_TRANSACTION_REFERENCE_ID"
     /*-------Dejavoo------*/
 
     const val PERMISSION_BLUETOOTH = 1

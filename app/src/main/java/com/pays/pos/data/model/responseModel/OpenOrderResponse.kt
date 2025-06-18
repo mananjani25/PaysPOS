@@ -2,8 +2,8 @@ package com.pays.pos.data.model.responseModel
 
 
 import android.os.Parcelable
-import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
+import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import kotlinx.parcelize.Parcelize
 
 data class OpenOrderResponse(
@@ -337,6 +337,10 @@ data class OpenOrderResponse(
                 val enroll_to_loyalty: Boolean?,
                 @SerializedName("final_reward")
                 val final_reward: Int? = 0,
+                @SerializedName("is_tokenized")
+                val isTokenized: Boolean = false,
+                @SerializedName("card_token")
+                val cardToken: String = "",
             ) {
                 @Parcelize
                 data class Address(

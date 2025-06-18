@@ -2018,6 +2018,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         if(wholeItemCount == listItemWT && guestItemCount == listItemGuestSelected) {
 
 
+            prefProvider.saveCustomerData(dineInModel.customer)
 
         dashboardViewModel.setTipAmount(0.0)
         dashboardViewModel.customerGivenTip.value=false
@@ -2175,6 +2176,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
+
+
 
 
 
