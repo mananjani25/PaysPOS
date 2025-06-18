@@ -74,6 +74,16 @@
                         android:textColor="@color/redColor"
                         android:textSize="@dimen/_4mdpi" />
 
+
+                    <TextView
+                        android:id="@+id/tokenIcon"
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
+                        android:background="@drawable/ic_credit_card"
+                        android:backgroundTint="@color/colorGreen"
+                        android:gravity="center_vertical"
+                        android:visibility="gone"/>
+
                     <TextView
                         android:layout_weight="1"
                         android:id="@+id/txtAddCustomer"

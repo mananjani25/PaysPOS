@@ -3,9 +3,8 @@ package com.pays.pos.data.model.responseModel
 import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
-import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
-import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
+import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse.Data.RefundDetails
 import kotlinx.parcelize.Parcelize
 
@@ -451,6 +450,10 @@ data class OnlineOrderResponseModel(
             val enroll_to_loyalty: Boolean?,
             @SerializedName("final_reward")
             val final_reward: Int? = 0,
+            @SerializedName("is_tokenized")
+            val isTokenized: Boolean = false,
+            @SerializedName("card_token")
+            val cardToken: String = "",
         ) {
             @Parcelize
             data class Address(
@@ -477,7 +480,11 @@ data class OnlineOrderResponseModel(
                 @SerializedName("street")
                 val street: String,
                 @SerializedName("type_of_address")
-                val typeOfAddress: String
+                val typeOfAddress: String,
+                @SerializedName("is_tokenized")
+                val isTokenized: Boolean = false,
+                @SerializedName("card_token")
+                val cardToken: String = "",
             ) : Parcelable {}
 
             @Parcelize

@@ -10,8 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbServiceCharge
@@ -19,14 +19,14 @@ import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.ViewDineInHeaderBinding
 import com.pays.pos.databinding.ViewDineInTableItemsBinding
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
-import com.google.gson.Gson
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.visible
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Collections
+import javax.inject.Inject
 
 class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
@@ -35,6 +35,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private lateinit var listner: DineInTableListner
     private val TAG = "DineInTableAdapter"
     private var isAnyPaymentDone : Boolean = false
+
 
 
     fun setListner(listner: DineInTableListner) {
@@ -218,6 +219,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         layoutPosition
                     ).customer?.last_name
                 )
+
+                if (list.get(layoutPosition).customer?.isTokenized == true) {
+                    binding.tokenIcon?.visible()
+                } else {
+                    binding.tokenIcon?.invisible()
+                }
             } else {
                 binding.txtTableName.setText(list.get(layoutPosition).title)
 

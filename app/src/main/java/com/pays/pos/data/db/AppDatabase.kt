@@ -55,7 +55,7 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
         VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class, ActivePaymentGateway::class],
-    version = 30
+    version = 31
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -562,6 +562,17 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_28_29: Migration = object : Migration(28, 29) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbCustomer ADD COLUMN isTokenized BOOLEAN DEFAULT 0 NOT NULL")
+                    database.execSQL("ALTER TABLE TbCustomer ADD COLUMN cardToken TEXT")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
@@ -592,7 +603,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_24_25,
                     MIGRATION_25_26,
                     MIGRATION_26_27,
-                    MIGRATION_27_28
+                    MIGRATION_27_28,
+                    MIGRATION_28_29
                 ).fallbackToDestructiveMigration()
                 .build()
     }
