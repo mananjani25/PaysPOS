@@ -3587,10 +3587,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         showProgressDialog()
                     }
                 })
+
+                val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
+
                 restrictTvCashClicks()
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
-                subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+                subTotalPrice = String.format("%.2f", if (isAmountWiseSplit) {subTotalPrice * amountWiseSplitShare } else { subTotalPrice / isSelectedCount}).toDouble()
 
                 EventBus.getDefault().post(
                     MessageEvent(
@@ -3605,12 +3608,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
                 )
                 totalServiceCharge =
-                    String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-                totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-                totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                    String.format("%.2f", if (isAmountWiseSplit) {totalServiceCharge * amountWiseSplitShare } else { totalServiceCharge / isSelectedCount}).toDouble()
+                totalTax = String.format("%.2f", if (isAmountWiseSplit) {totalTax * amountWiseSplitShare } else { totalTax / isSelectedCount}).toDouble()
+                totalDiscount = String.format("%.2f", if (isAmountWiseSplit) {totalDiscount * amountWiseSplitShare } else { totalDiscount / isSelectedCount}).toDouble()
                 cashDiscountSurcharge =
                     MethodUtils.getLatestCashDiscountOrSurCharge(
-                        WholetotalPrice,
+                        if (isAmountWiseSplit) {amountWiseSplit} else {WholetotalPrice},
                         prefProvider,
                         requireContext()
                     ) / isSelectedCount
@@ -3623,7 +3626,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                            requireContext()
 //                        ) / isSelectedCount
 //                    }
-                paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+                paymentAmount = String.format("%.2f", if (isAmountWiseSplit) {amountWiseSplit} else { WholetotalPrice / isSelectedCount}).toDouble()
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     EventBus.getDefault().post(
@@ -4853,6 +4856,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun makePaymentCreditCardDejavoo(txnid: String?, extData: String?) {
         paymentviewModel.dejavooRefTxnId = txnid
+        if (extData != null) {
+            paymentviewModel.extData = extData
+        }
 //        paymentviewModel.valorTransactionNumber = transactionNumber
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)

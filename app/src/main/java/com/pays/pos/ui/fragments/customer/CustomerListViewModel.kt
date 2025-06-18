@@ -148,7 +148,9 @@ public class CustomerListViewModel @Inject constructor(
                                             final_reward = it.final_reward,
                                             company = it.company,
                                             phones = it.phones,
-                                            addresses = it.addresses
+                                            addresses = it.addresses,
+                                            isTokenized = it.isTokenized,
+                                            cardToken = it.cardToken
                                         )
                                     )
                                 }
