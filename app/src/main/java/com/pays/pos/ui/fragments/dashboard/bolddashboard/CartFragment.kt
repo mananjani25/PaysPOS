@@ -3593,7 +3593,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 "Cannot change guest as already updating another item"
             )
 
-            dineInCartAdapter.setHeaderPosition(viewModel.dineInHeaderPosition)
+            binding.rvCartDineIn.post {
+                dineInCartAdapter.setHeaderPosition(viewModel.dineInHeaderPosition) // ✅ Safe to update
+            }
 
         }
     }
