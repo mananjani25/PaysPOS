@@ -3032,6 +3032,15 @@ class AllOrdersListingFragment(
                                     }
 
                                     if (printType == Constants.PRINT_UNPAID){
+                                        lineBreak()
+                                        if (customerSettingModel.fonts == Constants.LARGE) {
+                                            printBoldLeft("Cust Name _____________")
+                                            lineBreak()
+                                        } else {
+                                            printBoldLeft("Customer Name                     _____________")
+                                            lineBreak()
+                                        }
+
                                         if (customerSettingModel.showTipLineForCash) {
                                             lineBreak()
                                             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -3049,6 +3058,15 @@ class AllOrdersListingFragment(
                                                 printBoldLeft("Total                             _____________")
                                             }
 
+                                        }
+
+                                        lineBreak()
+                                        if (customerSettingModel.fonts == Constants.LARGE) {
+                                            printBoldLeft("Cust Sign _____________")
+                                            lineBreak()
+                                        } else {
+                                            printBoldLeft("Customer Signature                _____________")
+                                            lineBreak()
                                         }
 
                                     }
@@ -5098,10 +5116,19 @@ class AllOrdersListingFragment(
 
             if ( printType == Constants.PRINT_UNPAID) {
 
+                SunmiPrinterApi.getInstance().lineWrap(2)
+                if (customerSettingModel.fonts == Constants.LARGE) {
 
+
+                    PrintSunmiUtils.tips("Cust Name _____________")
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.tips("Customer Name                      _____________")
+
+                }
                 if (customerSettingModel.showTipLineForCash) {
 
-                    SunmiPrinterApi.getInstance().lineWrap(2)
+
                     if (customerSettingModel.fonts == Constants.LARGE) {
 
                         PrintSunmiUtils.tips("Tip       _____________")
@@ -5119,6 +5146,15 @@ class AllOrdersListingFragment(
                     } else {
                         PrintSunmiUtils.tips("Total                              _____________")
                     }
+
+                }
+
+                if (customerSettingModel.fonts == Constants.LARGE) {
+
+                    PrintSunmiUtils.tips("Cust Sign _____________")
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.tips("Customer Signature                 _____________")
 
                 }
 
@@ -9046,6 +9082,25 @@ class AllOrdersListingFragment(
 
             if (printType == Constants.PRINT_UNPAID) {
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                        1
+                    )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ){
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        PrintSunmiUtils.boldTextNew("Cust Name _____________")
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.boldTextNew("Customer Name                     _____________")
+                    }
+                } else {
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        PrintSunmiUtils.boldText("Cust Name _____________")
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.boldText("Customer Name                     _____________")
+                    }
+                }
+
 
                 if (customerSettingModel.showTipLineForCash) {
 
@@ -9085,6 +9140,26 @@ class AllOrdersListingFragment(
                         } else {
                             PrintSunmiUtils.boldText("Total                             _____________")
                         }
+                    }
+                }
+
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                        1
+                    )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ){
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        PrintSunmiUtils.boldTextNew("Cust Sign _____________")
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.boldTextNew("Customer Signature                _____________")
+                    }
+                } else {
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        PrintSunmiUtils.boldText("Cust Sign _____________")
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.boldText("Customer Signature                _____________")
                     }
                 }
 
