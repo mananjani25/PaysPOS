@@ -2062,7 +2062,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("dicountB", divideDiscount)
         bundle.putInt("guestIndexForDineIn", guestIndexForDineIn)
 
-
         val adapterList = dineInTableAdapter.getList()
 
 
@@ -2844,7 +2843,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            updateOrderCall(isFromReorder = false,true)
+            updateOrderCall(isFromReorder = false,true , "3")
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }
@@ -3546,7 +3545,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             amountToShow
                         )
 
-                        toFinalAmt = finalAmount
+                         toFinalAmt = finalAmount
 
 
                         var paidGuestCount = 0
@@ -3869,6 +3868,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             oldList.get(dragTo).item?.guestItemId?.let {
                 listOfMoveItemIds.add(it)
             }
+            oldList.get(dragTo).item.apply { this?.isDestroy = true }
+            Log.e("updateAdapterData", "isDestroy: ${oldList.get(dragTo).item?.isDestroy}")
+
             oldList.get(dragTo).item?.guestItemId = null
 
             if (oldList[dragTo].item?.itemId != 1) {
@@ -3888,7 +3890,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     oldList[dragTo].item = oldList[k].item
                                     oldList[dragTo].item?.itemQuantity = updatedQuantity
                                     oldList[dragTo].item?.sort = dragTo
-                                    oldList.remove(oldList[k])
+                                    oldList.get(dragTo).item.apply { this?.isDestroy = true }
+                                 //   oldList.remove(oldList[k])
                                     break
                                 }
                             }
@@ -3908,11 +3911,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
                                 ) {
                                     var updatedQuantity: Int =
-                                        oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                                     oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
                                     oldList[dragTo].item = oldList[l].item
                                     oldList[dragTo].item?.itemQuantity = updatedQuantity
                                     oldList[dragTo].item?.sort = dragTo
-                                    oldList.remove(oldList[l])
+                                    oldList.get(dragTo).item.apply { this?.isDestroy = true }
+                                   // oldList.remove(oldList[l])
                                     break
                                 }
                             }
@@ -4164,13 +4168,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 dineInCartItemMoved = false
             }
 
-            updateOrderCall(isFromReorder = true)
+            updateOrderCall(isFromReorder = true, false, "1")
         }
 
     }
 
-    private fun updateOrderCall(isFromReorder: Boolean,isFromWastage: Boolean = false) {
+    private fun updateOrderCall(isFromReorder: Boolean,isFromWastage: Boolean = false, test : String) {
         try {
+            Log.e(TAG, "rest test : $test", )
             cartList = getCartModel(dineInTableAdapter.getList().toCollection(arrayListOf()))
             cartList?.note = getOrderDetailsResponse?.note.toString()
             cartList?.listOfItemRemoved = listOfMoveItemIds
@@ -4194,11 +4199,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             val orderRequestModel = dashboardViewModel.updateOrder(cartList!!, true)
 
 
+//            orderRequestModel.order.orderItemsAttributes
+//                .forEach { it.isDestroy = true }
+
             //Remove moved items from list
             orderRequestModel.order.orderItemsAttributes
                 .filter { it.itemId in listOfMoveItemIds }
                 .forEach { it.isDestroy = true }
 
+            Log.e(TAG, "updateOrderCall  222222: ${listOfMoveItemIds}", )
 
             if (isFromWastage) {
                 orderRequestModel.apply {
@@ -4275,7 +4284,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     message = "removed"
                 )
             }
-            listOfMoveItemIds.clear()
+         //   listOfMoveItemIds.clear()
         }catch (e: Exception) {
             e.printStackTrace()
         }
@@ -4536,7 +4545,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             dineInCartItemMoved = false
         }
 
-        updateOrderCall(isFromReorder = true,true)
+        updateOrderCall(isFromReorder = true,true, "2")
     }
 
     // Navigate to Add Item to Wastage dialog
@@ -4726,10 +4735,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                          adapter.getItem(viewHolder.layoutPosition).id
                      )*/
                     updateAdapterData()
-                    recyclerView.post {
-                        dineInTableAdapter.notifyItemMoved(dragFrom, dragTo)
-                        dineInTableAdapter.notifyItemRangeChanged(min(dragFrom, dragTo), abs(dragTo - dragFrom) + 1)
-                    }
+//                    recyclerView.post {
+//                        dineInTableAdapter.notifyItemMoved(dragFrom, dragTo)
+//                        dineInTableAdapter.notifyItemRangeChanged(min(dragFrom, dragTo), abs(dragTo - dragFrom) + 1)
+//                    }
                 }
 
                 try {

@@ -984,7 +984,7 @@ class TransactionDetailsFragment : Fragment() {
                         context = it.applicationContext,
                         valor,
                         onSuccess = { tResponse ->
-                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                            var transactionJsonResponse = Gson().fromJson(
                                 tResponse,
                                 ValorSuccessResponse::class.java
                             )
@@ -1894,8 +1894,7 @@ class TransactionDetailsFragment : Fragment() {
             mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
 
         orderDetailsItemAdapter.taxList.forEach {
-            val order =
-                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+            val order = RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
 
             order.orderId = it.orderId
             order.orderItemId = it.id

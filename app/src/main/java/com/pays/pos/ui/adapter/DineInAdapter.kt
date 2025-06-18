@@ -213,7 +213,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
             listner.onItemSelected(bindingAdapterPosition, position, data)
-
+            notifyItemChanged(position)
         }
 
         override fun onCartItemClickListener(view: View?, data: TbCartItem, position: Int) {
@@ -289,7 +289,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
 
     fun setHeaderPosition(headerPosition:Int) {
         list.get(0).selectedPosition = headerPosition
-        notifyDataSetChanged()
+//        notifyDataSetChanged()
     }
 
     fun getItem(position: Int): DineInModel {

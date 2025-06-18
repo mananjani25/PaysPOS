@@ -165,22 +165,21 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 //                itemBinding.txtTransactionId.visibility = View.GONE
 //            }
 
-
             try {
-                if (model.employeeName != null) {
-                    if (model.orderDetails.orderTypeName.equals("Kiosk TakeOut")) {
-                        itemBinding.txtTeamName?.text =
-                            prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+            if (model.orderDetails != null){
+                if (model.employeeName != null){
+                    if (model.orderDetails.orderTypeName.equals("Kiosk TakeOut")){
+                        itemBinding.txtTeamName?.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
                     } else {
                         itemBinding.txtTeamName?.text = model.employeeName
                     }
-                } else {
+                }else{
                     itemBinding.txtTeamName?.text = ""
                 }
+            }
             }catch (e: Exception) {
                 e.printStackTrace()
             }
-
 
 
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
