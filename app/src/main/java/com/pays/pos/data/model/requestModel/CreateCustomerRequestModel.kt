@@ -33,7 +33,11 @@ data class CreateCustomerRequestModel(
         @SerializedName("phones_attributes")
         var phones_attributes: ArrayList<Phone>? = arrayListOf(),
         @SerializedName("addresses_attributes")
-        var addresses_attributes: ArrayList<Addresses>? = arrayListOf()
+        var addresses_attributes: ArrayList<Addresses>? = arrayListOf(),
+        @SerializedName("is_tokenized")
+        var isTokenized: Boolean = false,
+        @SerializedName("card_token")
+        var cardToken: String = "",
     ) {
         data class Phone(
             @SerializedName("id")

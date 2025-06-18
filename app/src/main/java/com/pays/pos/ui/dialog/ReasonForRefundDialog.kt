@@ -303,8 +303,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            var rrnValue = ((paxExtData.substring(paxExtData.indexOf("RRN="))
-                .substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
+            var rrnValue =  if (Regex("\\d+").find(paxExtData)?.value?.length != 12) {
+                ((paxExtData.substring(paxExtData.indexOf("RRN="))
+                    .substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
+            } else {
+                Regex("\\d+").find(paxExtData)?.value ?: ""
+            }
 
             var dejavoo = Dejavoo(
                 registerId =  prefProvider.getValue(
@@ -326,9 +330,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 transType = "3",
                 txnType = TransactionType.REFUND,
                 rrn = rrnValue,
-                authToken = prefProvider.getValue(
-                    Constants.DEJAVOO_AUTH_TOKEN,""
-                )
+                authToken = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
             )
 
             context?.let {

@@ -33,6 +33,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.reflect.TypeToken
@@ -156,7 +159,11 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONException
+import org.json.JSONObject
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
@@ -164,6 +171,9 @@ import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.POST
 import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -209,6 +219,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var isPaymentScreen = true
     private var isSplitScreen = false
     private var isAmountWiseSplit = false
+
+    var customerDetails: TbCustomer? = null
 
     private var remainingAmount: Double = 0.0
     private var amountWiseSplit: Double = 0.0
@@ -345,6 +357,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.lnrGiftCard.gone()
         }
 
+        customerDetails = prefProvider.getCustomerData()
+
+        if (customerDetails?.isTokenized == true) {
+            binding.llSavedCard.visible()
+        }
+
 //        BroadPOSCommunicator.startListeningService()
 
         initPOSLink()
@@ -356,6 +374,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         initProgressObserver()
         initClickListener()
         return binding.root
+    }
+
+    interface RawApiService {
+        @POST("api/v1/iposTransact")
+        fun postRawJson(
+            @Header("") token: String,
+            @Body body: RequestBody
+        ): Call<ResponseBody>
     }
 
     fun setUpAmountInput(editText: EditText, maxAmount: Double) {
@@ -3740,7 +3766,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         ).isNotEmpty()
                     ) {
                         makeValorPaymentRequest()
-                    } else {
+                    } else if (prefProvider.getValue(Constants.DEJAVOO_AUTH_KEY, "").isNotEmpty()) {
+                        if (customerDetails?.isTokenized == true) {
+                            makeDejavooCaptureRequestForTokenization()
+                        }
+                    }
+                    else {
                         runOnUiThread(object : java.lang.Runnable {
                             override fun run() {
                                 binding.llCreditCard.isEnabled = true
@@ -4096,6 +4127,188 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         })
         errorDisplay("Please connect a payment device.")
     }
+
+    private fun makeDejavooCaptureRequestForTokenization() {
+
+        val cardToken = customerDetails?.cardToken
+
+//        val apiEndPoint = if (Constants.paymentLive) {
+//                "https://payment.ipospays.com/api/v1/iposTransact"
+//        } else {
+//            "https://payment.ipospays.tech/api/v1/iposTransact"
+//        }
+//
+//        val request = mapOf(
+//            "merchantAuthentication" to mapOf(
+//                "merchantId" to "659324491704",
+//                "transactionReferenceId" to "4986125"
+//            ),
+//            "transactionRequest" to mapOf(
+//                "transactionType" to 1, // Sale using token
+//                "amount" to (paymentAmount*100).toInt(), // e.g. "1000" for $10.00
+//                "cardToken" to cardToken, // Optional
+//                "applySteamSettingTipFeeTax" to false
+//            ),
+//            "preferences" to mapOf(
+//                "eReceipt" to false,
+//                "customerName" to ((customerDetails?.first_name + " " + customerDetails?.last_name)
+//                    ?: ""),
+//                "customerEmail" to (customerDetails?.email ?: ""),
+//                "customerMobile" to ""
+//            )
+//        )
+//
+//        val gson = Gson()
+//        val json = gson.toJson(request)
+//        val mediaType = "application/json; charset=utf-8".toMediaType()
+//        val requestBody = json.toRequestBody(mediaType)
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://payment.ipospays.tech/") // or .tech
+//            .client(OkHttpClient())
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        val api = retrofit.create(RawApiService::class.java)
+//
+//        api.postRawJson("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw", requestBody).enqueue(object : Callback<ResponseBody> {
+//            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+//                if (response.isSuccessful) {
+//                    Log.d("API", "Success: ${response.body()?.string()}")
+//                    dismissProgressDialog()
+//                } else {
+//                    Log.e("API", "Error: ${response.errorBody()?.string()}")
+//                    dismissProgressDialog()
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+//                Log.e("API", "Failure: ${t.message}")
+//                dismissProgressDialog()
+//            }
+//        })
+
+
+
+        val url: java.lang.StringBuilder =
+            if (!Constants.paymentLive)
+                StringBuilder("https://payment.ipospays.tech/api/v1/iposTransact")
+            else
+                StringBuilder("https://payment.ipospays.com/api/v1/iposTransact") //Place Live URL Here
+
+        val payload = JSONObject()
+        try {
+            val merchantAuthentication = JSONObject()
+            merchantAuthentication.put("merchantId", prefProvider.getValue(Constants.DEJAVOO_TPN, ""))
+            val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
+            merchantAuthentication.put(
+                "transactionReferenceId",
+                transactionReferenceId
+            )
+
+            val transactionRequest = JSONObject()
+            transactionRequest.put(
+                "transactionType",
+                1
+            )
+            transactionRequest.put("amount", (paymentAmount*100).toInt())
+            transactionRequest.put("cardToken", cardToken)
+            transactionRequest.put("applySteamSettingTipFeeTax", false)
+
+            val preferences = JSONObject()
+            preferences.put("eReceipt", false)
+            preferences.put("customerName", ((customerDetails?.first_name + " " + customerDetails?.last_name)
+                ?: ""))
+            preferences.put("customerEmail", (customerDetails?.email ?: ""))
+            preferences.put("customerMobile", "")
+
+            payload.put("merchantAuthentication", merchantAuthentication)
+            payload.put("transactionRequest", transactionRequest)
+//            payload.put("preferences", preferences)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+
+
+        Log.d("DEJAVOO:", "payloadToDejavoo(): ${payload}")
+
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url.toString(),
+            payload,
+            com.android.volley.Response.Listener<JSONObject> { response ->
+                Log.d("DEJAVOO:", "onSuccessResponse(): ${response}")
+                onSuccess(Gson().toJson(response))
+
+                dismissProgressDialog()
+            },
+            com.android.volley.Response.ErrorListener { error -> // Handle the error
+                Log.d("DEJAVOO:", "onErrorResponse(): ${error}")
+                onFailure(Gson().toJson(error))
+                dismissProgressDialog()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers: MutableMap<String, String> = HashMap()
+                headers["token"] = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
+                Log.d("DEJAVOO:", "getHeaders(): ${prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")}")
+//                  headers["accept"] = "application/json"
+//                   headers["content-type"] = "application/json"
+                return headers
+            }
+        }
+
+
+        val timeoutMs = 100000 // 10 seconds
+        val maxRetries = 1 // Number of retry attempts
+        val backoffMultiplier = 1.5f // Multiplier for backoff
+
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            timeoutMs,
+            maxRetries,
+            backoffMultiplier
+        )
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(jsonObjectRequest)
+
+    }
+
+    private fun onFailure(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+
+    }
+
+    private fun onSuccess(toJson: String?) {
+
+        try {
+            val jsonObject = JSONObject(toJson ?: "")
+            val nameValuePair = jsonObject.optJSONObject("nameValuePairs")
+            val iposResponse = nameValuePair?.optJSONObject("iposhpresponse")
+            val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
+            val responseCode = nameValuePair1?.optString("responseCode") ?: ""
+            val responseMessage = nameValuePair1?.optString("responseMessage") ?: ""
+            val rrn = nameValuePair1?.optString("rrn") ?: ""
+            val transactionReferenceId = nameValuePair1?.optString("transactionReferenceId") ?: ""
+
+            Log.d("DEJAVOO", "RRN: $rrn, RefID: $transactionReferenceId")
+
+            if (responseCode.toInt() == 200) {
+                makePaymentCreditCardDejavoo(transactionReferenceId, rrn)
+            } else {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    responseMessage)
+            }
+
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Log.e("DEJAVOO", "Invalid JSON: ${toJson}")
+        }
+    }
+
+
+
 
     private fun makeDejavooCaptureRequestForPreAuth() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
@@ -6585,12 +6798,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //
 
             try {
-                val preAuthData = paymentviewModel.preAuthData
+                if (!customerDetails?.isTokenized!!) {
+                    val preAuthData = paymentviewModel.preAuthData
 
-                if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty() ) {
-                    binding.llSavedCard.visibility = View.VISIBLE
+                    if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty()) {
+                        binding.llSavedCard.visibility = View.VISIBLE
+                    } else {
+                        binding.llSavedCard.visibility = View.GONE
+                    }
                 } else {
-                    binding.llSavedCard.visibility = View.GONE
+                    binding.llSavedCard.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 binding.llSavedCard.visibility = View.GONE

@@ -141,7 +141,12 @@ data class GetOrderDetailsResponse(
             @SerializedName("same_as_billing_address")
             val same_as_billing_address: Boolean?,
             @SerializedName("final_reward")
-            val final_reward: Int? = 0
+            val final_reward: Int? = 0,
+            @SerializedName("is_tokenized")
+            val isTokenized: Boolean = false,
+            @SerializedName("card_token")
+            val cardToken: String = "",
+
         ) : Parcelable {
             @Parcelize
             data class Addresse(
