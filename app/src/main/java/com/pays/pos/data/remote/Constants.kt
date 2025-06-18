@@ -489,7 +489,8 @@ object Constants {
     const val KIOSK_OPEN_ORDER = "KioskOpenorder"
     const val PHONE_ORDER_TAB = "PhoneOrder"
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
-    const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
+
+    const val THIRD_PARTY_ORDER_TAB = /*"OnlineOrder"*/ "ThirdPartyOrder"
     const val taxListDynamic = "taxListDynamic"
     const val discountType = "discountType"
     const val discountSelectedValue = "discountSelectedValue"

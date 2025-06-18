@@ -616,7 +616,7 @@ class AllOrdersListingFragment(
                     }
 
                     Status.LOADING -> {
-//                        ProgressUtils.showProgressDialog(requireActivity())
+                        ProgressUtils.showProgressDialog(requireActivity())
                     }
                 }
             }
@@ -897,38 +897,34 @@ class AllOrdersListingFragment(
 
         try {
             runBlocking {
-                val res =
-                    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) { dashboardViewModel.getAllOrderTypes() }
+                val res = withContext(CoroutineScope(Dispatchers.IO).coroutineContext) { dashboardViewModel.getAllOrderTypes() }
 
                 if (orderTabTypeId.isNotEmpty()) {
-                    val relevantOrders =
-                        res.filter { it.orderType == ONLINE_ORDER_TAB || it.orderType == THIRD_PARTY_ORDER_TAB }
-                    val found = relevantOrders.find { it.id == orderTabTypeId.toInt() }
 
-                    val activeOpenOrdersType =
-                        res.filter { it.orderType == KIOSK_OPEN_ORDER || it.orderType == OPEN_ORDER_TAB }
-                    val foundActiveOpenOrdersType = activeOpenOrdersType.find { it.id == orderTabTypeId.toInt() }
-
-                    if (found != null) {
-                        val listIds =
-                            relevantOrders.joinToString(separator = ",") { it.id.toString() }
-                        orderTabTypeId = "[$listIds]"
+                    if (orderTab == ONLINE_ORDER_TAB || orderTab == "OnlineOrder") {
+                        val relevantOrders = res.filter { it.orderType == ONLINE_ORDER_TAB || it.orderType == "OnlineOrder" }
+                            .joinToString(separator = ",") { it.id.toString() }
+                        orderTabTypeId = "[$relevantOrders]"
                     }
 
-                    if (foundActiveOpenOrdersType != null) {
-                        val listIds =
-                            activeOpenOrdersType.joinToString(separator = ",") { it.id.toString() }
-                        orderTabTypeId = "[$listIds]"
+                    if (orderTab == KIOSK_OPEN_ORDER || orderTab == OPEN_ORDER_TAB) {
+                        val activeOpenOrdersType = res.filter { it.orderType == KIOSK_OPEN_ORDER || it.orderType == OPEN_ORDER_TAB }
+                            .joinToString(separator = ",") { it.id.toString() }
+                        orderTabTypeId = "[$activeOpenOrdersType]"
                     }
-                } else {
+
+                    if (orderTab == THIRD_PARTY_ORDER_TAB) {
+                        val thirdPartyOrderId = res.find { it.orderType == THIRD_PARTY_ORDER_TAB }
+                        orderTabTypeId = "[${thirdPartyOrderId?.id.toString()}]"
+                        paymentStatus = "Paid"
+                    }
+
                     if (orderTab == PHONE_ORDER_TAB) {
                         val phoneOrderId = res.find { it.orderType == PHONE_ORDER_TAB }
-                        orderTabTypeId = phoneOrderId?.id.toString()
+                        orderTabTypeId = "[${phoneOrderId?.id.toString()}]"
                     }
                 }
             }
-
-
 
             viewModel.getAllOrders(
                 viewModel.startDate.value.toString(),
@@ -937,7 +933,6 @@ class AllOrdersListingFragment(
                 paymentStatus,
                 orderTabTypeId
             ).observe(viewLifecycleOwner) { it ->
-
 
                 Log.d("08JUNE23", "getAllOrders response: CALLED")
                 it?.let { resource ->
@@ -1003,6 +998,7 @@ class AllOrdersListingFragment(
                 }
             }
         } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -1338,25 +1334,17 @@ class AllOrdersListingFragment(
                 //currentPage = 1
                 myCalendar = Calendar.getInstance()
                 myCalendar.add(Calendar.DATE, 0)
-                Log.d(
-                    TAG,
-                    "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH)
-                )
+                Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH))
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.MONTH))
-                Log.d(
-                    TAG, "startDatePickerObserver: " + myCalendar
-                        .get(Calendar.YEAR)
-                )
+                Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.YEAR))
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.time)
-                var datePickerDialog: DatePickerDialog = DatePickerDialog(
+                val datePickerDialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
-                    myCalendar
-                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.YEAR),
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
-
                 )
                 datePickerDialog.show()
                 if (orderStatus == "4") {
@@ -1381,15 +1369,13 @@ class AllOrdersListingFragment(
                     myCalendar1 = Calendar.getInstance()
                     myCalendar1.add(Calendar.DATE, 7)
                 }
-                var datePickerDialog: DatePickerDialog = DatePickerDialog(
+                val datePickerDialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
-                    myCalendar1
-                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.YEAR),
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
-
                 )
                 if (orderStatus == "4") {
 //                    datePickerDialog.datePicker.minDate = Date().time
@@ -1406,9 +1392,7 @@ class AllOrdersListingFragment(
 
         binding.rvOpenOrder.addItemDecoration(
             DividerItemDecoration(
-                context,
-                LinearLayoutManager.VERTICAL
-            )
+                context, LinearLayoutManager.VERTICAL)
         )
 
         adapter = AllOrderAdapter(requireContext(), prefProvider)
@@ -1475,70 +1459,65 @@ class AllOrdersListingFragment(
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
-
                         ordersViewModel.changeTabPosition.value = 2
                     }
                     this.negativeButton("NO") {
                     }
+                }
+            }
 
+            "ReadyForPickup" -> {
+                alert("", "Are you sure, you want to ready for pickup this order ?") {
+                    this.positiveButton("YES") {
+                        updateOrder(adapter.filterList[0].id, status)
+                        ordersViewModel.changeTabPosition.value = 2
+                    }
+                    this.negativeButton("NO") {
+                    }
                 }
             }
 
             "rejected" -> {
 
                 if ((orderTab == ALL_ORDER_TAB || orderTab == ONLINE_ORDER_TAB)
-                    && ((adapter.orderList[pos].orderType == ONLINE_ORDER_TAB) || (adapter.orderList[pos].orderType == THIRD_PARTY_ORDER_TAB))
-                ) {
+                    && (adapter.orderList[pos].orderType == ONLINE_ORDER_TAB)
+                    || (adapter.orderList[pos].orderType == "OnlineOrder")) {
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
                             removedPos = order.id
-                            var employeeIdtemp =
-                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                            var terminal_id =
-                                prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-                            var orderItemRefundsAttributesList =
-                                ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
-                            adapter.orderList[pos].orderItems.forEach { item ->
-                                val orderItemRefundsAttributeModel =
-                                    RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+                            val employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                            val terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                            val orderItemRefundsAttributesList = ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
 
+                            adapter.orderList[pos].orderItems.forEach { item ->
+                                val orderItemRefundsAttributeModel = RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
                                 orderItemRefundsAttributeModel.amount = item.totalPrice
                                 orderItemRefundsAttributeModel.employeeId = employeeIdtemp
                                 orderItemRefundsAttributeModel.orderId = item.orderId
                                 orderItemRefundsAttributeModel.refundType = 0
-                                orderItemRefundsAttributeModel.paymentId =
-                                    adapter.orderList[pos].payments[0].id
+                                orderItemRefundsAttributeModel.paymentId = adapter.orderList[pos].payments[0].id
                                 orderItemRefundsAttributeModel.orderItemId = item.id
                                 orderItemRefundsAttributeModel.quantity = item.quantity
-                                orderItemRefundsAttributesList.add(
-                                    orderItemRefundsAttributeModel
-                                )
+                                orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
                             }
 
                             refundData = RefundRequestModelOnlineOrder().apply {
-                                paymentRefund =
-                                    RefundRequestModelOnlineOrder.PaymentRefund().apply {
-                                        amount =
-                                            adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
-                                        orderId = adapter.orderList[pos].id
-                                        paymentId = adapter.orderList[pos].payments[0].id
-                                        employeeId = employeeIdtemp
-                                        taxRefunded =
-                                            adapter.orderList[pos].payments[0].taxAmount
-                                        tipsRefunded =
-                                            adapter.orderList[pos].payments[0].tips
-                                        terminalId = terminal_id
-                                        serviceChargeRefunded =
-                                            adapter.orderList[pos].payments[0].serviceChargeAmount
-                                        cash_discount_or_surcharge_refunded =
-                                            adapter.orderList[pos].payments[0].cashDiscount
-                                        subtotal_refunded =
-                                            adapter.orderList[pos].payments[0].subTotal
-                                        orderItemRefundsAttributes =
-                                            orderItemRefundsAttributesList
-                                    }
+                                paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                                    amount = adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                                    orderId = adapter.orderList[pos].id
+                                    paymentId = adapter.orderList[pos].payments[0].id
+                                    employeeId = employeeIdtemp
+                                    taxRefunded = adapter.orderList[pos].payments[0].taxAmount
+                                    tipsRefunded = adapter.orderList[pos].payments[0].tips
+                                    terminalId = terminal_id
+                                    serviceChargeRefunded = adapter.orderList[pos].payments[0].serviceChargeAmount
+                                    cash_discount_or_surcharge_refunded = adapter.orderList[pos].payments[0].cashDiscount
+                                    subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
+                                    orderItemRefundsAttributes = orderItemRefundsAttributesList
+                                }
                             }
+
                             val bundle = Bundle().apply {
                                 putParcelable("refundData", refundData)
                                 putDouble(
@@ -1561,7 +1540,6 @@ class AllOrdersListingFragment(
                             }
                             bundle.putString("isFrom", "rejectOnlineOrder")
 
-
                             val cancelOnlineWebOrderModel = CancelOnlineWebOrderModel(
                                 0,
                                 adapter.filterList[pos].id,
@@ -1569,9 +1547,7 @@ class AllOrdersListingFragment(
                                 isRefunded = false
                             )
 
-                            onlineDetailViewModel.cancelOnlineWebOrderLiveData.value =
-                                cancelOnlineWebOrderModel
-
+                            onlineDetailViewModel.cancelOnlineWebOrderLiveData.value = cancelOnlineWebOrderModel
 
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
                                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
@@ -1589,6 +1565,7 @@ class AllOrdersListingFragment(
                                 }
                             }
                         }
+
                         this.negativeButton("NO") {
                         }
 
@@ -1599,21 +1576,14 @@ class AllOrdersListingFragment(
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
-                            removedPos = pos
-                            acceptedAndDeclineOrder(
-                                order.payments.get(0).pax_data,
-                                0,
-                                adapter.filterList[pos].id,
-                                false
-                            )
+                            makeAcceptedDeclinedServerCall(0, adapter.orderList[pos].id, false)
                         }
+
                         this.negativeButton("NO") {
                         }
 
                     }
                 }
-
-
             }
 
             "UPDATE" -> {
@@ -1739,7 +1709,7 @@ class AllOrdersListingFragment(
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
-                
+
                 updatedCartModel.discountId = order.discountId
                 /*---------------BIS-4189---------------*/
                 if (updatedCartModel.discountSelectdValue.isNaN()){
@@ -2343,7 +2313,7 @@ class AllOrdersListingFragment(
             "CANCEL" -> {//cancel order
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
 
-                   var data:OnlineOrderResponseModel.Data = adapter.getItem(pos)
+                    var data:OnlineOrderResponseModel.Data = adapter.getItem(pos)
                     val bundle = Bundle().apply {
                         /* putParcelable("refundData", refundData)
                          putDouble("refundAmount", subTotalPrice)*/
@@ -2400,15 +2370,9 @@ class AllOrdersListingFragment(
                                 if (it.customerStatus) {
                                     initPrinter(it, Constants.CUSTOMER, order, type)
                                 }
-
-
                             }
                         }
-
-
                     }
-
-
                 }
 
                 Status.ERROR -> {
@@ -5706,28 +5670,15 @@ class AllOrdersListingFragment(
     // To get connected kitchen printers
     private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data,isCancelOrder:Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
-            var it = viewModel.getKitchenPrinterList()
+            val it = viewModel.getKitchenPrinterList()
 
             if (isPrint) {
 
                 isPrint = false
-                it?.forEach {
-                    if (it.kitchenStatus && checkItemsforPrinterOnlineOrder(
-                            data.orderItems, it.printerCategories.toCollection(
-                                arrayListOf()
-                            )
-                        )
-                    ) {
-
+                it.forEach {
+                    if (it.kitchenStatus && checkItemsforPrinterOnlineOrder(data.orderItems, it.printerCategories.toCollection(arrayListOf()))) {
                         Log.d("getKitchenPrinterList", "getKitchenPrinterList mmm")
-
-                        initKitchenPrinter(
-                            it,
-                            Constants.KITCHEN,
-                            data,
-                            isCancelOrder
-                        )
-
+                        initKitchenPrinter(it, Constants.KITCHEN, data, isCancelOrder)
                     }
                 }
             }
@@ -5826,18 +5777,15 @@ class AllOrdersListingFragment(
                             orderData.orderType.equals("OnlineOrder", true)) &&
                     orderData.deliveryType != null
                 ) {
-
                     appendText(orderData?.deliveryType.toString())
                     lineFeed(2)
                 }
-
             }
 
             if (kitchenSettingModel.showTeamMember) {
                 appendText("Employee:" + orderData?.employee?.name)
                 lineFeed(2)
             }
-
 
             appendText(Constants.getReceiptFormatDateFromUTCServer(
                 requireContext(),
@@ -5850,7 +5798,7 @@ class AllOrdersListingFragment(
             setAlignment(0)
 
 
-            for (i in 0 until orderData?.orderItems.size){
+            for (i in 0 until orderData?.orderItems.size) {
                 data.printerCategories.toCollection(arrayListOf()).forEach {
                     if (it.id == orderData?.orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
                         val obj = orderData?.orderItems.get(i)
@@ -5872,84 +5820,73 @@ class AllOrdersListingFragment(
 
                                     lineFeed(1)
                                 }
-
                             }
 
-
-                            if (obj.note.isNotEmpty()) {
-
+                            if (obj.note.isNotEmpty() || obj.note.isNotBlank()) {
                                 appendText("  Note:" + obj.note)
                                 lineFeed(1)
                             }
                         }
                     }
 
-
-
-
-                }
-
-
-            }
-
-             if (orderData?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-                 lineFeed(2)
-                setAlignment(1)
-                 appendText("Order Note")
-                 lineFeed(1)
-                 appendText(orderData.note)
-                 lineFeed(2)
-
-
-             }
-
-            lineFeed(1)
-
-            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
-
-                try{
-
-                    if (orderData?.customer != null){
-
-                        setAlignment(0)
-                        appendText("Customer Details")
+                    if (orderData.note.isNotEmpty() && kitchenSettingModel.showOrderNote) {
+                        lineFeed(2)
+                        setAlignment(1)
+                        appendText("Order Note")
                         lineFeed(1)
-                        appendText("------------------------")
-                        lineFeed(1)
-                        if (kitchenSettingModel.showCustomerName) {
+                        appendText(orderData.note)
+                        lineFeed(2)
 
 
-                            appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
-                            lineFeed(1)
-                        }
-                        try{
-                            if (kitchenSettingModel.showCustomerPhone) {
+                    }
 
-                                if (orderData?.customer?.phones?.isNotEmpty()) {
+                    lineFeed(1)
 
-                                    orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                        appendText(
-                                            MethodUtils.formatPhoneNumber(it)
-                                        )
-                                        lineFeed(1)
-                                    }
+                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
+
+                        try {
+
+                            if (orderData?.customer != null) {
+
+                                setAlignment(0)
+                                appendText("Customer Details")
+                                lineFeed(1)
+                                appendText("------------------------")
+                                lineFeed(1)
+                                if (kitchenSettingModel.showCustomerName) {
+
+
+                                    appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
+                                    lineFeed(1)
                                 }
-                            }
-                        }catch (e:Exception){
+                                try {
+                                    if (kitchenSettingModel.showCustomerPhone) {
 
-                        }
+                                        if (orderData?.customer?.phones?.isNotEmpty()) {
 
-                        try{
-                            if (kitchenSettingModel.showCustomerAddress) {
+                                            orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                                appendText(
+                                                    MethodUtils.formatPhoneNumber(it)
+                                                )
+                                                lineFeed(1)
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
 
-                                if (orderData?.orderType.trim()
-                                        .lowercase() == "Open Order".trim()
-                                        .lowercase() && orderData?.deliveryType.trim()
-                                        .lowercase() == "Pickup".trim()
-                                        .lowercase()
-                                ) {
+                                }
 
-                                } else if (orderData?.customer?.addresses?.isNotEmpty()) {
+                                try {
+                                    if (kitchenSettingModel.showCustomerAddress) {
+
+                                        if (orderData?.orderType.trim()
+                                                .lowercase() == "Open Order".trim()
+                                                .lowercase() && orderData?.deliveryType.trim()
+                                                .lowercase() == "Pickup".trim()
+                                                .lowercase()
+                                        ) {
+
+                                        } else if (orderData?.customer?.addresses?.isNotEmpty()) {
 
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -5959,57 +5896,57 @@ class AllOrdersListingFragment(
 //                            }
 
 //                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                        ?.forEach {
+                                            orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                                ?.forEach {
 
-                                            if (it.typeOfAddress.equals(
-                                                    SHIPPING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                appendText(
-                                                    it.fullAddress
-                                                )
-                                                lineFeed(1)
-                                            }
+                                                    if (it.typeOfAddress.equals(
+                                                            SHIPPING_ADDRESS,
+                                                            ignoreCase = true
+                                                        )
+                                                    ) {
+                                                        appendText(
+                                                            it.fullAddress
+                                                        )
+                                                        lineFeed(1)
+                                                    }
+                                                }
+
+
                                         }
-
+                                    }
+                                } catch (e: Exception) {
 
                                 }
+
                             }
-                        }catch (e:Exception){
 
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-
                     }
 
-                }
-                catch (e:Exception){
-                    e.printStackTrace()
+
+
+
+                    lineFeed(6)
+                    cutPaper(true)
+
+
+
+                    Log.e(TAG, "PushContent ${data.ipAddress}")
+                    Log.e(
+                        "checkKey", "pushContent: checkSN:${data.ipAddress} ${
+                            pushContent(
+                                trade_no =
+                                String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                                "${data.ipAddress}", 1, 1, "您有新的订单", 0
+                            )
+                        }"
+                    )
                 }
             }
-
-
-
-
-            lineFeed(6)
-            cutPaper(true)
-
-
-
-            Log.e(TAG,"PushContent ${data.ipAddress}")
-            Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
-            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
-                "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
-
-
-
-        }
-        else {
-
-
+        } else {
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
-
                 try {
                     SunmiPrinterApi.getInstance()
                         .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
@@ -6597,12 +6534,8 @@ class AllOrdersListingFragment(
                 printKitchenFromLandiInner(data, orderData)
             } else {
 
-                if (!data.name.substring(0, 6).toString().lowercase()
-                        .contains("TM-m".lowercase())
-                ) {
-                    var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
-                            .contains("TM-m".lowercase())
-                    ) {
+                if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
+                    val mPrinter = if (data.name.substring(0, 6).lowercase().contains("TM-m".lowercase())) {
                         Log.e(TAG, "YesContains")
                         Printer(
                             Printer.TM_M30,
@@ -6702,8 +6635,6 @@ class AllOrdersListingFragment(
             }
 
         }
-
-
     }
 
     interface OnBluetoothPermissionGranted {
@@ -6836,16 +6767,11 @@ class AllOrdersListingFragment(
 //                                        PrintSunmiUtils.normalText("\n")
 //                                    }
 
-                                    receiptModel?.orderItems?.let {
-
-                                        addOrdersForKitchenOnlineOrderLandi(
-                                            it,
-                                            kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()),
-                                            LPrint
-                                        )
+                                    receiptModel.orderItems.let {
+                                        addOrdersForKitchenOnlineOrderLandi(it, kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()), LPrint)
                                     }
 
-                                    if (receiptModel?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                                    if (receiptModel.note.isNotEmpty() && kitchenSettingModel.showOrderNote) {
 
                                         lineBreak()
                                         printCenter("Order Note",isBold = true,
@@ -6883,17 +6809,15 @@ class AllOrdersListingFragment(
                                                 try{
                                                     if (kitchenSettingModel.showCustomerPhone) {
 
-                                                        if (receiptModel?.customer?.phones?.isNotEmpty()) {
+                                                        if (receiptModel.customer.phones.isNotEmpty()) {
 
-                                                            receiptModel?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                                                printLeft(
-                                                                    MethodUtils.formatPhoneNumber(it), isBold = true, fontSize = FONT_SIZE_5X
-                                                                )
+                                                            receiptModel.customer.phones.get(0).phoneNumber.let {
+                                                                printLeft(MethodUtils.formatPhoneNumber(it), isBold = true, fontSize = FONT_SIZE_5X)
                                                             }
                                                         }
                                                     }
-                                                }catch (e:Exception){
-
+                                                } catch (e:Exception) {
+                                                    e.printStackTrace()
                                                 }
 
                                                 lineBreak()
@@ -6901,9 +6825,9 @@ class AllOrdersListingFragment(
                                                 try{
                                                     if (kitchenSettingModel.showCustomerAddress) {
 
-                                                        if (receiptModel?.orderType.trim()
+                                                        if (receiptModel.orderType.trim()
                                                                 .lowercase() == "Open Order".trim()
-                                                                .lowercase() && receiptModel?.deliveryType.trim()
+                                                                .lowercase() && receiptModel.deliveryType.trim()
                                                                 .lowercase() == "Pickup".trim()
                                                                 .lowercase()
                                                         ) {

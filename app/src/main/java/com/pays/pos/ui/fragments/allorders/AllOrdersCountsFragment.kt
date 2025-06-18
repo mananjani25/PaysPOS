@@ -37,7 +37,6 @@ import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.TAG
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.statusUtils.Status
@@ -63,10 +62,12 @@ class AllOrdersCountsFragment : Fragment() {
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     private var ongoingOrderCount: Int? = 0
+    private var readyForPickupCount: Int? = 0
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
     private var completedOrdersCount: Int? = 0
     private var upcomingOrderCount: Int? = 0
+    private val TAG = "AllOrdersCountsFragment"
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -100,8 +101,8 @@ class AllOrdersCountsFragment : Fragment() {
     ): View {
         binding = FragmentAllOrdersCountsBinding.inflate(inflater, container, false)
         Log.d(TAG, "onCreateView: CURRENT POS = $tabPosition")
-        requireContext().registerReceiver(broadcastReceiver, IntentFilter("allOrderCounts"));
-        requireContext().registerReceiver(cancelledBroadcastReceiver, IntentFilter("cancelled"));
+        requireContext().registerReceiver(broadcastReceiver, IntentFilter("allOrderCounts"))
+        requireContext().registerReceiver(cancelledBroadcastReceiver, IntentFilter("cancelled"))
         binding.commonToolbar.root.gone()
         getAllOrderCounts(viewModel.startDate.value, viewModel.endDate.value)
 
@@ -109,12 +110,7 @@ class AllOrdersCountsFragment : Fragment() {
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                dineInViewModel
+                display, requireContext(), viewLifecycleOwner, dashboardViewModel, passcodeViewModel, dineInViewModel
 
             )
         }
@@ -144,14 +140,14 @@ class AllOrdersCountsFragment : Fragment() {
         requireContext().unregisterReceiver(cancelledBroadcastReceiver)
     }
 
-    private fun addObservers(){
+    private fun addObservers() {
 
         /**
          * 0 = Pending orders , 1 = InProgress orders , 2 = Completed , 3 = Cancelled / Rejected
          */
 
-        ordersViewModel.changeTabPosition.observe(viewLifecycleOwner){
-            if(it != -1){
+        ordersViewModel.changeTabPosition.observe(viewLifecycleOwner) {
+            if (it != -1) {
 //                ORDER_TAB = THIRD_PARTY_ORDER_TAB
 //                changePosition(it)
             }
@@ -162,7 +158,7 @@ class AllOrdersCountsFragment : Fragment() {
         }
 
 
-        dashboardViewModel.refreshLiveData.observe(viewLifecycleOwner){
+        dashboardViewModel.refreshLiveData.observe(viewLifecycleOwner) {
 
             Log.d("08JUNE23", "onReceive: CALLED REFRESH")
         }
@@ -226,7 +222,7 @@ class AllOrdersCountsFragment : Fragment() {
 //            getAllOrderCounts(startDate, endDate)
 
             var position = intent?.getIntExtra("position", 0) ?: 0
-            if(tabPosition == ALL_ORDER_TAB_POS){
+            if (tabPosition == ALL_ORDER_TAB_POS) {
                 position = 3 //For cancelled in all orders otherwise 2
             }
             changePosition(position)
@@ -290,113 +286,100 @@ class AllOrdersCountsFragment : Fragment() {
 
 
                             when (ORDER_TAB) {
+
                                 ALL_ORDER_TAB -> {
-                                    pendingOrdersCount = it.data?.data?.all_orders?.pending ?: 0
-                                    ongoingOrderCount = it.data?.data?.all_orders?.in_progress ?: 0
-                                    completedOrdersCount = it.data?.data?.all_orders?.completed ?: 0
-                                    cancelledOrdersCount = it.data?.data?.all_orders?.rejected ?: 0
-                                    upcomingOrderCount = it.data?.data?.all_orders?.upcoming ?: 0
+                                    pendingOrdersCount = it.data?.data?.allOrders?.pending ?: 0
+                                    ongoingOrderCount = it.data?.data?.allOrders?.inProgress ?: 0
+                                    completedOrdersCount = it.data?.data?.allOrders?.completed ?: 0
+                                    cancelledOrdersCount = it.data?.data?.allOrders?.rejected ?: 0
+                                    upcomingOrderCount = it.data?.data?.allOrders?.upcoming ?: 0
                                 }
 
                                 OPEN_ORDER_TAB -> {
-                                    pendingOrdersCount = it.data?.data?.open_orders?.active ?: 0
+                                    pendingOrdersCount = it.data?.data?.openOrders?.active ?: 0
                                     ongoingOrderCount = 0
-                                    completedOrdersCount =
-                                        it.data?.data?.open_orders?.completed ?: 0
-                                    cancelledOrdersCount =
-                                        it.data?.data?.open_orders?.cancelled ?: 0
+                                    completedOrdersCount = it.data?.data?.openOrders?.completed ?: 0
+                                    cancelledOrdersCount = it.data?.data?.openOrders?.cancelled ?: 0
                                     upcomingOrderCount = 0
                                 }
 
                                 PHONE_ORDER_TAB -> {
-                                    pendingOrdersCount = it.data?.data?.phone_orders?.active ?: 0
+                                    pendingOrdersCount = it.data?.data?.phoneOrders?.active ?: 0
                                     ongoingOrderCount = 0
-                                    completedOrdersCount =
-                                        it.data?.data?.phone_orders?.completed ?: 0
-                                    cancelledOrdersCount =
-                                        it.data?.data?.phone_orders?.cancelled ?: 0
+                                    completedOrdersCount = it.data?.data?.phoneOrders?.completed ?: 0
+                                    cancelledOrdersCount = it.data?.data?.phoneOrders?.cancelled ?: 0
                                     upcomingOrderCount = 0
                                 }
 
-//                                ONLINE_ORDER_TAB -> {
-//                                    pendingOrdersCount = it.data?.data?.web_orders?.pending ?: 0
-//                                    ongoingOrderCount = it.data?.data?.web_orders?.in_progress ?: 0
-//                                    completedOrdersCount = it.data?.data?.web_orders?.completed ?: 0
-//                                    cancelledOrdersCount = it.data?.data?.web_orders?.rejected ?: 0
-//                                    upcomingOrderCount = it.data?.data?.web_orders?.upcoming ?: 0
-//                                }
-//
-//                                THIRD_PARTY_ORDER_TAB -> {
-//                                    pendingOrdersCount =
-//                                        it.data?.data?.third_party_online_orders?.pending ?: 0
-//                                    ongoingOrderCount =
-//                                        it.data?.data?.third_party_online_orders?.in_progress ?: 0
-//                                    completedOrdersCount =
-//                                        it.data?.data?.third_party_online_orders?.completed ?: 0
-//                                    cancelledOrdersCount =
-//                                        it.data?.data?.third_party_online_orders?.rejected ?: 0
-//                                    upcomingOrderCount =
-//                                        it.data?.data?.third_party_online_orders?.upcoming ?: 0
-//                                }
+                                ONLINE_ORDER_TAB -> {
+                                    pendingOrdersCount = it.data?.data?.webOrders?.pending ?: 0
+                                    ongoingOrderCount = it.data?.data?.webOrders?.inProgress ?: 0
+                                    completedOrdersCount = it.data?.data?.webOrders?.completed ?: 0
+                                    cancelledOrdersCount = it.data?.data?.webOrders?.rejected ?: 0
+                                    upcomingOrderCount = it.data?.data?.webOrders?.upcoming ?: 0
+                                }
+
+                                THIRD_PARTY_ORDER_TAB -> {
+                                    pendingOrdersCount = it.data?.data?.thirdPartyOnlineOrders?.pending ?: 0
+                                    ongoingOrderCount = it.data?.data?.thirdPartyOnlineOrders?.inProgress ?: 0
+                                    readyForPickupCount = it.data?.data?.thirdPartyOnlineOrders?.readyForPickup ?: 0
+                                    completedOrdersCount = it.data?.data?.thirdPartyOnlineOrders?.completed ?: 0
+                                    cancelledOrdersCount = it.data?.data?.thirdPartyOnlineOrders?.rejected ?: 0
+                                    upcomingOrderCount = it.data?.data?.thirdPartyOnlineOrders?.upcoming ?: 0
+                                }
 
                                 // Added to reflect order count of online order and web order combine
 
-                                ONLINE_ORDER_TAB,
-                                THIRD_PARTY_ORDER_TAB -> {
-                                    var orderOl = 0
-                                    var orderWeb = 0
-
-                                    // combine pending order
-                                    orderOl = it.data?.data?.web_orders?.pending ?: 0
-                                    orderWeb = it.data?.data?.third_party_online_orders?.pending ?: 0
-
-                                    pendingOrdersCount = orderOl+orderWeb
-
-                                    //combine in progress order
-                                    orderOl = it.data?.data?.web_orders?.in_progress ?: 0
-                                    orderWeb = it.data?.data?.third_party_online_orders?.in_progress ?: 0
-
-                                    ongoingOrderCount = orderOl+orderWeb
-
-                                    //combine  completed order
-                                    orderOl = it.data?.data?.web_orders?.completed ?: 0
-                                    orderWeb = it.data?.data?.third_party_online_orders?.completed ?: 0
-
-                                    completedOrdersCount = orderOl+orderWeb
-
-                                    //combine rejected order
-                                    orderOl = it.data?.data?.web_orders?.rejected ?: 0
-                                    orderWeb = it.data?.data?.third_party_online_orders?.rejected ?: 0
-
-                                    cancelledOrdersCount = orderOl+orderWeb
-
-                                    //combine upcoming order
-                                    orderOl = it.data?.data?.web_orders?.upcoming ?: 0
-                                    orderWeb = it.data?.data?.third_party_online_orders?.upcoming ?: 0
-
-                                    upcomingOrderCount = orderOl+orderWeb
-                                }
+//                                ONLINE_ORDER_TAB,
+//                                THIRD_PARTY_ORDER_TAB -> {
+//                                    var orderOl = 0
+//                                    var orderWeb = 0
+//
+//                                    // combine pending order
+//                                    orderOl = it.data?.data?.webOrders?.pending ?: 0
+//                                    orderWeb = it.data?.data?.thirdPartyOnlineOrders?.pending ?: 0
+//
+//                                    pendingOrdersCount = orderOl+orderWeb
+//
+//                                    //combine in progress order
+//                                    orderOl = it.data?.data?.webOrders?.inProgress ?: 0
+//                                    orderWeb = it.data?.data?.thirdPartyOnlineOrders?.inProgress ?: 0
+//
+//                                    ongoingOrderCount = orderOl+orderWeb
+//
+//                                    //combine  completed order
+//                                    orderOl = it.data?.data?.webOrders?.completed ?: 0
+//                                    orderWeb = it.data?.data?.thirdPartyOnlineOrders?.completed ?: 0
+//
+//                                    completedOrdersCount = orderOl+orderWeb
+//
+//                                    //combine rejected order
+//                                    orderOl = it.data?.data?.webOrders?.rejected ?: 0
+//                                    orderWeb = it.data?.data?.thirdPartyOnlineOrders?.rejected ?: 0
+//
+//                                    cancelledOrdersCount = orderOl+orderWeb
+//
+//                                    //combine upcoming order
+//                                    orderOl = it.data?.data?.webOrders?.upcoming ?: 0
+//                                    orderWeb = it.data?.data?.thirdPartyOnlineOrders?.upcoming ?: 0
+//
+//                                    upcomingOrderCount = orderOl+orderWeb
+//                                }
                             }
 
-                            val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
-                            val openOrdersPendingCount = it.data?.data?.open_orders?.active ?: 0
-                            val phoneOrdersPendingCount = it.data?.data?.phone_orders?.active ?: 0
-                            var webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
-                            var thirdPartyOrdersPendingCount =
-                                it.data?.data?.third_party_online_orders?.pending ?: 0
+                            val allOrdersPendingCount = it.data?.data?.allOrders?.pending ?: 0
+                            val openOrdersPendingCount = it.data?.data?.openOrders?.active ?: 0
+                            val phoneOrdersPendingCount = it.data?.data?.phoneOrders?.active ?: 0
+                            val webOrdersPendingCount = it.data?.data?.webOrders?.pending ?: 0
+                            val thirdPartyOrdersPendingCount = it.data?.data?.thirdPartyOnlineOrders?.all ?: 0
 
                             //Added to reflect order count of online order and web order combine
-                            webOrdersPendingCount += thirdPartyOrdersPendingCount
-                            thirdPartyOrdersPendingCount = webOrdersPendingCount
-
+//                            webOrdersPendingCount += thirdPartyOrdersPendingCount
+//                            thirdPartyOrdersPendingCount = webOrdersPendingCount
 
                             EventBus.getDefault().post(
                                 PendingCounts(
-                                    allOrdersPendingCount,
-                                    openOrdersPendingCount,
-                                    phoneOrdersPendingCount,
-                                    webOrdersPendingCount,
-                                    thirdPartyOrdersPendingCount
+                                    allOrdersPendingCount, openOrdersPendingCount, phoneOrdersPendingCount, webOrdersPendingCount, thirdPartyOrdersPendingCount
                                 )
                             )
 
@@ -427,80 +410,95 @@ class AllOrdersCountsFragment : Fragment() {
 
             when (position) {
                 0 -> {
-                    val activeOrders = AllOrdersListingFragment(
-                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val activeOrders = AllOrdersListingFragment("0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(activeOrders)
                 }
 
                 1 -> {
-                    val completedOrders = AllOrdersListingFragment(
-                        "1", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val completedOrders = AllOrdersListingFragment("1", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(completedOrders)
                 }
 
                 2 -> {
-                    val cancelledOrders = AllOrdersListingFragment(
-                        "2", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val cancelledOrders = AllOrdersListingFragment("2", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(cancelledOrders)
                 }
 
             }
 
-        } else {
-
+        } else if (tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
             when (position) {
                 0 -> {
-                    val activeOrders = AllOrdersListingFragment(
-                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val activeOrders = AllOrdersListingFragment("0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(activeOrders)
                 }
 
                 1 -> {
-                    val inProgressOrders = AllOrdersListingFragment(
-                        "1", "InProgress", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val inProgressOrders = AllOrdersListingFragment("1", "InProgress", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(inProgressOrders)
                 }
 
                 2 -> {
-                    val completedOrders = AllOrdersListingFragment(
-                        "2", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val completedOrders = AllOrdersListingFragment("2", "ReadyForPickup", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(completedOrders)
                 }
 
                 3 -> {
-                    val cancelledOrders = AllOrdersListingFragment(
-                        "3", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val cancelledOrders = AllOrdersListingFragment("3", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(cancelledOrders)
                 }
 
                 4 -> {
-                    val upcomingOrders = AllOrdersListingFragment(
-                        "4", "UpComing", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
-                    )
+                    val upcomingOrders = AllOrdersListingFragment("4", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
+                    loadFragment(upcomingOrders)
+                }
+
+                5 -> {
+                    val upcomingOrders = AllOrdersListingFragment("5", "UpComing", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
+                    loadFragment(upcomingOrders)
+                }
+            }
+        } else {
+
+            when (position) {
+                0 -> {
+                    val activeOrders = AllOrdersListingFragment("0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
+                    loadFragment(activeOrders)
+                }
+
+                1 -> {
+                    val inProgressOrders = AllOrdersListingFragment("1", "InProgress", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
+                    loadFragment(inProgressOrders)
+                }
+
+                2 -> {
+                    val completedOrders = AllOrdersListingFragment("2", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
+                    loadFragment(completedOrders)
+                }
+
+                3 -> {
+                    val cancelledOrders = AllOrdersListingFragment("3", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
+                    loadFragment(cancelledOrders)
+                }
+
+                4 -> {
+                    val upcomingOrders = AllOrdersListingFragment("4", "UpComing", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID)
                     loadFragment(upcomingOrders)
                 }
             }
         }
-
     }
 
     private fun loadFragment(frag: Fragment) {
-       try{
-           activity?.let {
-               val fm: FragmentManager = it.supportFragmentManager
-               fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
-           }
+        try {
+            activity?.let {
+                val fm: FragmentManager = it.supportFragmentManager
+                fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+            }
 
-       }catch (e:Exception){
+        } catch (e: Exception) {
             Log.e("AllOrdersCrashException", e.printStackTrace().toString())
-       }
+        }
     }
 
     private fun setAdapter(pos: Int) {
@@ -513,6 +511,11 @@ class AllOrdersCountsFragment : Fragment() {
         if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
             list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
+        } else if (tabPosition == THIRD_PARTY_ORDER_TAB_POS) {
+            list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
+            list.add(InventoryItemModel(0, "Ready For Pickup", readyForPickupCount, pos == 2))
+            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 3))
+            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 4))
         } else {
             list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
@@ -522,33 +525,29 @@ class AllOrdersCountsFragment : Fragment() {
             }
         }
 
-        binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(),
-            list,
-            false,
-            object : InventoryAdapter.InventoryListner {
-                override fun onItemSelect(position: Int) {
+        binding.recyclerViewItemsList.adapter = InventoryAdapter(requireContext(), list, false, object : InventoryAdapter.InventoryListner {
+            override fun onItemSelect(position: Int) {
 
-                    var cancelPosition = 0
+                var cancelPosition = 0
 
-                    cancelPosition =
-                        if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
-                            2
-                        } else {
-                            3
-                        }
-
-                    if (position == cancelPosition && rolePermission.hasCancelOrderPermission(
-                            binding.root
-                        )
-                    ) {
-                        changePosition(position)
-                    } else {
-                        changePosition(position)
-                    }
-
-                    LogUtil.logE(TAG, "position  $position")
+                cancelPosition = if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
+                    2
+                } else {
+                    3
                 }
-            })
+
+                if (position == cancelPosition && rolePermission.hasCancelOrderPermission(
+                        binding.root
+                    )
+                ) {
+                    changePosition(position)
+                } else {
+                    changePosition(position)
+                }
+
+                LogUtil.logE(TAG, "position  $position")
+            }
+        })
     }
 
 }

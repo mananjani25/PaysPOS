@@ -244,18 +244,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     fun onlineOrderBadgeDisplay(count: Int) {
-        if (count != null) {
-            if (count > 0) {
-                binding.layoutHeader.txtBadgeCount?.visible()
-                binding.layoutHeader.txtBadgeCount.blink()
-                binding.layoutHeader.txtBadgeCount?.text = count.toString()
-            } else {
-                binding.layoutHeader.txtBadgeCount.clearAnimation()
-                binding.layoutHeader.txtBadgeCount?.gone()
-            }
+        Log.d(TAG, "onlineOrderBadgeDisplay: $count")
+        if (count > 0) {
+            binding.layoutHeader.txtBadgeCount.visible()
+            binding.layoutHeader.txtBadgeCount.blink()
+            binding.layoutHeader.txtBadgeCount.text = count.toString()
         } else {
             binding.layoutHeader.txtBadgeCount.clearAnimation()
-            binding.layoutHeader.txtBadgeCount?.gone()
+            binding.layoutHeader.txtBadgeCount.gone()
         }
     }
 
@@ -732,7 +728,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Status.SUCCESS -> {
                         Log.d(TAG, "getAllOrderCounts: ${it.data?.data}")
 
-                        val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
+                        val allOrdersPendingCount = it.data?.data?.allOrders?.pending ?: 0
                         onlineOrderBadgeDisplay(allOrdersPendingCount)
 
                     }
