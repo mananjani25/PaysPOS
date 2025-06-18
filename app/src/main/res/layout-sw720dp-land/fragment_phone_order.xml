@@ -288,6 +288,22 @@
                         android:textSize="@dimen/_7mdpi" />
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/txtScheduleDateTime"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_square_border_grey"
+                    android:hint="@string/tv_schedule_date_and_time"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
+                    android:maxLength="20"
+                    android:padding="@dimen/_9sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"

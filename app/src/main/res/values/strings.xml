@@ -651,6 +651,7 @@
     <string name="tv_refunded_amount">Refunded Amount</string>
     <string name="tv_email_address">Email Address <font color='#ff6000'>*</font></string>
     <string name="tv_email_address_">Email Address</string>
+    <string name="tv_schedule_date_and_time">Schedule Date And Time</string>
     <string name="tv_birthday">Birthday <font color='#ff6000'>*</font></string>
     <string name="tv_birthday_">Birthday</string>
     <string name="tv_option_set">Option Set <font color='#ff6000'>*</font></string>

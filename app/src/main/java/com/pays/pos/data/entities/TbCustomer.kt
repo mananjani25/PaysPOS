@@ -32,7 +32,8 @@ data class TbCustomer(
     @SerializedName("phones") val phones: List<TbPhones> = listOf(),
     @TypeConverters(TypeConvertorAddress::class)
     @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
-    var isSelcted: Boolean = false
+    var isSelcted: Boolean = false,
+    var futureDataAndTime:String ?=""
 ) : Parcelable {
     companion object {
         fun customerMapping(customer: OpenOrderResponse.Data.Order.Customer): TbCustomer {
