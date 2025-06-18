@@ -24,6 +24,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -118,6 +121,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -2665,7 +2669,11 @@ class CustomDisplay(
                             }
 
                             Constants.DEJAVOO->{
-                                adjustDejavooTips()
+                                if (Regex("\\d+").find(mPaymentViewModel.extData)?.value?.length != 12) {
+                                    adjustDejavooTips()
+                                } else {
+                                    adjustDejavooTokenizedTips()
+                                }
                             }
 
                             else->{
@@ -3095,7 +3103,11 @@ class CustomDisplay(
                     }
 
                     Constants.DEJAVOO->{
-                        adjustDejavooTips()
+                        if (Regex("\\d+").find(mPaymentViewModel.extData)?.value?.length != 12) {
+                            adjustDejavooTips()
+                        } else {
+                            adjustDejavooTokenizedTips()
+                        }
                     }
 
                     else->{
@@ -3386,7 +3398,11 @@ class CustomDisplay(
                             }
 
                             Constants.DEJAVOO -> {
-                                adjustDejavooTips()
+                                if (Regex("\\d+").find(mPaymentViewModel.extData)?.value?.length != 12) {
+                                    adjustDejavooTips()
+                                } else {
+                                    adjustDejavooTokenizedTips()
+                                }
                             }
 
                             else -> {
@@ -3458,6 +3474,108 @@ class CustomDisplay(
             SunmiPrintHelper.getInstance().openCashBox()
         }
     }
+
+    private fun adjustDejavooTokenizedTips() {
+
+        val url: java.lang.StringBuilder =
+            if (!Constants.paymentLive)
+                StringBuilder("https://payment.ipospays.tech/api/v1/iposTransact")
+            else
+                StringBuilder("https://payment.ipospays.com/api/v1/iposTransact") //Place Live URL Here
+
+        val payload = JSONObject()
+        try {
+            val merchantAuthentication = JSONObject()
+            merchantAuthentication.put(
+                "merchantId",
+                prefProvider.getValue(Constants.DEJAVOO_TPN, "")
+            )
+            val transactionReferenceId = System.currentTimeMillis().toString().takeLast(7)
+            merchantAuthentication.put(
+                "transactionReferenceId",
+                transactionReferenceId
+            )
+
+            val transactionRequest = JSONObject()
+            transactionRequest.put("transactionType", 7)
+            transactionRequest.put("rrn", Regex("\\d+").find(mPaymentViewModel.extData)?.value ?: "")
+            transactionRequest.put("amount", (tippedAmount*100).toInt())
+
+            payload.put("merchantAuthentication", merchantAuthentication)
+            payload.put("transactionRequest", transactionRequest)
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        Log.d("DEJAVOO:", "payloadToDejavoo(): ${payload}")
+
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url.toString(),
+            payload,
+            com.android.volley.Response.Listener<JSONObject> { response ->
+                Log.d("DEJAVOO:", "onSuccessResponse(): ${response}")
+                onSuccess(Gson().toJson(response))
+
+                dismissProgressDialog()
+            },
+            com.android.volley.Response.ErrorListener { error -> // Handle the error
+                Log.d("DEJAVOO:", "onErrorResponse(): ${error}")
+                onFailure(Gson().toJson(error))
+                dismissProgressDialog()
+            }
+        ) {
+            override fun getHeaders(): Map<String, String> {
+                val headers: MutableMap<String, String> = HashMap()
+                headers["token"] = prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")
+                Log.d("DEJAVOO:", "getHeaders(): ${prefProvider.getValue(Constants.DEJAVOO_AUTH_TOKEN, "")}")
+//                  headers["accept"] = "application/json"
+//                   headers["content-type"] = "application/json"
+                return headers
+            }
+        }
+
+
+        val timeoutMs = 100000 // 10 seconds
+        val maxRetries = 1 // Number of retry attempts
+        val backoffMultiplier = 1.5f // Multiplier for backoff
+
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            timeoutMs,
+            maxRetries,
+            backoffMultiplier
+        )
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private fun onFailure(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+
+    }
+
+    private fun onSuccess(toJson: String?) {
+        val jsonObject = JSONObject(toJson ?: "")
+        val nameValuePair = jsonObject.optJSONObject("nameValuePairs")
+        val iposResponse = nameValuePair?.optJSONObject("iposhpresponse")
+        val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
+        val responseCode = nameValuePair1?.optString("responseCode")
+        val responseMessage = nameValuePair1?.optString("responseMessage")
+        if (responseCode?.toInt() == 200) {
+            dashBoardCategoryViewModel.processingTipForCard.postValue(false)
+            mPaymentViewModel.dejavooRefTxnId=null
+            callUpdateTip(mTransactionViewModel)
+        } else {
+            AlertUtils.showCustomAlert(
+                context,
+                responseMessage
+            )
+        }
+    }
+
 
     private fun adjustDejavooTips() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
