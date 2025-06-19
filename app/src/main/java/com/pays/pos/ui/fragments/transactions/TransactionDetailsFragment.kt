@@ -984,7 +984,7 @@ class TransactionDetailsFragment : Fragment() {
                         context = it.applicationContext,
                         valor,
                         onSuccess = { tResponse ->
-                            var transactionJsonResponse = Gson().fromJson(
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
                                 tResponse,
                                 ValorSuccessResponse::class.java
                             )

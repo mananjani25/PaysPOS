@@ -20,6 +20,7 @@ import com.pays.pos.R
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.model.responseModel.NoteResponse
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.databinding.DailogAddNoteBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.NotesListAdapter
@@ -214,6 +215,9 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             putParcelable("item", item)
             putBoolean("isOrderNote", isOrderNote)
             headerItemPosition?.let { putInt("headerPos", it) }
+            if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
+                dashBoardCategoryViewModel.isItemEditing = false
+            }
         }
 
         setFragmentResult("request_key_note", result)
