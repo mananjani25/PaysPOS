@@ -2096,9 +2096,13 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     tipsAdjusted = false
                     totalDiscount = totaldiscount / splitValue
                     order_id = orderId
-                    cash_discount_or_surcharge = divideCashDiscount / splitValue
                     total_cash_discount = divideCashDiscount / splitValue
                     cash_discount_type = cashDiscountType
+                    if (cashDiscountType == "CashDiscount") {
+                        cash_discount_or_surcharge = 0.0
+                    }else{
+                        cash_discount_or_surcharge = divideCashDiscount / splitValue
+                    }
                 }
                 return paymentReq
             } else {
