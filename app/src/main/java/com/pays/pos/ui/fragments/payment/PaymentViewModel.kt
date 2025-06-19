@@ -176,6 +176,15 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun submit(orderRequestModel: OrderRequestModel) {
+        Log.e(TAG,"checkOrderTypeName:  ${orderRequestModel.order.orderTypeName}")
+        Log.e(TAG,"checkOrderTypeNamePref:  ${prefProvider.getValue(Constants.ORDER_TYPE_NAME,"")}")
+
+        if (orderRequestModel.order.orderTypeName.equals("Phone Order",true) || prefProvider.getValue(Constants.ORDER_TYPE_NAME,"") == "Phone Order"){
+            orderRequestModel.order.futureDeliveryDate = prefProvider.getValue(Constants.SCHEDULED_DATE_AND_TIME,"")
+            if (prefProvider.getValue(Constants.SCHEDULED_DATE_AND_TIME,"").isNotEmpty()) {
+                orderRequestModel.order.orderStatus = "UpComing"
+            }
+        }
         Log.e(TAG, "checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
         if (orderRequestModel.order.deliveryType.equals("null")) {
             orderRequestModel.order.deliveryType = ""

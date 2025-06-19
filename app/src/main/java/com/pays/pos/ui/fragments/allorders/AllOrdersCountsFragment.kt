@@ -422,8 +422,9 @@ class AllOrdersCountsFragment : Fragment() {
 
     private fun changePosition(position: Int) {
         mPos = position
+        Log.e("checkPos","position ${tabPosition}")
 
-        if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
+        if (tabPosition == OPEN_ORDER_TAB_POS ) {
 
             when (position) {
                 0 -> {
@@ -447,9 +448,47 @@ class AllOrdersCountsFragment : Fragment() {
                     loadFragment(cancelledOrders)
                 }
 
+
+
             }
 
-        } else {
+        }
+      else  if ( tabPosition == PHONE_ORDER_TAB_POS) {
+
+            when (position) {
+                0 -> {
+                    val activeOrders = AllOrdersListingFragment(
+                        "0", "Pending", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(activeOrders)
+                }
+
+                1 -> {
+                    val completedOrders = AllOrdersListingFragment(
+                        "1", "Completed", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(completedOrders)
+                }
+
+                2 -> {
+                    val cancelledOrders = AllOrdersListingFragment(
+                        "2", "Rejected", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(cancelledOrders)
+                }
+
+                3->{
+
+                    val upcomingOrders = AllOrdersListingFragment(
+                        "4", "UpComing", startDate, endDate, ORDER_TAB, ORDER_TAB_TYPE_ID
+                    )
+                    loadFragment(upcomingOrders)
+                }
+
+            }
+
+        }
+        else {
 
             when (position) {
                 0 -> {
@@ -510,10 +549,17 @@ class AllOrdersCountsFragment : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
 
         list.add(InventoryItemModel(0, "Pending Orders", pendingOrdersCount, pos == 0))
-        if (tabPosition == OPEN_ORDER_TAB_POS || tabPosition == PHONE_ORDER_TAB_POS) {
+        if (tabPosition == OPEN_ORDER_TAB_POS ) {
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
             list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
-        } else {
+        }
+        else if (tabPosition == PHONE_ORDER_TAB_POS){
+
+            list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 1))
+            list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 2))
+            list.add(InventoryItemModel(0, "Upcoming", upcomingOrderCount, pos == 3))
+        }
+        else {
             list.add(InventoryItemModel(0, "InProgress Orders", ongoingOrderCount, pos == 1))
             list.add(InventoryItemModel(0, "Completed", completedOrdersCount, pos == 2))
             list.add(InventoryItemModel(0, "Cancelled ", cancelledOrdersCount, pos == 3))

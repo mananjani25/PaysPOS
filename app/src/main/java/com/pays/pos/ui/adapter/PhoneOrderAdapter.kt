@@ -2,6 +2,7 @@ package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -99,6 +100,7 @@ class PhoneOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
 
             binding.tvDeliveryType.text = item.deliveryType
+
 
             if (item.paymentStatus == "Cancelled" || item.paymentStatus == "Paid") {
 

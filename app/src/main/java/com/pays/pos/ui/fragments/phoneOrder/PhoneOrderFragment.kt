@@ -102,6 +102,7 @@ class PhoneOrderFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_phone_order, container, false)
         binding.lifecycleOwner = this
+        prefProvider?.setValue(Constants.SCHEDULED_DATE_AND_TIME,"")
         manageDeliveryTypeView()
         resultListener()
         placesClientInit()
@@ -213,6 +214,7 @@ class PhoneOrderFragment : Fragment() {
             showFutureDateTimePicker(requireContext(), onResult = {
                 Log.e(TAG,"checkDateResu  ${it}")
                 binding.txtScheduleDateTime.text = it
+                prefProvider?.setValue(Constants.SCHEDULED_DATE_AND_TIME,it)
             })
         }
 

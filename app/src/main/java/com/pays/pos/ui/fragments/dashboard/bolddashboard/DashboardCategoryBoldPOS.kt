@@ -5025,7 +5025,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                     }
                 } else {
-                    getKitchenPrinters(it, model)
+                    if (model?.orderTypeName.equals("Phone Order", true) && prefProvider.getValue(Constants.SCHEDULED_DATE_AND_TIME,"").isNotEmpty()) {
+
+                        prefProvider.getValue(Constants.SCHEDULED_DATE_AND_TIME,"")
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                    } else {
+                        getKitchenPrinters(it, model)
+                    }
                 }
 
                 viewModel.deleteCart()

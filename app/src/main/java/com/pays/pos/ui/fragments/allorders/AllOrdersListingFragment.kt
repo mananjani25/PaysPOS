@@ -930,12 +930,32 @@ class AllOrdersListingFragment(
 
 
 
+            var orderTypeId =""
+            if (orderTabTypeId != null && orderTabTypeId.isNotEmpty()){
+              orderTypeId =  "[${orderTabTypeId}]"
+            }
+            Log.e("checkOrderTypeTab","sfsf  ${orderTabTypeId}")
+            Log.e("checkOrderTypeTab","orderTAb  ${orderTab}")
+            Log.e("checkOrderTypeTab","orderStatus  ${orderStatus}")
+            var endDate = viewModel.endDate.value.toString()
+
+            if (orderTab == Constants.PHONE_ORDER_TAB && orderStatus == "4"){
+               endDate = addDaysToDate(endDate,23)
+                viewModel.endDate.value = endDate
+            }
+
+            binding.tvEndDate.text = endDate
+            Log.e("checkOrderTypeTab","endDate:  ${endDate}")
+
+
+
             viewModel.getAllOrders(
                 viewModel.startDate.value.toString(),
                 viewModel.endDate.value.toString(),
                 orderStatusLabel,
                 paymentStatus,
-                orderTabTypeId
+                orderTypeId
+
             ).observe(viewLifecycleOwner) { it ->
 
 
@@ -1039,12 +1059,21 @@ class AllOrdersListingFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         if (orderStatus == "4" || (endDateTime != null && SimpleDateFormat(
                 "MM/dd/yyyy", Locale.getDefault()
             ).parse(endDateTime).after(Calendar.getInstance().time))
         ) {
+            Log.e(TAG,"endDatePhoneOrder: ")
+            if (orderStatus == "4" && orderTab == PHONE_ORDER_TAB){
+
+            }
+            else{
+
+            }
             viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
         } else {
+
             viewModel.setCurrentDate(
                 Calendar.getInstance(), startDateTime, endDateTime, orderStatus
             )
@@ -9802,6 +9831,23 @@ class AllOrdersListingFragment(
     override fun onPause() {
         super.onPause()
         buttonClickHandler.removeCallbacks(buttonClickRunnable)
+    }
+
+
+    fun addDaysToDate(inputDate: String, daysToAdd: Int): String {
+        val inputFormat = SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault())
+
+        return try {
+            val date = inputFormat.parse(inputDate)
+            val calendar = Calendar.getInstance()
+            calendar.time = date!!
+            calendar.add(Calendar.DAY_OF_YEAR, daysToAdd)
+            outputFormat.format(calendar.time)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
     }
 
 }

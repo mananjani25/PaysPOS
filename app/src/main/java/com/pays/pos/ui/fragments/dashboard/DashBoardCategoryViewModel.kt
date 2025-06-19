@@ -7086,6 +7086,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun submit(orderRequestModel: OrderRequestModel) {
 
         _showProgress.value = Event(true)
+        Log.e("checkSubmit","${orderRequestModel.order.orderTypeName}")
 
         viewModelScope.launch {
             val resource: Resource<CreateOrderResponse> =
