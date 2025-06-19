@@ -7642,6 +7642,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             lineBreak()
                                         } else {
                                             printBoldLeft("Total                             _____________")
+                                            lineBreak()
                                         }
 
                                     }
@@ -12528,6 +12529,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             lineBreak()
                                         } else {
                                             printBoldLeft("Total                             _____________")
+                                            lineBreak()
                                         }
 
                                     }

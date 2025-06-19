@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_1sdp"
-                    android:layout_weight="1.2"
+                    android:layout_weight="1.3"
                     android:gravity="center">
 
 
@@ -101,29 +101,49 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:weightSum="2"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_gravity="center">
+                    android:layout_toStartOf="@+id/btnPay"
+                    android:paddingStart="@dimen/_2sdp">
 
-                    <TextView
-                        android:id="@+id/tokenIcon"
-                        android:layout_width="@dimen/_14sdp"
-                        android:layout_height="@dimen/_14sdp"
-                        android:background="@drawable/ic_credit_card"
-                        android:backgroundTint="@color/colorGreen"
-                        android:gravity="center"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_10mdpi"
-                        android:visibility="invisible"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginBottom="@dimen/_1ssp"
+                        android:orientation="vertical"
+                        android:layout_gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tokenIcon"
+                            android:layout_width="@dimen/_14sdp"
+                            android:layout_height="@dimen/_12sdp"
+                            android:background="@drawable/ic_credit_card"
+                            android:backgroundTint="@color/colorGreen"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:visibility="invisible"/>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/imgPrint"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_10sdp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/print"
+                        android:visibility="invisible"
+                        />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1.5"
+                    android:layout_weight="1.3"
                     android:gravity="center"
                     android:paddingStart="@dimen/_12sdp">
 
@@ -154,20 +174,7 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:paddingStart="@dimen/_2sdp">
 
-                    <ImageView
-                        android:id="@+id/imgPrint"
-                        android:layout_width="@dimen/_10sdp"
-                        android:layout_height="@dimen/_10sdp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/print" />
-                </LinearLayout>
             </LinearLayout>
 
             <ImageView
