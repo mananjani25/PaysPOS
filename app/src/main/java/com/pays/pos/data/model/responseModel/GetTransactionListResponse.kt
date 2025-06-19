@@ -39,7 +39,7 @@ data class GetTransactionListResponse(
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("employee_name")
-            val employeeName: String,
+            private val _employeeName: String?,
             @SerializedName("id")
             val id: Int,
             @SerializedName("offline_id")
@@ -88,6 +88,8 @@ data class GetTransactionListResponse(
             var ext_data: String = ""
 
         ) {
+            val employeeName get() = _employeeName ?: ""
+
             data class Customer(
                 @SerializedName("first_name")
                 val firstName: String?,
