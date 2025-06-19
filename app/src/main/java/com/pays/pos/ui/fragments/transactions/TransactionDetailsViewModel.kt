@@ -291,7 +291,7 @@ class TransactionDetailsViewModel @Inject constructor(
                             amount,
                             it,
                             "out",
-                            it1,
+                            it1.toString(),
                             it2,
                             refundReason,
                             it3,
