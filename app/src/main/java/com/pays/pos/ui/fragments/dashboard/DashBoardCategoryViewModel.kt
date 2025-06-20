@@ -148,6 +148,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
@@ -162,6 +163,7 @@ import java.util.Locale
 import java.util.Random
 import javax.inject.Inject
 import kotlin.collections.set
+import kotlin.coroutines.resume
 import kotlin.math.ceil
 import kotlin.math.log
 
@@ -903,6 +905,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    suspend fun awaitDeleteCart(): Unit = suspendCancellableCoroutine { cont ->
+        deleteCartNew {
+            cont.resume(Unit)
+        }
+    }
+
     fun addCart(cartModel: CartModel) {
         var mCartModel = cartModel
         System.currentTimeMillis()
@@ -1165,9 +1173,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 )
             )
             GlobalScope.launch {
-                deleteOrderTypeBackupByName(
-                    prefProvider.employeeId()
-                )
+                deleteOrderTypeBackupByName(prefProvider.employeeId())
                 posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                 destroyedList.clear()
 
@@ -1182,6 +1188,40 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             Log.d("deleteCart", "Preference is null")
+        }
+    }
+
+    private fun deleteCartNew(isLastItem: Boolean = false, onComplete: (() -> Unit)? = null) {
+        try {
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+            cartModel = null
+            manualCartOrderNote = ""
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                        Gson().toJson(Thread.currentThread().stackTrace)
+                    }"
+                )
+            )
+            viewModelScope.launch {
+                deleteOrderTypeBackupByName(prefProvider.employeeId())
+                posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+                destroyedList.clear()
+
+                //Added to clear all the data when last item is removed from the cart.
+                if (currentCartItems.size <= 1 && isLastItem) {
+                    deleteCartItems()
+                    clearCartModelBackup()
+                }
+
+                currentCartItems.clear()
+                duplicateCurrentCartItem.clear()
+                onComplete?.invoke()
+            }
+        } catch (e: Exception) {
+            Log.d("deleteCart", "Preference is null")
+            onComplete?.invoke()
         }
     }
 

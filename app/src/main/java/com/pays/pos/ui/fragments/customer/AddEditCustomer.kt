@@ -49,10 +49,12 @@ import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 
 @AndroidEntryPoint
@@ -1432,82 +1434,77 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     private fun moveToCheckout(updatedCustomerModel: TbCustomer) {
 
-        prefProvider.setValue(
-            Constants.CUSTOMER_NAME,
-            updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name
-        )
+        lifecycleScope.launch {
+            prefProvider.setValue(Constants.CUSTOMER_NAME, updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name)
 
-        prefProvider.setValue(
-            Constants.RECEIPT_CUSTOMER_NAME,
-            updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name
-        )
+            prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, updatedCustomerModel.first_name + " " + updatedCustomerModel.last_name)
 
-        updatedCustomerModel.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+            updatedCustomerModel.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
-        prefProvider.saveCustomerData(updatedCustomerModel)
+            prefProvider.saveCustomerData(updatedCustomerModel)
 
-        prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-        prefProvider.setValueInt("cardCount", 0)
-        prefProvider.setValue(Constants.SUB_TOTAL, "")
-        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-        prefProvider.setValue(Constants.TIP, "")
-        prefProvider.setValue(Constants.TAX_CHARGE, "")
-        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+            prefProvider.setValue("PaidAmount", "")
+            prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+            prefProvider.setValueInt("cardCount", 0)
+            prefProvider.setValue(Constants.SUB_TOTAL, "")
+            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+            prefProvider.setValue(Constants.TIP, "")
+            prefProvider.setValue(Constants.TAX_CHARGE, "")
+            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
-        dashboardViewModel.deleteCart()
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AddEditCustomer.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+            dashboardViewModel.awaitDeleteCart()
 
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AddEditCustomer.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
 
-        prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
-        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
-        prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+            prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+            prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+            prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
 
-        val cm = CartModel()
-        val tbItem = TbCartItem()
-        tbItem.name = "Digital Gift Card"
-        tbItem.quantity = 1
-        tbItem.itemQuantity = 1
-        val totalPrice =
-            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
-        tbItem.price = totalPrice
-        tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-        tbItem.orderTypeId = 0
-        tbItem.orderType = Constants.GIFT_CARD
-        tbItem.orderTypeName = Constants.GIFT_CARD
+            val cm = CartModel()
+            val tbItem = TbCartItem()
+            tbItem.name = "Digital Gift Card"
+            tbItem.quantity = 1
+            tbItem.itemQuantity = 1
+            val totalPrice = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+            tbItem.price = totalPrice
+            tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+            tbItem.orderTypeId = 0
+            tbItem.orderType = Constants.GIFT_CARD
+            tbItem.orderTypeName = Constants.GIFT_CARD
 
-        cm.apply {
-            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-            isOpenOrder = false
-            orderTypeId = 0
-            orderType = Constants.GIFT_CARD
-            orderTypeName = Constants.GIFT_CARD
+            cm.apply {
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                isOpenOrder = false
+                orderTypeId = 0
+                orderType = Constants.GIFT_CARD
+                orderTypeName = Constants.GIFT_CARD
+            }
+
+            dashboardViewModel.addCart(cm)
+            dashboardViewModel.addOrderItemsToCartItems(listOf(tbItem))
+
+            val bundle = Bundle()
+            bundle.putBoolean("update", true)
+            bundle.putDouble("totalPrice", totalPrice)
+            bundle.putDouble("finalprice", totalPrice)
+            bundle.putDouble("cashDiscountSurcharge",0.0)
+            bundle.putDouble("subTotalPrice", totalPrice)
+            bundle.putDouble("totalTax", 0.0)
+            bundle.putDouble("totalDiscount", 0.0)
+            bundle.putDouble("totalServiceCharge", 0.0)
+            bundle.putParcelable("cartList", cm)
+
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(com.pays.pos.R.id.addEditCustomer, true)
+                .build()
+
+            findNavController().navigate(
+                com.pays.pos.R.id.action_addEditCustomer_to_paymentBoldPosFragment,
+                bundle, navOptions
+            )
         }
-
-        dashboardViewModel.addCart(cm)
-        dashboardViewModel.addOrderItemsToCartItems(listOf(tbItem))
-
-        val bundle = Bundle()
-        bundle.putBoolean("update", true)
-        bundle.putDouble("totalPrice", totalPrice)
-        bundle.putDouble("finalprice", totalPrice)
-        bundle.putDouble("cashDiscountSurcharge",0.0)
-        bundle.putDouble("subTotalPrice", totalPrice)
-        bundle.putDouble("totalTax", 0.0)
-        bundle.putDouble("totalDiscount", 0.0)
-        bundle.putDouble("totalServiceCharge", 0.0)
-        bundle.putParcelable("cartList", cm)
-
-        val navOptions = NavOptions.Builder()
-            .setPopUpTo(com.pays.pos.R.id.addEditCustomer, true)
-            .build()
-
-        findNavController().navigate(
-            com.pays.pos.R.id.action_addEditCustomer_to_paymentBoldPosFragment,
-            bundle, navOptions
-        )
     }
 
     private fun onUpdatingCustomer(customer: TbCustomer){

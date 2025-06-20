@@ -14,6 +14,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -239,93 +240,79 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             dataBundle.putParcelable("customer",customer)
 
             findNavController().navigate(R.id.action_addCustomerToGiftCard_to_plasticCardNumber,dataBundle)
-        }
-        else {
+        } else {
 
-
-            prefProvider.setValue(
-                Constants.CUSTOMER_NAME,
-                customer.first_name + " " + customer.last_name
-            )
-
-            prefProvider.setValue(
-                Constants.RECEIPT_CUSTOMER_NAME,
-                customer.first_name + " " + customer.last_name
-            )
-            var orderTypeIdFromDb: Int = 0
-            synchronized(this) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    orderTypeIdFromDb = dashboardViewModel.orderTypeByName(Constants.TAKEOUT)
+            lifecycleScope.launch {
+                prefProvider.setValue(Constants.CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
+                prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
+                var orderTypeIdFromDb: Int = 0
+                synchronized(this) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        orderTypeIdFromDb = dashboardViewModel.orderTypeByName(Constants.TAKEOUT)
+                    }
                 }
-            }
-            customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+                customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
-            prefProvider.saveCustomerData(customer)
+                prefProvider.saveCustomerData(customer)
 
-            prefProvider.setValue("PaidAmount", "")
-            prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-            prefProvider.setValueInt("cardCount", 0)
-            prefProvider.setValue(Constants.SUB_TOTAL, "")
-            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-            prefProvider.setValue(Constants.TIP, "")
-            prefProvider.setValue(Constants.TAX_CHARGE, "")
-            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
-            dashboardViewModel.deleteCart()
+                dashboardViewModel.awaitDeleteCart()
 
-            prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
-            prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
-            prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+                prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
 
-            val cm = CartModel()
-            val tbItem = TbCartItem()
-            tbItem.name = "Digital Gift Card"
-            tbItem.quantity = 1
-            tbItem.itemQuantity = 1
-            val totalPrice =
-                prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
-            tbItem.price = totalPrice
-            tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-            tbItem.orderTypeId = orderTypeIdFromDb
-            tbItem.orderType = Constants.GIFT_CARD
-            tbItem.orderTypeName = Constants.GIFT_CARD
+                val cm = CartModel()
+                val tbItem = TbCartItem()
+                tbItem.name = "Digital Gift Card"
+                tbItem.quantity = 1
+                tbItem.itemQuantity = 1
+                val totalPrice = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+                tbItem.price = totalPrice
+                tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                tbItem.orderTypeId = orderTypeIdFromDb
+                tbItem.orderType = Constants.GIFT_CARD
+                tbItem.orderTypeName = Constants.GIFT_CARD
 
-            cm.apply {
-                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                isOpenOrder = false
-                orderTypeId = orderTypeIdFromDb
-                orderType = Constants.GIFT_CARD
-                orderTypeName = Constants.GIFT_CARD
-                locationId = prefProvider.getLocationId()
-            }
-            Log.e(TAG, "checkItems: ${Gson().toJson(tbItem)}")
+                cm.apply {
+                    employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                    terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                    isOpenOrder = false
+                    orderTypeId = orderTypeIdFromDb
+                    orderType = Constants.GIFT_CARD
+                    orderTypeName = Constants.GIFT_CARD
+                    locationId = prefProvider.getLocationId()
+                }
+                Log.e(TAG, "checkItems: ${Gson().toJson(tbItem)}")
 
-            dashboardViewModel.addCart(cm)
-            dashboardViewModel.addItemToCartItems(tbItem)
+                dashboardViewModel.addCart(cm)
+                dashboardViewModel.addItemToCartItems(tbItem)
 
+                val bundle = Bundle()
+                bundle.putBoolean("update", true)
+                bundle.putDouble("totalPrice", totalPrice)
+                bundle.putDouble("finalprice", totalPrice)
+                bundle.putDouble("cashDiscountSurcharge", 0.0)
+                bundle.putDouble("subTotalPrice", totalPrice)
+                bundle.putDouble("totalTax", 0.0)
+                bundle.putDouble("totalDiscount", 0.0)
+                bundle.putDouble("totalServiceCharge", 0.0)
+                bundle.putParcelable("cartList", cm)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(100)
+                findNavController().navigate(
+                    R.id.action_addCustomerToGiftCard_to_paymentBoldPosFragment,
+                    bundle
+                )
 
-                runOnUiThread(kotlinx.coroutines.Runnable {
-                    val bundle = Bundle()
-                    bundle.putBoolean("update", true)
-                    bundle.putDouble("totalPrice", totalPrice)
-                    bundle.putDouble("finalprice", totalPrice)
-                    bundle.putDouble("cashDiscountSurcharge", 0.0)
-                    bundle.putDouble("subTotalPrice", totalPrice)
-                    bundle.putDouble("totalTax", 0.0)
-                    bundle.putDouble("totalDiscount", 0.0)
-                    bundle.putDouble("totalServiceCharge", 0.0)
-                    bundle.putParcelable("cartList", cm)
-
-                    findNavController().navigate(
-                        R.id.action_addCustomerToGiftCard_to_paymentBoldPosFragment,
-                        bundle
-                    )
-                })
             }
         }
     }
