@@ -1474,9 +1474,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             attachFileLogger()
         }
         initLandiCashBox()
-        CoroutineScope(Dispatchers.IO).launch {
-            prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
+//        }
 
         if (!checkServiceRunning(
                 applicationContext,
