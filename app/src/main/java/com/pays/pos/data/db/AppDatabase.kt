@@ -562,6 +562,17 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_28_29: Migration = object : Migration(28, 29) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbCustomer ADD COLUMN isTokenized BOOLEAN DEFAULT 0 NOT NULL")
+                    database.execSQL("ALTER TABLE TbCustomer ADD COLUMN cardToken TEXT")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         val MIGRATION_30_31: Migration = object : Migration(30, 31) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
@@ -603,6 +614,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_25_26,
                     MIGRATION_26_27,
                     MIGRATION_27_28,
+                    MIGRATION_27_28,
+                    MIGRATION_28_29,
                     MIGRATION_30_31
                 ).fallbackToDestructiveMigration()
                 .build()

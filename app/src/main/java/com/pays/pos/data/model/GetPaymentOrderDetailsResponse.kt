@@ -1,10 +1,9 @@
 package com.pays.pos.data.model
 
 import android.os.Parcelable
-import com.pays.pos.data.entities.TbServiceCharge
+import com.google.gson.annotations.SerializedName
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.OpenOrderResponse
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 
@@ -249,6 +248,8 @@ class GetPaymentOrderDetailsResponse(
             val addresses: List<OpenOrderResponse.Data.Order.Customer.Address>,
             @SerializedName("phones")
             val phones: List<OpenOrderResponse.Data.Order.Customer.Phone>,
+            @SerializedName("card_token")
+            val cardToken : String
         ) : Parcelable {
 
         }

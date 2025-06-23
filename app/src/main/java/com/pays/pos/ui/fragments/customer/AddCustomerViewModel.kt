@@ -6,24 +6,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.model.CustomerSearchList
 import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.CreateCustomerReponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CustomerCreatedEvent
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.pays.pos.data.model.CustomerSearchList
-import com.pays.pos.data.model.requestModel.OnlineOrderUpdateRequest
-import com.pays.pos.logger.CustomerCreatedEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -379,6 +384,8 @@ class AddCustomerViewModel @Inject constructor(
                         company = value.data!!.company
                         enroll_to_loyalty = value.data!!.enroll_to_loyalty
                         same_as_billing_address = value.data!!.same_as_billing_address
+                        isTokenized = value.data!!.isTokenized
+                        cardToken = value.data!!.cardToken
 
                         addresses_attributes = (value.data?.addresses_attributes!!)
 
@@ -419,6 +426,8 @@ class AddCustomerViewModel @Inject constructor(
                                             same_as_billing_address = customerListReposne.data.same_as_billing_address,
                                             final_reward = customerListReposne.data.final_reward,
                                             company = customerListReposne.data.company,
+                                            isTokenized = customerListReposne.data.isTokenized,
+                                            cardToken = customerListReposne.data.cardToken,
                                             isSelcted = true,
                                         )
 
@@ -524,7 +533,9 @@ class AddCustomerViewModel @Inject constructor(
                                         final_reward = it.final_reward,
                                         company = it.company,
                                         phones = it.phones,
-                                        addresses = it.addresses
+                                        addresses = it.addresses,
+                                        isTokenized = it.isTokenized,
+                                        cardToken = it.cardToken
                                     )
 
                                     customerDataList.add(customer)
@@ -600,6 +611,8 @@ class AddCustomerViewModel @Inject constructor(
                                         same_as_billing_address = customerSearchList.data[0].same_as_billing_address,
                                         final_reward = customerSearchList.data[0].final_reward,
                                         company = customerSearchList.data[0].company,
+                                        isTokenized = customerSearchList.data[0].isTokenized,
+                                        cardToken = customerSearchList.data[0].cardToken,
                                         isSelcted = true,
                                     )
 
@@ -698,6 +711,8 @@ class AddCustomerViewModel @Inject constructor(
                                         same_as_billing_address = it.data[0].same_as_billing_address,
                                         final_reward = it.data[0].final_reward,
                                         company = it.data[0].company,
+                                        cardToken = it.data[0].cardToken,
+                                        isTokenized = it.data[0].isTokenized,
                                         isSelcted = true,
                                     )
 
@@ -729,6 +744,8 @@ class AddCustomerViewModel @Inject constructor(
                                                     same_as_billing_address = it.data[0].same_as_billing_address,
                                                     final_reward = it.data[0].final_reward,
                                                     company = it.data[0].company,
+                                                    cardToken = it.data[0].cardToken,
+                                                    isTokenized = it.data[0].isTokenized,
                                                     isSelcted = true,
                                                 )
 

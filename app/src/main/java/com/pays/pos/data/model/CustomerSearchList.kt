@@ -2,11 +2,11 @@ package com.pays.pos.data.model
 
 
 import androidx.room.TypeConverters
+import com.google.gson.annotations.SerializedName
 import com.pays.pos.data.entities.TbAddress
 import com.pays.pos.data.entities.TbPhones
 import com.pays.pos.data.typeconvert.TypeConvertorAddress
 import com.pays.pos.data.typeconvert.TypeConvertorPhone
-import com.google.gson.annotations.SerializedName
 
 data class CustomerSearchList(
     @SerializedName("data")
@@ -32,6 +32,8 @@ data class CustomerSearchList(
         @SerializedName("phones") val phones: List<TbPhones> = listOf(),
         @TypeConverters(TypeConvertorAddress::class)
         @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
+        @SerializedName("is_tokenized") val isTokenized: Boolean = false,
+        @SerializedName("card_token") val cardToken: String = "",
     ) {
 
     }

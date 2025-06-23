@@ -217,7 +217,7 @@ open class PaymentViewModel @Inject constructor(
                         }"
                     )
                 )
-
+                Log.d(TAG, "211 submit checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
                 posRepository.createOrder(orderRequestModel)
             }
 
@@ -2902,7 +2902,15 @@ open class PaymentViewModel @Inject constructor(
             val totalPP = totalPrice
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP /*- totalDC*/
+//            if () //gift card redeem and its less = > totalAM - tipAmount
+
             amount = totalAM
+
+//            if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
+//                if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
+//                    amount = totalAM - tipAmount
+//                }
+//            }
 
             if (paymentTypeStatus == "Cash") {
                 if (cashdiscountType == "SurCharge") {
@@ -2949,8 +2957,6 @@ open class PaymentViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(totalDis)
             tipID?.let { tipId = it }
 
-
-
             if (isUpdateOrder && orderId != null) {
                 order_id = orderId
             }
@@ -2958,17 +2964,10 @@ open class PaymentViewModel @Inject constructor(
             is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
             if (is_loyalty_applied == true) {
                 loyalty_program_id = "${redeemLoyaltyInfo?.loyaltyProgramsModel?.id}"
-                loyalty_amount =
-                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyAmount else redeemLoyaltyInfo?.usedLoyaltyAmount?.div(
-                        splitValue
-                    )
-                used_reward_points =
-                    if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyPoints else redeemLoyaltyInfo?.usedLoyaltyPoints?.div(
-                        splitValue
-                    )
+                loyalty_amount = if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyAmount else redeemLoyaltyInfo?.usedLoyaltyAmount?.div(splitValue)
+                used_reward_points = if (splitValue == -1) redeemLoyaltyInfo?.usedLoyaltyPoints else redeemLoyaltyInfo?.usedLoyaltyPoints?.div(splitValue)
                 is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
             }
-
         }
     }
 
@@ -3222,9 +3221,15 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     )
                                 } else {
-                                    if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                    Log.d(TAG,
+                                        "splitByOrder PayableType: ${response.data.order.payments[response.data.order.payments.size - 1].paymentType}")
+
+                                    if (response.data.order.payments[response.data.order.payments.size - 1].paymentType == "Cash") {
                                         cashLogApi(createOrderResponse, "in")
-                                    } else {
+                                    }
+                                    /*if (response.data.order.payments[response.data.order.payments.size - 1].paymentType == "Cash") {
+                                        cashLogApi(createOrderResponse, "in")
+                                    }*/ else {
                                         _data.value = Event(createOrderResponse)
                                         EventBus.getDefault().post(
                                             MessageEvent(
@@ -3237,12 +3242,7 @@ open class PaymentViewModel @Inject constructor(
                                     }
                                 }
                                 deletePaxPaymentData()
-
-
-
                                 if (isDineIn) _msgText.value = Event(response.message)
-
-
                             }
 
                         } else {

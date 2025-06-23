@@ -5,13 +5,13 @@ import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.google.gson.annotations.SerializedName
 import com.pays.pos.data.model.CustomerSearchList
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.model.responseModel.OpenOrderResponse
 import com.pays.pos.data.typeconvert.TypeConvertorAddress
 import com.pays.pos.data.typeconvert.TypeConvertorPhone
-import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -32,8 +32,10 @@ data class TbCustomer(
     @SerializedName("phones") val phones: List<TbPhones> = listOf(),
     @TypeConverters(TypeConvertorAddress::class)
     @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
-    var isSelcted: Boolean = false,
-    var futureDataAndTime:String ?=""
+    var futureDataAndTime:String ?="",
+    @SerializedName("is_tokenized") val isTokenized: Boolean = false,
+    @SerializedName("card_token") val cardToken: String? = null,
+    var isSelcted: Boolean = false
 ) : Parcelable {
     companion object {
         fun customerMapping(customer: OpenOrderResponse.Data.Order.Customer): TbCustomer {
@@ -46,6 +48,8 @@ data class TbCustomer(
                 enroll_to_loyalty = customer.enroll_to_loyalty,
                 final_reward = customer.final_reward,
                 company = customer.company,
+                isTokenized =  customer.isTokenized,
+                cardToken = customer.cardToken,
             )
         }
 
@@ -60,6 +64,8 @@ data class TbCustomer(
                 enroll_to_loyalty = customer.enroll_to_loyalty,
                 final_reward = customer.final_reward,
                 company = customer.company,
+                isTokenized =  customer.isTokenized,
+                cardToken = customer.cardToken,
             )
         }
 
@@ -75,7 +81,9 @@ data class TbCustomer(
                 final_reward = customer.final_reward,
                 company = customer.company,
                 phones = customer.phones,
-                addresses = customer.addresses
+                addresses = customer.addresses,
+                isTokenized =  customer.isTokenized,
+                cardToken = customer.cardToken,
             )
         }
 
@@ -89,6 +97,8 @@ data class TbCustomer(
                 enroll_to_loyalty = customer.enroll_to_loyalty,
                 final_reward = customer.final_reward,
                 company = customer.company,
+                isTokenized =  customer.isTokenized,
+                cardToken = customer.cardToken,
             )
         }
     }

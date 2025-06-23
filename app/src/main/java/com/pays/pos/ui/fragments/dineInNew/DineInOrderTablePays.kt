@@ -2018,6 +2018,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         if(wholeItemCount == listItemWT && guestItemCount == listItemGuestSelected) {
 
 
+            prefProvider.saveCustomerData(dineInModel.customer)
 
         dashboardViewModel.setTipAmount(0.0)
         dashboardViewModel.customerGivenTip.value=false
@@ -2060,7 +2061,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("serviceChargeB", serviceChargeGuest)
         bundle.putDouble("dicountB", divideDiscount)
         bundle.putInt("guestIndexForDineIn", guestIndexForDineIn)
-
 
         val adapterList = dineInTableAdapter.getList()
 
@@ -2175,6 +2175,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
+
+
 
 
 
@@ -2841,7 +2843,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            updateOrderCall(isFromReorder = false,true)
+            updateOrderCall(isFromReorder = false,true )
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }
@@ -3543,7 +3545,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             amountToShow
                         )
 
-                        toFinalAmt = finalAmount
+                         toFinalAmt = finalAmount
 
 
                         var paidGuestCount = 0
@@ -3865,7 +3867,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let {
                 listOfMoveItemIds.add(it)
+
             }
+           // oldList.get(dragTo).item.apply { this?.isDestroy = true }
+           // Log.e("updateAdapterData", "isDestroy: ${oldList.get(dragTo).item?.isDestroy}")
+
             oldList.get(dragTo).item?.guestItemId = null
 
             if (oldList[dragTo].item?.itemId != 1) {
@@ -3885,6 +3891,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     oldList[dragTo].item = oldList[k].item
                                     oldList[dragTo].item?.itemQuantity = updatedQuantity
                                     oldList[dragTo].item?.sort = dragTo
+                                  //  oldList.get(dragTo).item.apply { this?.isDestroy = true }
                                     oldList.remove(oldList[k])
                                     break
                                 }
@@ -3905,10 +3912,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
                                 ) {
                                     var updatedQuantity: Int =
-                                        oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                                     oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
                                     oldList[dragTo].item = oldList[l].item
                                     oldList[dragTo].item?.itemQuantity = updatedQuantity
                                     oldList[dragTo].item?.sort = dragTo
+                                   // oldList.get(dragTo).item.apply { this?.isDestroy = true }
                                     oldList.remove(oldList[l])
                                     break
                                 }
@@ -4161,7 +4169,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 dineInCartItemMoved = false
             }
 
-            updateOrderCall(isFromReorder = true)
+            updateOrderCall(isFromReorder = true, false)
         }
 
     }
@@ -4191,11 +4199,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             val orderRequestModel = dashboardViewModel.updateOrder(cartList!!, true)
 
 
+//            orderRequestModel.order.orderItemsAttributes
+//                .forEach { it.isDestroy = true }
+
             //Remove moved items from list
             orderRequestModel.order.orderItemsAttributes
                 .filter { it.itemId in listOfMoveItemIds }
                 .forEach { it.isDestroy = true }
 
+         //   Log.e(TAG, "updateOrderCall  222222: ${listOfMoveItemIds}", )
 
             if (isFromWastage) {
                 orderRequestModel.apply {
@@ -4272,7 +4284,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     message = "removed"
                 )
             }
-            listOfMoveItemIds.clear()
+           listOfMoveItemIds.clear()
         }catch (e: Exception) {
             e.printStackTrace()
         }
@@ -4724,9 +4736,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                      )*/
                     updateAdapterData()
                     recyclerView.post {
-                        dineInTableAdapter.notifyItemMoved(dragFrom, dragTo)
+                       dineInTableAdapter.notifyItemMoved(dragFrom, dragTo)
                         dineInTableAdapter.notifyItemRangeChanged(min(dragFrom, dragTo), abs(dragTo - dragFrom) + 1)
-                    }
+                   }
                 }
 
                 try {
@@ -6897,10 +6909,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if ( paymentType.equals("Unpaid", ignoreCase = true)) {
 
+                SunmiPrinterApi.getInstance().lineWrap(2)
+                if (customerSettingModel.fonts == Constants.LARGE) {
+
+                    PrintSunmiUtils.tips("Cust Name _____________")
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.tips("Customer Name                      _____________")
+
+                }
 
                 if (customerSettingModel.showTipLineForCash) {
 
-                    SunmiPrinterApi.getInstance().lineWrap(2)
+                   // SunmiPrinterApi.getInstance().lineWrap(2)
                     if (customerSettingModel.fonts == Constants.LARGE) {
 
                         PrintSunmiUtils.tips("Tip       _____________")
@@ -6918,6 +6939,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         PrintSunmiUtils.tips("Total                              _____________")
                     }
+
+                }
+
+                if (customerSettingModel.fonts == Constants.LARGE) {
+
+                    PrintSunmiUtils.tips("Cust Sign _____________")
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.tips("Customer Signature                 _____________")
 
                 }
 
@@ -7588,8 +7618,17 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     lineBreak()
 
-                                    if (customerSettingModel.showTipLineForCash) {
+                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                        printBoldLeft("Cust Name _____________")
                                         lineBreak()
+                                    } else {
+                                        printBoldLeft("Customer Name                     _____________")
+                                        lineBreak()
+                                    }
+
+
+                                    if (customerSettingModel.showTipLineForCash) {
+                                      //  lineBreak()
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             printBoldLeft("Tip       _____________")
                                             lineBreak()
@@ -7603,8 +7642,17 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             lineBreak()
                                         } else {
                                             printBoldLeft("Total                             _____________")
+                                            lineBreak()
                                         }
 
+                                    }
+
+                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                        printBoldLeft("Cust Sign _____________")
+                                        lineBreak()
+                                    } else {
+                                        printBoldLeft("Customer Signature                _____________")
+                                        lineBreak()
                                     }
 
 
@@ -8249,8 +8297,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             val sunmiFrameworkVersion = prefProvider.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
                 .toTypedArray()
 
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                    1
+                )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldTextNew("Cust Name _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldTextNew("Customer Name                     _____________")
+                }
+            } else {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Cust Name _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldText("Customer Name                     _____________")
+                }
+            }
+
             if (customerSettingModel.showTipLineForCash) {
-                SunmiPrintHelper.getInstance().lineWrap(1)
+                //SunmiPrintHelper.getInstance().lineWrap(1)
 
                 if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
                         1
@@ -8288,6 +8355,25 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         PrintSunmiUtils.boldText("Total                             _____________")
                     }
+                }
+            }
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                    1
+                )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldTextNew("Cust Sign _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldTextNew("Customer Signature                _____________")
+                }
+            } else {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Cust Sign _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldText("Customer Signature                _____________")
                 }
             }
 
@@ -10133,11 +10219,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance().lineWrap(1)
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.tips("Cust Name _____________")
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            } else {
+                PrintSunmiUtils.tips("Customer Name                      _____________")
+            }
+
             if (customerSettingModel.showTipLineForCash) {
 
                 /*if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {*/
 
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+                   // SunmiPrinterApi.getInstance().lineWrap(1)
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         PrintSunmiUtils.tips("Tip       _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
@@ -10152,12 +10247,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         PrintSunmiUtils.tips("Total                              _____________")
                     }
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+                  //  SunmiPrinterApi.getInstance().lineWrap(1)
 
                 /*}*/
 
 
             }
+
+            if (customerSettingModel.fonts == Constants.LARGE) {
+                PrintSunmiUtils.tips("Cust Sign _____________")
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            } else {
+                PrintSunmiUtils.tips("Customer Signature                 _____________")
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.showTipSuggestion) {
 
@@ -10694,8 +10797,28 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             val sunmiFrameworkVersion = prefProvider.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
                 .toTypedArray()
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                    1
+                )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldTextNew("Cust Name _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldTextNew("Customer Name                     _____________")
+                }
+            } else {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Cust Name _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldText("Customer Name                     _____________")
+                }
+            }
             if (customerSettingModel.showTipLineForCash) {
-                SunmiPrintHelper.getInstance().lineWrap(1)
+                //SunmiPrintHelper.getInstance().lineWrap(1)
 
                 if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
                         1
@@ -10733,6 +10856,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         PrintSunmiUtils.boldText("Total                             _____________")
                     }
+                }
+            }
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                    1
+                )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldTextNew("Cust Sign _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldTextNew("Customer Signature                _____________")
+                }
+            } else {
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Cust Sign _____________")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                } else {
+                    PrintSunmiUtils.boldText("Customer Signature                _____________")
                 }
             }
 
@@ -12366,8 +12507,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     }
 
-                                    if (customerSettingModel.showTipLineForCash) {
+                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                        printBoldLeft("Cust Name _____________")
                                         lineBreak()
+                                    } else {
+                                        printBoldLeft("Customer Name                     _____________")
+                                        lineBreak()
+                                    }
+                                    if (customerSettingModel.showTipLineForCash) {
+                                        //lineBreak()
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             printBoldLeft("Tip       _____________")
                                             lineBreak()
@@ -12381,8 +12529,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             lineBreak()
                                         } else {
                                             printBoldLeft("Total                             _____________")
+                                            lineBreak()
                                         }
 
+                                    }
+                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                        printBoldLeft("Cust Sign       _____________")
+                                        lineBreak()
+                                    } else {
+                                        printBoldLeft("Customer Signature                 _____________")
+                                        lineBreak()
                                     }
 
 

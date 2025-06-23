@@ -14,8 +14,7 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.extensions.getColorCompat
 import com.pays.pos.utils.extensions.setOnSingleClickListener
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Locale
 
 
 class CustomerListAdapter(
@@ -200,10 +199,22 @@ class CustomerListAdapter(
                             email = it.email
                         }
 
+                        var isTokenized = false
+                        if (it.isTokenized) {
+                            isTokenized = it.isTokenized
+                        }
+
+                        var cardToken = ""
+                        if (it.cardToken != null) {
+                            cardToken = it.cardToken
+                        }
+
                         name.lowercase(Locale.getDefault()).contains(charSequence) or
                                 email.lowercase(Locale.getDefault()).contains(charSequence) or
                                 phone.contains(charSequence) or
-                                company.lowercase(Locale.getDefault()).contains(charSequence)
+                                company.lowercase(Locale.getDefault()).contains(charSequence) or
+                                isTokenized or
+                                cardToken.contains(charSequence)
                     }.forEach { fList.add(it) }
 
                     fList

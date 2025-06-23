@@ -111,6 +111,16 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         "Pending" -> {
                             binding.orderStatusLinear.visible()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "ReadyForPickup" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.visible()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.gone()
@@ -119,6 +129,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         "InProgress" -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.visible()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.gone()
@@ -128,6 +139,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.gone()
                             binding.orderCompletedButton.visible()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.gone()
                         }
@@ -135,6 +147,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         "UpComing" -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.visible()
@@ -143,6 +156,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         else -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.visible()
                             binding.orderUpcomingButton.gone()
@@ -152,20 +166,88 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                     binding.viewOrderStatus.visible()
                     binding.orderStatusLinear.gone()
                     binding.orderInprogressButton.gone()
+                    binding.orderReadyForPickupButton.gone()
                     binding.orderCompletedButton.gone()
                     binding.orderCancelledButton.gone()
                     binding.orderUpcomingButton.gone()
                 }
+            } else if(orderedTab == THIRD_PARTY_ORDER_TAB || item.orderType == THIRD_PARTY_ORDER_TAB) {
+                binding.viewOrderStatus.gone()
+
+                when (item.order_status) {
+                    "Pending" -> {
+                        binding.orderStatusLinear.visible()
+                        binding.orderInprogressButton.gone()
+                        binding.orderReadyForPickupButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+
+                    "ReadyForPickup" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.visible()
+                        binding.orderReadyForPickupButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+
+                    "InProgress" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderReadyForPickupButton.visible()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+
+                    "Completed" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderReadyForPickupButton.gone()
+                        binding.orderCompletedButton.visible()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.gone()
+                    }
+
+                    "UpComing" -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderReadyForPickupButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.gone()
+                        binding.orderUpcomingButton.visible()
+                    }
+
+                    else -> {
+                        binding.orderStatusLinear.gone()
+                        binding.orderInprogressButton.gone()
+                        binding.orderReadyForPickupButton.gone()
+                        binding.orderCompletedButton.gone()
+                        binding.orderCancelledButton.visible()
+                        binding.orderUpcomingButton.gone()
+                    }
+                }
+
             } else {
                 binding.viewOrderStatus.gone()
-                if (orderedTab == ONLINE_ORDER_TAB || orderedTab == THIRD_PARTY_ORDER_TAB
-                    || item.orderType == ONLINE_ORDER_TAB || item.orderType == THIRD_PARTY_ORDER_TAB
-                ) {
+                if (orderedTab == ONLINE_ORDER_TAB || item.orderType == ONLINE_ORDER_TAB ) {
 
                     when (item.order_status) {
                         "Pending" -> {
                             binding.orderStatusLinear.visible()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
+                            binding.orderCompletedButton.gone()
+                            binding.orderCancelledButton.gone()
+                            binding.orderUpcomingButton.gone()
+                        }
+
+                        "ReadyForPickup" -> {
+                            binding.orderStatusLinear.gone()
+                            binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.visible()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.gone()
@@ -174,6 +256,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         "InProgress" -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.visible()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.gone()
@@ -182,6 +265,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         "Completed" -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.visible()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.gone()
@@ -190,6 +274,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         "UpComing" -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.visible()
@@ -199,6 +284,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         else -> {
                             binding.orderStatusLinear.gone()
                             binding.orderInprogressButton.gone()
+                            binding.orderReadyForPickupButton.gone()
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.visible()
                             binding.orderUpcomingButton.gone()
@@ -331,6 +417,9 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
             binding.completedImg.setOnClickListener {
                 mCallback?.onItemClickListener(it, absoluteAdapterPosition, "Completed")
+            }
+            binding.readyForPickupImg.setOnClickListener {
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "ReadyForPickup")
             }
 
             binding.root.setOnClickListener {
