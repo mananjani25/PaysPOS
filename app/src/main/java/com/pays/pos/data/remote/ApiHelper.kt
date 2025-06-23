@@ -32,7 +32,6 @@ import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
-import com.pays.pos.ui.fragments.eGiftCard.PlasticCardNumber
 import com.pays.pos.utils.FileUtils.getContentType
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
@@ -574,7 +573,19 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
 
     suspend fun getAllOrders(startDate: String, endDate: String, order_status: String, payment_status: String, order_type_id: String) =
-        getResult { apiService.getAllOrders(startDate, endDate, order_status, payment_status, order_type_id) }
+
+            getResult {
+
+
+                apiService.getAllOrders(
+                    startDate,
+                    endDate,
+                    order_status,
+                    payment_status,
+                    order_type_id
+                )
+            }
+
 
     suspend fun setAcceptedAndDeclineorder(
         time: Int,

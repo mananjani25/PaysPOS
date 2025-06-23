@@ -1,5 +1,7 @@
 package com.pays.pos.ui.fragments.phoneOrder
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Point
@@ -61,6 +63,7 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.ArrayList
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -74,6 +77,7 @@ class PhoneOrderFragment : Fragment() {
     private var customerID: Int? = null
     private var isPickUp = true
     private lateinit var binding: FragmentPhoneOrderBinding
+    private val TAG = "PhoneOrderFragment"
 
     private val viewModel by viewModels<LoginViewModel>()
     private val dashboardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -98,6 +102,7 @@ class PhoneOrderFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_phone_order, container, false)
         binding.lifecycleOwner = this
+        prefProvider?.setValue(Constants.SCHEDULED_DATE_AND_TIME,"")
         manageDeliveryTypeView()
         resultListener()
         placesClientInit()
@@ -205,6 +210,13 @@ class PhoneOrderFragment : Fragment() {
     }
 
     private fun clickEvent() {
+        binding.txtScheduleDateTime.setOnClickListener {
+            showFutureDateTimePicker(requireContext(), onResult = {
+                Log.e(TAG,"checkDateResu  ${it}")
+                binding.txtScheduleDateTime.text = it
+                prefProvider?.setValue(Constants.SCHEDULED_DATE_AND_TIME,it)
+            })
+        }
 
         binding.imgBack.setOnClickListener {
 //            findNavController().popBackStack()
@@ -462,10 +474,11 @@ class PhoneOrderFragment : Fragment() {
 
                 }
 
+                Log.e(TAG,"futureDateAndTime: ${binding.txtScheduleDateTime.text.toString()}")
                 if (customerID == null) {
-                    viewModel.createCustomer(addCustomerData)
+                    viewModel.createCustomer(addCustomerData, futureDataAndTime = binding.txtScheduleDateTime.text.toString())
                 } else {
-                    viewModel.createCustomer(addCustomerData, customerID!!, true)
+                    viewModel.createCustomer(addCustomerData, customerID!!, true, futureDataAndTime = binding.txtScheduleDateTime.text.toString())
 //                    redirectToMain(customer)
                 }
             }
@@ -665,4 +678,52 @@ class PhoneOrderFragment : Fragment() {
             }
         }
 
+
+    fun showFutureDateTimePicker(context: Context, onResult: (String) -> Unit) {
+        val calendar = Calendar.getInstance() // current date and time
+
+        // --- DATE PICKER ---
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = Calendar.getInstance()
+                selectedDate.set(year, month, dayOfMonth)
+
+                // --- TIME PICKER ---
+                val timePickerDialog = TimePickerDialog(
+                    context,
+                    { _, hourOfDay, minute ->
+                        selectedDate.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        selectedDate.set(Calendar.MINUTE, minute)
+
+                        if (selectedDate.before(Calendar.getInstance())) {
+                            Toast.makeText(context, "Please select a future time", Toast.LENGTH_SHORT).show()
+                        } else {
+                            val result = String.format(
+                                "%02d-%02d-%04d %02d:%02d",
+                                selectedDate.get(Calendar.DAY_OF_MONTH),
+                                selectedDate.get(Calendar.MONTH) + 1,
+                                selectedDate.get(Calendar.YEAR),
+                                selectedDate.get(Calendar.HOUR_OF_DAY),
+                                selectedDate.get(Calendar.MINUTE)
+                            )
+                            onResult(result)
+                        }
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                )
+                timePickerDialog.show()
+
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+
+        // Set minimum date to today
+        datePickerDialog.datePicker.minDate = calendar.timeInMillis
+        datePickerDialog.show()
+    }
 }

@@ -573,6 +573,16 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_30_31: Migration = object : Migration(30, 31) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbCustomer ADD COLUMN futureDataAndTime TEXT")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
@@ -604,7 +614,9 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_25_26,
                     MIGRATION_26_27,
                     MIGRATION_27_28,
-                    MIGRATION_28_29
+                    MIGRATION_27_28,
+                    MIGRATION_28_29,
+                    MIGRATION_30_31
                 ).fallbackToDestructiveMigration()
                 .build()
     }

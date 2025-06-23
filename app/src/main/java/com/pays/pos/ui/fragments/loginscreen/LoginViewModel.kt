@@ -179,7 +179,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun createCustomer(addCustomerData: CreateCustomerRequestModel, customerID: Int = -1, isEdit: Boolean = false) {
+    fun createCustomer(addCustomerData: CreateCustomerRequestModel, customerID: Int = -1, isEdit: Boolean = false,futureDataAndTime:String) {
 
         _showProgress.value = Event(true)
 
@@ -212,6 +212,7 @@ class LoginViewModel @Inject constructor(
                                     final_reward = customerListReposne.data.final_reward,
                                     company = customerListReposne.data.company,
                                     isSelcted = true,
+                                    futureDataAndTime = futureDataAndTime
                                 )
 
 

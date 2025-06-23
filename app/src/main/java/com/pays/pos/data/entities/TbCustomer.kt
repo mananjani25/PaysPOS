@@ -32,6 +32,7 @@ data class TbCustomer(
     @SerializedName("phones") val phones: List<TbPhones> = listOf(),
     @TypeConverters(TypeConvertorAddress::class)
     @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
+    var futureDataAndTime:String ?="",
     @SerializedName("is_tokenized") val isTokenized: Boolean = false,
     @SerializedName("card_token") val cardToken: String? = null,
     var isSelcted: Boolean = false

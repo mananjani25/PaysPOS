@@ -38,6 +38,7 @@ object Constants {
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
+    const val SCHEDULED_DATE_AND_TIME = "scheduled_date_and_time"
 
 
     /**

@@ -73,6 +73,7 @@ class OrderAttributeRequestModel {
     @SerializedName("payment_attributes")
     var paymentAttributes: PaymentAttributes? = null
 
+
     @SerializedName("payment_status")
     var paymentStatus: Int = 0
 
@@ -142,6 +143,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("deleted_guest_items")
     var deletedGuestItems: ArrayList<Int> = arrayListOf()
+
+    @SerializedName("order_status")
+    var orderStatus:String ?=null
 }
 
 

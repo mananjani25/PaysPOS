@@ -122,6 +122,7 @@ class PhoneOrderListFragment(
 
         startDatePickerObserver()
         endDatePickerObserver()
+        endDatePickerObserver()
         getCustomerReceiptSettings()
         observeTipsList()
 

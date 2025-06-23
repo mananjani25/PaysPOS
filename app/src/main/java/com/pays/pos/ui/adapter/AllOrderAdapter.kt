@@ -87,6 +87,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             if(!item.terminalName.isNullOrEmpty()) {
                 binding.txtStationName.text = item.terminalName
             }
+            Log.e("fasfasf","dgrgrggdgg")
 
             if (item.futureDeliveryTime != null && item.futureDeliveryTime.isNotEmpty()) {
                 val inputFormat = SimpleDateFormat("hh:mm a")
@@ -277,6 +278,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                             binding.orderCompletedButton.gone()
                             binding.orderCancelledButton.gone()
                             binding.orderUpcomingButton.visible()
+
                         }
 
                         else -> {
@@ -387,6 +389,22 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.llMainLayout.setBackgroundColor(
                     ContextCompat.getColor(context, R.color.backgroundColor)
                 )
+            }
+            Log.e(TAG,"checkOrderTab  ${orderedTab}")
+
+            if (orderedTab == PHONE_ORDER_TAB && item.order_status.equals("UpComing",true)){
+                Log.e("safsfasfasffas","ojnansff ${item.paymentStatus}")
+                binding.txtCustomerReceipt.gone()
+                if (item.paymentStatus == "Paid") {
+                    binding.lnrPhoneAndOnlineButtons.visible()
+                    binding.txtPayNow.gone()
+                    binding.txtEditOrder.gone()
+
+                    binding.txtCancelOrder.visible()
+                    binding.txtRePrintKitchenReceipt.visible()
+                    binding.orderCompletedButton.visible()
+                }
+
             }
         }
 

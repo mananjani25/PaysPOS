@@ -16,11 +16,11 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class AllOrdersViewModel @Inject constructor(
@@ -155,7 +155,7 @@ class AllOrdersViewModel @Inject constructor(
         posRepository.updateOnlineOrders(order_id, order_status)
 
 
-    fun setCurrentDate(
+    fun setCurrentDateForPhone(
         myCalendar: Calendar,
         paramStartDate: String?,
         paramEndDate: String?,
@@ -191,6 +191,68 @@ class AllOrdersViewModel @Inject constructor(
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
                 }
             } else {
+                if (status == "4") {
+                    endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                        "hh:mm a",
+                        Locale.getDefault()
+                    ).format(Date(System.currentTimeMillis() + 604800000))
+                } else {
+                    endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                        "hh:mm a",
+                        Locale.getDefault()
+                    ).format(Date(System.currentTimeMillis() + 60000))
+                }
+
+            }
+        }
+    }
+
+    fun setCurrentDate(
+        myCalendar: Calendar,
+        paramStartDate: String?,
+        paramEndDate: String?,
+        status: String,
+        orderTab:String?=null
+    ) {
+        val myFormat = "MM/dd/yyyy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        /* startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+             "hh:mm a",
+             Locale.getDefault()
+         ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
+
+
+        if (paramStartDate?.isNotEmpty() == true && paramEndDate?.isNotEmpty() == true) {
+            Log.e("EndDataTime","checkDate  ${paramEndDate}")
+            startDate.value = paramStartDate.toString()
+            endDate.value = paramEndDate.toString()
+        } else {
+            var startTime = prefProvider.getValue(Constants.REPORT_START_TIME, "")
+            var endTime = prefProvider.getValue(
+                Constants.REPORT_END_TIME, ""
+            )
+            if (startTime.isNotEmpty()) {
+                startDate.value = sdf.format(myCalendar.time) + " " + startTime
+            } else {
+                startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
+            }
+            if (endTime.isNotEmpty()) {
+                var temp_calender = Calendar.getInstance()
+                if (status == "4") {
+                    temp_calender.add(Calendar.DATE, 7)
+                    endDate.value = sdf.format(temp_calender.time) + " " + endTime
+                }
+                else if (status == "4" && orderTab == Constants.PHONE_ORDER_TAB){
+                    Log.e("checkPhoneOrder","YESTAB")
+                    temp_calender.add(Calendar.DATE, 30)
+                    endDate.value = sdf.format(temp_calender.time) + " " + endTime
+
+                }
+                else {
+                    endDate.value = sdf.format(temp_calender.time) + " " + endTime
+                }
+            } else {
+                Log.e("checkPhoneOrder","ENDTIMEEMPTY")
                 if (status == "4") {
                     endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
                         "hh:mm a",
