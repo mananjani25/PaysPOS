@@ -361,7 +361,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 var data: TbCustomer? = prefProvider.getCustomerData()
                                                 if (data != null) {
 
-                                                    if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) != DINE_IN) {
+                                                    if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) != DINE_IN && prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) != PHONE_ORDER) {
                                                         if (data.isTokenized) {
                                                             binding.tokenIcon?.visible()
                                                         } else {

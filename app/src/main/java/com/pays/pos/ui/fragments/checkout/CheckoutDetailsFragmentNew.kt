@@ -96,6 +96,7 @@ import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SPLIT_ENABLE
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -359,7 +360,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         customerDetails = prefProvider.getCustomerData()
 
-        if (customerDetails?.isTokenized == true) {
+        if (customerDetails?.isTokenized == true && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != PHONE_ORDER) {
             binding.llSavedCard.visible()
         }
 
@@ -6702,13 +6703,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (!customerDetails?.isTokenized!!) {
                     val preAuthData = paymentviewModel.preAuthData
 
-                    if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty()) {
+                    if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty() && prefProvider.getValue(ORDER_TYPE, TAKEOUT) != PHONE_ORDER) {
                         binding.llSavedCard.visibility = View.VISIBLE
                     } else {
                         binding.llSavedCard.visibility = View.GONE
                     }
                 } else {
-                    binding.llSavedCard.visibility = View.VISIBLE
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != PHONE_ORDER) {
+                        binding.llSavedCard.visibility = View.VISIBLE
+                    }
                 }
             } catch (e: Exception) {
                 binding.llSavedCard.visibility = View.GONE
