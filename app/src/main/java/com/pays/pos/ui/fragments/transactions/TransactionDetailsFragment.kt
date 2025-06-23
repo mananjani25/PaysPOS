@@ -1197,7 +1197,7 @@ class TransactionDetailsFragment : Fragment() {
                                 )
                             ) {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    refundCall(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
+                                    refundCall(paymentDetailsResponse.data.amount)
                                 }
                             } else {
                                 AlertUtils.showCustomAlert(
