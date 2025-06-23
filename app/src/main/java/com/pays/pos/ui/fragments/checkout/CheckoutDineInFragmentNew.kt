@@ -2338,100 +2338,135 @@ class CheckoutDineInFragmentNew : Fragment,
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
                 restrictTvCashClicks()
 
+//                subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+//
+//                EventBus.getDefault().post(
+//                    MessageEvent(
+//                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener dashboardViewModel.subTotalPrice-> ${
+//                            Gson().toJson(dashboardViewModel.subTotalPrice)
+//                        } , isSelectedCount-> ${isSelectedCount}", true
+//                    )
+//                )
+//
+//                Log.d(
+//                    "LOADER::",
+//                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+//                )
+//                totalServiceCharge =
+//                    String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+//                totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+//                totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+//                cashDiscountSurcharge =
+//                    MethodUtils.getLatestCashDiscountOrSurCharge(
+//                        WholetotalPrice,
+//                        prefProvider,
+//                        requireContext()
+//                    ) / isSelectedCount
+////                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+////                        0.0
+////                    } else {
+////                        MethodUtils.getLatestCashDiscountOrSurCharge(
+////                            WholetotalPrice,
+////                            prefProvider,
+////                            requireContext()
+////                        ) / isSelectedCount
+////                    }
+//                paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+//
+//                lifecycleScope.launch(Dispatchers.IO) {
+//                    EventBus.getDefault().post(
+//                        MessageEvent(
+//                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
+//                                Gson().toJson(paymentAmount)
+//                            }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
+//                                Gson().toJson(
+//                                    isSelectedCount
+//                                )
+//                            }", true
+//                        )
+//                    )
+//                }
+//
+//                Log.d(
+//                    "LOADER::",
+//                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+//                )
+//
+//                if (cashDiscountType == "SurCharge") {
+//                    paymentAmount =
+//                        String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+//                }
+//
+////        paymentviewModel.tipOnAmount = paymentAmount
+//                //        Above code is commented, because the split amount was not changing, below code is the solution
+//                try {
+//                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+//                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3)
+//                        .toDouble()
+//                } catch (e: Exception) {
+//                    try {
+//                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+//                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
+//                            .toDouble()
+//                    } catch (e: Exception) {
+//                        try {
+//                            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+//                                .substring(
+//                                    0,
+//                                    dashboardViewModel.totalPrice.toString().indexOf(".") + 1
+//                                )
+//                                .toDouble()
+//                        } catch (e: Exception) {
+//                            try {
+//                                paymentviewModel.tipOnAmount =
+//                                    dashboardViewModel.totalPrice.toString()
+//                                        .substring(
+//                                            0,
+//                                            dashboardViewModel.totalPrice.toString().indexOf(".")
+//                                        )
+//                                        .toDouble()
+//                            } catch (e: Exception) {
+//                            }
+//                        }
+//                    }
+//                }
+////                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+////                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+//
+//                /**
+//                 * Added to check tip details
+//                 * **/
+//
+//                dashboardViewModel.apply {
+//                    totalAmount = paymentAmount
+//                    paymentTypeForTip = "card"
+//                }
+
+
+//                tipAmountToPaymentDevice = tipAmount + MethodUtils.calculateCashDiscount(
+//                    tipAmount ,
+//                    prefProvider,
+//                    requireContext()
+//                )
+//
+//                paymentAmount += tipAmountToPaymentDevice
+
                 subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
-
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener dashboardViewModel.subTotalPrice-> ${
-                            Gson().toJson(dashboardViewModel.subTotalPrice)
-                        } , isSelectedCount-> ${isSelectedCount}", true
-                    )
-                )
-
-                Log.d(
-                    "LOADER::",
-                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                )
                 totalServiceCharge =
                     String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
                 totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
                 totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
                 cashDiscountSurcharge =
-                    MethodUtils.getLatestCashDiscountOrSurCharge(
-                        WholetotalPrice,
-                        prefProvider,
-                        requireContext()
-                    ) / isSelectedCount
-//                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-//                        0.0
-//                    } else {
-//                        MethodUtils.getLatestCashDiscountOrSurCharge(
-//                            WholetotalPrice,
-//                            prefProvider,
-//                            requireContext()
-//                        ) / isSelectedCount
-//                    }
+                    String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
                 paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-
-                lifecycleScope.launch(Dispatchers.IO) {
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
-                                Gson().toJson(paymentAmount)
-                            }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
-                                Gson().toJson(
-                                    isSelectedCount
-                                )
-                            }", true
-                        )
-                    )
-                }
-
-                Log.d(
-                    "LOADER::",
-                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                )
-
+                Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+                Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
                 }
+                //  makePaymentCreditCard()
 
-//        paymentviewModel.tipOnAmount = paymentAmount
-                //        Above code is commented, because the split amount was not changing, below code is the solution
-                try {
-                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3)
-                        .toDouble()
-                } catch (e: Exception) {
-                    try {
-                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
-                            .toDouble()
-                    } catch (e: Exception) {
-                        try {
-                            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                                .substring(
-                                    0,
-                                    dashboardViewModel.totalPrice.toString().indexOf(".") + 1
-                                )
-                                .toDouble()
-                        } catch (e: Exception) {
-                            try {
-                                paymentviewModel.tipOnAmount =
-                                    dashboardViewModel.totalPrice.toString()
-                                        .substring(
-                                            0,
-                                            dashboardViewModel.totalPrice.toString().indexOf(".")
-                                        )
-                                        .toDouble()
-                            } catch (e: Exception) {
-                            }
-                        }
-                    }
-                }
-//                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-//                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
 
                 /**
                  * Added to check tip details
@@ -2443,13 +2478,11 @@ class CheckoutDineInFragmentNew : Fragment,
                 }
 
 
-//                tipAmountToPaymentDevice = tipAmount + MethodUtils.calculateCashDiscount(
-//                    tipAmount ,
-//                    prefProvider,
-//                    requireContext()
-//                )
-//
-//                paymentAmount += tipAmountToPaymentDevice
+                paymentAmount += tipAmount
+
+
+                val rawAmountString =  binding.tvCard.text.toString()
+                paymentAmount = Regex("\\d+\\.\\d+").find(rawAmountString)!!.value.toDouble()
                 Log.d(
                     "LOADER::",
                     "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
