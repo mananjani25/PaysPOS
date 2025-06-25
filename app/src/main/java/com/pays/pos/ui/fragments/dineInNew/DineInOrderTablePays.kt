@@ -11280,6 +11280,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 true
                             )
                         }
+                        prefProvider.setValueboolean(Constants.DO_DINE_NOTE_PRINT, true)
                     }
                 }
             }
@@ -13829,24 +13830,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             when(printerType) {
                 CommonPrinterTypes.SunmiCloudPrinter -> {
+                    prefProvider.setValueboolean(Constants.DO_DINE_NOTE_PRINT, false)
                     PrintSunmiUtils.cutPaper()
                 }
 
                 CommonPrinterTypes.SunmiInnerPrinter -> {
+                    prefProvider.setValueboolean(Constants.DO_DINE_NOTE_PRINT, false)
                     PrintSunmiUtils.cutPaperInner()
                 }
 
                 CommonPrinterTypes.LandiInnerPrinter -> {
+                    prefProvider.setValueboolean(Constants.DO_DINE_NOTE_PRINT, false)
                     LPrint.paperCut()
                 }
 
                 CommonPrinterTypes.TspStarPrinter -> {
-
+                    prefProvider.setValueboolean(Constants.DO_DINE_NOTE_PRINT, false)
                 }
             }
-
-
-
 
             //ProgressUtils.dismissProgressDialog()
 
@@ -14442,12 +14443,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             list.forEachIndexed { itemIndex, it ->
                 if (it.isHeader == 1) {
                     it.item?.let {
+                        Log.e("checkForAutoFire", "DO_DINE_NOT_PRINT : ${prefProvider.getValueboolean(Constants.DO_DINE_NOTE_PRINT, false)}")
 
-                            if(!it.isFired) {
+                        if(!it.isFired || (prefProvider.getValueboolean(Constants.DO_DINE_NOTE_PRINT, false) == true) ) {
                             /**
                              * First condition works for manual printing and second will work for auto printing
                              */
-                            if ((!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
+                            //    Log.e(TAG, "checkForAutoFire: isFried: ${it.isFired}")
+
+                                if ((!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
+                                Log.e(TAG, "checkForAutoFire: note: ${it.note}")
                                 fireItemsList.add(it)
                                 listItem.add(it)
                                 //it.isFired = true
@@ -14471,7 +14476,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     it.isFired && it.modifier_set_ids == item.modifier_set_ids
                                         }
 
-                                    if (foundItemList.isNotEmpty()) {
+
+                                    if (foundItemList.isNotEmpty() || dashboardViewModel.order_note.isNotEmpty()) {
                                         val foundItem = foundItemList.first()
 
                                         /***
@@ -14481,6 +14487,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         if (it.itemQuantity != foundItem.itemQuantity ||
                                             it.note != foundItem.note ||
                                             !dashboardViewModel.checkModifierNew(it, foundItem)
+                                            || dashboardViewModel.order_note.isNotEmpty()
                                         ) {
 
 
@@ -14693,10 +14700,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                             "printerName  ${kit.name} "
                                                         )
                                                         autoPrintEnable = true
-                                                        if (!prefProvider.getValueboolean(
-                                                                IS_PRINTER_QUEUE_ENABLE,
-                                                                false
-                                                            )
+                                                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
                                                         ) {
                                                             initKitchenPrinter(
                                                                 kit,
@@ -14724,8 +14728,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     ) {
 
-                                        if (checkItemsforPrinterDineIn(
-                                                listItem,
+                                        if (checkItemsforPrinterDineIn(listItem,
                                                 kit.printerCategories.toCollection(
                                                     arrayListOf()
                                                 )
