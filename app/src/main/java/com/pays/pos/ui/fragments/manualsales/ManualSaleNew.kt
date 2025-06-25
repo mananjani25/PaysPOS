@@ -253,54 +253,54 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setUpToolbar()//created By Zeeshan
         callbackForDialog()
         setupTaxAdapter()
-        binding.linearTaxDetail.setOnClickListener {
-            if (taxBirfurcationAdapter.taxlist.size > 0) {
-                if (!taxClickable) {
-                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
-                    taxClickable = true
-                    if (taxBirfurcationAdapter.taxlist.size == 1) {
-                        if (viewModel.order_note.isNotEmpty()) {
-                            binding.linearBottomInfo.layoutParams.height =
-                                resources.getDimension(R.dimen._75sdp).toInt()
-                        } else {
-                            binding.linearBottomInfo.layoutParams.height =
-                                resources.getDimension(R.dimen._60sdp).toInt()
-                        }
-                    } else if (taxBirfurcationAdapter.taxlist.size == 2) {
-                        if (viewModel.order_note.isNotEmpty()) {
-                            binding.linearBottomInfo.layoutParams.height =
-                                resources.getDimension(R.dimen._85sdp).toInt()
-                        } else {
-                            binding.linearBottomInfo.layoutParams.height =
-                                resources.getDimension(R.dimen._75sdp).toInt()
-                        }
-                    } else {
-                        if (viewModel.order_note.isNotEmpty()) {
-                            binding.linearBottomInfo.layoutParams.height =
-                                resources.getDimension(R.dimen._110sdp).toInt()
-                        } else {
-                            binding.linearBottomInfo.layoutParams.height =
-                                resources.getDimension(R.dimen._100sdp).toInt()
-                        }
-
-                    }
-                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
-                    binding.relativeDynamicTax.visible()
-                } else {
-                    if (viewModel.order_note.isNotEmpty()) {
-                        binding.linearBottomInfo.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
-                    } else {
-                        binding.linearBottomInfo.layoutParams.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
-                    }
-                    taxClickable = false
-                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-                    binding.relativeDynamicTax.gone()
-                }
-            }
-
-        }
+//        binding.linearTaxDetail.setOnClickListener {
+//            if (taxBirfurcationAdapter.taxlist.size > 0) {
+//                if (!taxClickable) {
+//                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+//                    taxClickable = true
+//                    if (taxBirfurcationAdapter.taxlist.size == 1) {
+//                        if (viewModel.order_note.isNotEmpty()) {
+//                            binding.linearBottomInfo.layoutParams.height =
+//                                resources.getDimension(R.dimen._75sdp).toInt()
+//                        } else {
+//                            binding.linearBottomInfo.layoutParams.height =
+//                                resources.getDimension(R.dimen._60sdp).toInt()
+//                        }
+//                    } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+//                        if (viewModel.order_note.isNotEmpty()) {
+//                            binding.linearBottomInfo.layoutParams.height =
+//                                resources.getDimension(R.dimen._85sdp).toInt()
+//                        } else {
+//                            binding.linearBottomInfo.layoutParams.height =
+//                                resources.getDimension(R.dimen._75sdp).toInt()
+//                        }
+//                    } else {
+//                        if (viewModel.order_note.isNotEmpty()) {
+//                            binding.linearBottomInfo.layoutParams.height =
+//                                resources.getDimension(R.dimen._110sdp).toInt()
+//                        } else {
+//                            binding.linearBottomInfo.layoutParams.height =
+//                                resources.getDimension(R.dimen._100sdp).toInt()
+//                        }
+//
+//                    }
+////                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+////                    binding.relativeDynamicTax.visible()
+//                } else {
+//                    if (viewModel.order_note.isNotEmpty()) {
+//                        binding.linearBottomInfo.layoutParams.height =
+//                            resources.getDimension(R.dimen._60sdp).toInt()
+//                    } else {
+//                        binding.linearBottomInfo.layoutParams.height =
+//                            resources.getDimension(R.dimen._50sdp).toInt()
+//                    }
+//                    taxClickable = false
+////                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+//                    binding.relativeDynamicTax.gone()
+//                }
+//            }
+//
+//        }
 
 
 
@@ -341,8 +341,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
-            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-            binding.imgDropdown.visible()
+//            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+//            binding.imgDropdown.visible()
             taxBirfurcationAdapter.setList(taxlistData)
             binding.relativeDynamicTax.gone()
         } else {
@@ -353,8 +353,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
-            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-            binding.imgDropdown.gone()
+//            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+//            binding.imgDropdown.gone()
             binding.relativeDynamicTax.gone()
             taxClickable = false
         }
@@ -371,8 +371,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         taxClickable = false
-        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-        binding.imgDropdown.gone()
+//        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+//        binding.imgDropdown.gone()
         binding.relativeDynamicTax.gone()
     }
 
@@ -1205,7 +1205,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     }
                 }
-                binding.imgDropdown.gone()
+//                binding.imgDropdown.gone()
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
                 binding.relativeDynamicTax.gone()
@@ -1614,7 +1614,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
                 taxClickable = false
-                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+//                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                 binding.relativeDynamicTax.gone()
                 addItemToCart(binding.llKeypad.txtAmount.text.toString(), true)
                 binding.llKeypad.txtAmount.setText("0.00")
@@ -1689,7 +1689,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (manualSaleCartAdapterNew.getList().isEmpty()) {
                 tabCartItemModel.customItemID = 1
-                binding.imgDropdown.visible()
+//                binding.imgDropdown.visible()
             } else {
 
                 var id =
@@ -1697,7 +1697,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 id++
 
                 tabCartItemModel.customItemID = id
-                binding.imgDropdown.visible()
+//                binding.imgDropdown.visible()
             }
 
             tabCartItemModel.itemId = manualItemId
