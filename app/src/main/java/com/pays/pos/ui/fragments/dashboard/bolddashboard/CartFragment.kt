@@ -5541,71 +5541,48 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     }
 
-//    private fun getOrderTypes() {
-//        orderTypeAdapter = OrderTypeAdapter()
-//        orderTypeAdapter?.setCallback(this)
-//        binding.rvOrderType?.adapter = orderTypeAdapter
-//
-//        viewModel.orderTypes().observe(requireActivity()) {
-//
-//            Log.e(TAG, "checkAllOrderTypes:  ${Gson().toJson(it.data)}")
-//
-//            val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
-//
-//            /**
-//             * List contains order types that we don't want to show on POS order types
-//             *
-//             */
-//            val orderTypesToRemove = listOf(
-//                "OnlineWebOrder",
-//                "OnlineOrder",
-//                "KioskTakeout",
-//                "KioskOpenorder",
-//                "ThirdPartyOrder"
-//            )
-//
-//            orderTypesToRemove.forEach { orderTypeToRemove ->
-//
-//                val found =
-//                    orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove, true) }
-//
-//                if (found?.isNotEmpty() == true)
-//                    orderTypesToShow.remove(found.first())
-//            }
-//
-//            orderTypesToShow?.removeIf { orderType ->
-//                orderTypesToRemove.contains(orderType.orderType)
-//            }
-//
-//
-//            orderTypesToShow?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
-//        }
-//
-//    }
-    private fun getOrderTypes(){
-        orderTypeAdapter = OrderTypeAdapter().also {
-            it.setCallback(this)
-            binding.rvOrderType?.adapter = it
-        }
+    private fun getOrderTypes() {
+        orderTypeAdapter = OrderTypeAdapter()
+        orderTypeAdapter?.setCallback(this)
+        binding.rvOrderType?.adapter = orderTypeAdapter
 
-        viewModel.orderTypes().observe(requireActivity()) { result ->
-            val allOrderTypes = result?.data ?: emptyList()
+        viewModel.orderTypes().observe(requireActivity()) {
 
-            Log.e(TAG, "checkAllOrderTypes: ${Gson().toJson(allOrderTypes)}")
+            Log.e(TAG, "checkAllOrderTypes:  ${Gson().toJson(it.data)}")
 
-            val orderTypesToShow = listOf(
-                "TakeOut",
-                "PhoneOrder",
-                "DineIn",
-                "OpenOrder"
+            val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
+
+            /**
+             * List contains order types that we don't want to show on POS order types
+             *
+             */
+            val orderTypesToRemove = listOf(
+                "OnlineWebOrder",
+                "OnlineOrder",
+                "KioskTakeout",
+                "KioskOpenorder",
+                "ThirdPartyOrder"
             )
 
-            val filteredOrderTypes = allOrderTypes
-                .filter { it.orderType in orderTypesToShow }
+            orderTypesToRemove.forEach { orderTypeToRemove ->
 
-            orderTypeAdapter?.addAll(filteredOrderTypes)
+                val found =
+                    orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove, true) }
+
+                if (found?.isNotEmpty() == true)
+                    orderTypesToShow.remove(found.first())
+            }
+
+            orderTypesToShow?.removeIf { orderType ->
+                orderTypesToRemove.contains(orderType.orderType)
+            }
+
+
+            orderTypesToShow?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
         }
+
     }
+
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
