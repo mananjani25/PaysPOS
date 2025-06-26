@@ -284,8 +284,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 //                        }
 //
 //                    }
-////                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
-////                    binding.relativeDynamicTax.visible()
+//                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+//                    binding.relativeDynamicTax.visible()
 //                } else {
 //                    if (viewModel.order_note.isNotEmpty()) {
 //                        binding.linearBottomInfo.layoutParams.height =
@@ -295,7 +295,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 //                            resources.getDimension(R.dimen._50sdp).toInt()
 //                    }
 //                    taxClickable = false
-////                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+//                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
 //                    binding.relativeDynamicTax.gone()
 //                }
 //            }
