@@ -1053,6 +1053,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (binding.enteredSplitAmount.text.toString().isNotEmpty() && binding.enteredSplitAmount.text.toString().replace("$", "").toDouble() > 0.00) {
                 dashboardViewModel.amountWiseSplit.value = binding.enteredSplitAmount.text.toString().replace("$", "").toDouble()
                 if (dashboardViewModel.amountWiseSplit.value != WholetotalPrice) {
+                    dashboardViewModel.paymentInProgress.value = false
+                    dashboardViewModel.tipBeforeEnabled = true
                     dashboardViewModel.isAmountWiseSplit.value = true
                     isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!
                     dashboardViewModel.amountWiseSplit.value?.let {
@@ -6891,6 +6893,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                        presentation.shouldHighlightNoTip()
 //                        presentation.updateTotals(
 //                            binding.tvCash.text.toString(),
 //                            binding.tvCard.text.toString()
