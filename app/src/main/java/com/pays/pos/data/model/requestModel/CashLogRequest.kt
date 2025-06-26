@@ -11,7 +11,7 @@ data class CashLogRequest(
     @SerializedName("event")
     val event: String,
     @SerializedName("order_id")
-    val orderId: Int,
+    val orderId: String,
     @SerializedName("payment_id")
     val paymentId: Int,
     @SerializedName("reason")

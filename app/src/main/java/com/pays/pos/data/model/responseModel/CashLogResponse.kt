@@ -43,7 +43,7 @@ data class CashLogResponse(
             @SerializedName("custom_order_id")
             val custom_order_id: Int,
             @SerializedName("order_type_name")
-            val orderTypeName: String,
+            private val _orderTypeName: String?,
             @SerializedName("payment_id")
             val paymentId: Int,
             @SerializedName("reason")
@@ -56,6 +56,9 @@ data class CashLogResponse(
             val tipSettingId: Any,
             @SerializedName("total_tips")
             val totalTips: Any
-        )
+        ) {
+            val orderTypeName: String
+                get() = _orderTypeName ?: "-"
+        }
     }
 }

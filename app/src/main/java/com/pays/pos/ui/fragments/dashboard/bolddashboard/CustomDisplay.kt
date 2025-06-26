@@ -3298,7 +3298,7 @@ class CustomDisplay(
             tippedAmount,
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
             "in",
-            cashLogServerOrderIdMain,
+            cashLogServerOrderIdMain.toString(),
             cashLogPaymentIdMain,
             "Tip added to the order",
             prefProvider.getValueInt(Constants.TERMINAL_ID, -1),

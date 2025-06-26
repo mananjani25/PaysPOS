@@ -725,7 +725,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             tippedAmount,
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
             "in",
-            singleTransaction?.orderId ?: -1,
+            singleTransaction?.orderId.toString(),
             singleTransaction?.id ?: -1,
             "Tip added to the order",
             prefProvider.getValueInt(Constants.TERMINAL_ID, -1),

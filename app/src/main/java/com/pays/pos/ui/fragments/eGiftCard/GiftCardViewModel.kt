@@ -536,7 +536,7 @@ class GiftCardViewModel @Inject constructor(
                                             Constants.EMPLOYEE_ID, 0
                                         ),
                                         "in",
-                                        it.id,//This may be wrong
+                                        "",
                                         it.payments[it.payments.size - 1].id,
                                         "Gift card purchase",
                                         prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
@@ -862,7 +862,7 @@ class GiftCardViewModel @Inject constructor(
                                             Constants.EMPLOYEE_ID, 0
                                         ),
                                         "in",
-                                        it.id,//This may be wrong
+                                        "",
                                         it.payments[it.payments.size - 1].id,
                                         "Gift card recharge",
                                         prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
