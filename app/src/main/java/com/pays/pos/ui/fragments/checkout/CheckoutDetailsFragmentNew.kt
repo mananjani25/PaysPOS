@@ -4297,6 +4297,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val nameValuePair1 = iposResponse?.optJSONObject("nameValuePairs")
             val responseCode = nameValuePair1?.optString("responseCode") ?: ""
             val responseMessage = nameValuePair1?.optString("responseMessage") ?: ""
+            val errResponseMessage = nameValuePair1?.optString("errResponseMessage")
             val rrn = nameValuePair1?.optString("rrn") ?: ""
             val transactionReferenceId = nameValuePair1?.optString("transactionReferenceId") ?: ""
 
@@ -4307,7 +4308,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 AlertUtils.showCustomAlert(
                     requireContext(),
-                    responseMessage)
+                    errResponseMessage)
             }
 
         } catch (e: JSONException) {
