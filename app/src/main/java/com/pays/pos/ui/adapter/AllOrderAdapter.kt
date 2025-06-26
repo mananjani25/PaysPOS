@@ -2,7 +2,6 @@ package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +30,7 @@ import com.pays.pos.utils.callback.OrderCallBack
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 
 class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
@@ -381,15 +380,15 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.imgIndicator.setColorFilter(ContextCompat.getColor(context, R.color.white))
             }
 
-            if(item.payments.isNotEmpty() && item.order_status == "Pending" && item.paymentStatus != "Paid" && item.refundDetails.refundedAmount == 0.0 ) {
-                binding.llMainLayout.setBackgroundColor(
-                    ContextCompat.getColor(context, R.color.preAuthGreen)
-                )
-            }else {
-                binding.llMainLayout.setBackgroundColor(
-                    ContextCompat.getColor(context, R.color.backgroundColor)
-                )
-            }
+//            if(item.payments.isNotEmpty() && item.order_status == "Pending" && item.paymentStatus != "Paid" && item.refundDetails.refundedAmount == 0.0 ) {
+//                binding.llMainLayout.setBackgroundColor(
+//                    ContextCompat.getColor(context, R.color.preAuthGreen)
+//                )
+//            }else {
+//                binding.llMainLayout.setBackgroundColor(
+//                    ContextCompat.getColor(context, R.color.backgroundColor)
+//                )
+//            }
             Log.e(TAG,"checkOrderTab  ${orderedTab}")
 
             if (orderedTab == PHONE_ORDER_TAB && item.order_status.equals("UpComing",true)){
