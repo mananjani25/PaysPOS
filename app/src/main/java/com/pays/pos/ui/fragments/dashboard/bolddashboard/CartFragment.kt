@@ -5560,8 +5560,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 "OnlineWebOrder",
                 "OnlineOrder",
                 "KioskTakeout",
-                "OnlineWebOrder",
-                "KioskOpenorder"
+                "KioskOpenorder",
+                "ThirdPartyOrder"
             )
 
             orderTypesToRemove.forEach { orderTypeToRemove ->
@@ -5582,6 +5582,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         }
 
     }
+
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
