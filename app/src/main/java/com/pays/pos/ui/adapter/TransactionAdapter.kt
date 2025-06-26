@@ -166,17 +166,23 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 //            }
 
             try {
-            if (model.orderDetails != null){
-                if (model.employeeName != null){
-                    if (model.orderDetails.orderTypeName.equals("Kiosk TakeOut")){
-                        itemBinding.txtTeamName?.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
-                    } else {
-                        itemBinding.txtTeamName?.text = model.employeeName
-                    }
-                }else{
-                    itemBinding.txtTeamName?.text = ""
+                //don't replace it with dot(.)
+                val isKioskTakeOut = model?.orderDetails?.orderTypeName == "Kiosk TakeOut"
+                itemBinding.txtTeamName.text = if (isKioskTakeOut)   {
+                    prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+                } else {
+                    model.employeeName
                 }
-            }
+
+//                if (model.orderDetails != null) {
+//                    if (model.orderDetails.orderTypeName == "Kiosk TakeOut") {
+//                        itemBinding.txtTeamName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+//                    } else {
+//                        itemBinding.txtTeamName.text = model.employeeName
+//                    }
+//                } else {
+//                    itemBinding.txtTeamName.text = model.employeeName
+//                }
             }catch (e: Exception) {
                 e.printStackTrace()
             }
