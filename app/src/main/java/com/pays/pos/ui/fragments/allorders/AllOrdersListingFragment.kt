@@ -2933,9 +2933,14 @@ class AllOrdersListingFragment(
                                     /**
                                      * Print total amount
                                      */
-                                    val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(order.totalAmount)
-
+                                    var totalAmt: Double
+                                    if (receiptModel.orderType == KIOSK_OPEN_ORDER) {
+                                        totalAmt =
+                                            MethodUtils.roundOffAmountDouble(order.totalAmount + receiptModel.cash_discount_or_surcharge!!)
+                                    }else {
+                                        totalAmt =
+                                            MethodUtils.roundOffAmountDouble(order.totalAmount)
+                                    }
                                     lineBreak()
                                     printBoldLeft(
                                         padLine(
@@ -2949,14 +2954,23 @@ class AllOrdersListingFragment(
                                     if (receiptModel.cashDiscountType == "CashDiscount"
                                     ) {
 
+                                        var totalCashDiscount: Double
+                                        if (receiptModel.orderType == KIOSK_OPEN_ORDER) {
+                                            totalCashDiscount =
+                                                MethodUtils.roundOffAmountDouble(receiptModel.cash_discount_or_surcharge!!)
+
+                                        } else {
+                                            totalCashDiscount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                                                receiptModel.totalAmount,
+                                                prefProvider,
+                                                requireContext()
+                                            )
+                                        }
+
                                         val str5 = padLine(
                                             "Pay by Cash",
                                             "$" + MethodUtils.roundOffAmountString(
-                                                receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(
-                                                    receiptModel.totalAmount,
-                                                    prefProvider,
-                                                    requireContext()
-                                                )
+                                                receiptModel.totalAmount - totalCashDiscount
                                             ),
                                             if (customerSettingModel.fonts == Constants.LARGE) {
                                                 23
@@ -8949,7 +8963,15 @@ class AllOrdersListingFragment(
 
             if (receiptModel.totalAmount != null) {
 
-                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+//                val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+                var totalAmt: Double
+                if (receiptModel.orderType == KIOSK_OPEN_ORDER) {
+                    totalAmt =
+                        MethodUtils.roundOffAmountDouble(receiptModel.totalAmount + receiptModel.cash_discount_or_surcharge!!)
+                }else {
+                    totalAmt =
+                        MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
+                }
 
                 val str5 = padLine(
                     "Total Price",
@@ -8970,16 +8992,21 @@ class AllOrdersListingFragment(
 
             if (receiptModel.cashDiscountType == "CashDiscount"
             ) {
-
                 val str5 = padLine(
                     "Pay by Cash",
-                    "$" + MethodUtils.roundOffAmountString(
-                        receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(
-                            receiptModel.totalAmount,
-                            prefProvider,
-                            requireContext()
+                    "$" + if (receiptModel.orderType == KIOSK_OPEN_ORDER) {
+                        MethodUtils.roundOffAmountString(
+                            receiptModel.totalAmount
+                            )
+                    } else {
+                        MethodUtils.roundOffAmountString(
+                            receiptModel.totalAmount - MethodUtils.getLatestCashDiscountOrSurCharge(
+                                receiptModel.totalAmount,
+                                prefProvider,
+                                requireContext()
+                            )
                         )
-                    ),
+                    },
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
