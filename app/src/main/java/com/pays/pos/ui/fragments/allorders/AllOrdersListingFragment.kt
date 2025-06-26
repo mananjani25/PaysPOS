@@ -5893,65 +5893,67 @@ class AllOrdersListingFragment(
                             }
                         }
                     }
+                }
+            }
 
-                    if (orderData.note.isNotEmpty() && kitchenSettingModel.showOrderNote) {
-                        lineFeed(2)
-                        setAlignment(1)
-                        appendText("Order Note")
+            if (orderData.note.isNotEmpty() && kitchenSettingModel.showOrderNote) {
+                lineFeed(2)
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(orderData.note)
+                lineFeed(2)
+
+
+            }
+
+            lineFeed(1)
+
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
+
+                try {
+
+                    if (orderData?.customer != null) {
+
+                        setAlignment(0)
+                        appendText("Customer Details")
                         lineFeed(1)
-                        appendText(orderData.note)
-                        lineFeed(2)
+                        appendText("------------------------")
+                        lineFeed(1)
+                        if (kitchenSettingModel.showCustomerName) {
 
 
-                    }
+                            appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
+                            lineFeed(1)
+                        }
+                        try {
+                            if (kitchenSettingModel.showCustomerPhone) {
 
-                    lineFeed(1)
+                                if (orderData?.customer?.phones?.isNotEmpty()) {
 
-                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
+                                    orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                        appendText(
+                                            MethodUtils.formatPhoneNumber(it)
+                                        )
+                                        lineFeed(1)
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+
+                        }
 
                         try {
+                            if (kitchenSettingModel.showCustomerAddress) {
 
-                            if (orderData?.customer != null) {
+                                if (orderData?.orderType.trim()
+                                        .lowercase() == "Open Order".trim()
+                                        .lowercase() && orderData?.deliveryType.trim()
+                                        .lowercase() == "Pickup".trim()
+                                        .lowercase()
+                                ) {
 
-                                setAlignment(0)
-                                appendText("Customer Details")
-                                lineFeed(1)
-                                appendText("------------------------")
-                                lineFeed(1)
-                                if (kitchenSettingModel.showCustomerName) {
-
-
-                                    appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
-                                    lineFeed(1)
-                                }
-                                try {
-                                    if (kitchenSettingModel.showCustomerPhone) {
-
-                                        if (orderData?.customer?.phones?.isNotEmpty()) {
-
-                                            orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                                appendText(
-                                                    MethodUtils.formatPhoneNumber(it)
-                                                )
-                                                lineFeed(1)
-                                            }
-                                        }
-                                    }
-                                } catch (e: Exception) {
-
-                                }
-
-                                try {
-                                    if (kitchenSettingModel.showCustomerAddress) {
-
-                                        if (orderData?.orderType.trim()
-                                                .lowercase() == "Open Order".trim()
-                                                .lowercase() && orderData?.deliveryType.trim()
-                                                .lowercase() == "Pickup".trim()
-                                                .lowercase()
-                                        ) {
-
-                                        } else if (orderData?.customer?.addresses?.isNotEmpty()) {
+                                } else if (orderData?.customer?.addresses?.isNotEmpty()) {
 
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -5961,55 +5963,50 @@ class AllOrdersListingFragment(
 //                            }
 
 //                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                            orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                                ?.forEach {
+                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                        ?.forEach {
 
-                                                    if (it.typeOfAddress.equals(
-                                                            SHIPPING_ADDRESS,
-                                                            ignoreCase = true
-                                                        )
-                                                    ) {
-                                                        appendText(
-                                                            it.fullAddress
-                                                        )
-                                                        lineFeed(1)
-                                                    }
-                                                }
-
-
+                                            if (it.typeOfAddress.equals(
+                                                    SHIPPING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                appendText(
+                                                    it.fullAddress
+                                                )
+                                                lineFeed(1)
+                                            }
                                         }
-                                    }
-                                } catch (e: Exception) {
+
 
                                 }
-
                             }
-
                         } catch (e: Exception) {
-                            e.printStackTrace()
+
                         }
+
                     }
 
-
-
-
-                    lineFeed(6)
-                    cutPaper(true)
-
-
-
-                    Log.e(TAG, "PushContent ${data.ipAddress}")
-                    Log.e(
-                        "checkKey", "pushContent: checkSN:${data.ipAddress} ${
-                            pushContent(
-                                trade_no =
-                                String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
-                                "${data.ipAddress}", 1, 1, "您有新的订单", 0
-                            )
-                        }"
-                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
+
+            lineFeed(6)
+            cutPaper(true)
+
+            Log.e(TAG, "PushContent ${data.ipAddress}")
+            Log.e(
+                "checkKey", "pushContent: checkSN:${data.ipAddress} ${
+                    pushContent(
+                        trade_no =
+                            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                        "${data.ipAddress}", 1, 1, "您有新的订单", 0
+                    )
+                }"
+            )
+
+
         } else {
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
                 try {
@@ -6224,7 +6221,7 @@ class AllOrdersListingFragment(
                                                                             )
                                                                             .actionPrintText(
                                                                                 content =
-                                                                                "--------------------------------------------"
+                                                                                    "--------------------------------------------"
                                                                             )
                                                                     )
 
