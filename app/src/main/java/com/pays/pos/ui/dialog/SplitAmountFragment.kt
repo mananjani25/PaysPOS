@@ -27,6 +27,8 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     private var isCustom: Boolean = false
     private var totalPrice: Double = 0.0
     private var splitValue: Int = 1
+    private var paymentAmount : Double = 0.0
+    private var isCashDiscount = ""
 //    private var isAmountWiseSplit: Boolean = false
     private lateinit var binding: DailogSplitAmountBinding
     var current = ""
@@ -88,6 +90,8 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
 
     private fun setupData() {
         totalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+        paymentAmount = arguments?.getDouble("paymentAmount",0.0) ?: 0.0
+        isCashDiscount = arguments?.getString("isCashDiscount","") ?: ""
 //        splitValue = requireArguments().getInt("splitValue")
 
         binding.edtAmount.addTextChangedListener(this)
@@ -101,7 +105,13 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
         (getString(R.string.symbole) + String.format(
             "%.2f",
             totalPrice
-        )).also { binding.txtAmount.text = it }
+        )).also {
+            if(isCashDiscount == "CashDiscount"){
+
+                binding.txtAmount.text = getString(R.string.symbole) + String.format("%.2f",paymentAmount)
+            }
+            else binding.txtAmount.text = it
+        }
         (getString(R.string.symbole) + String.format(
             "%.2f",
             totalPrice
