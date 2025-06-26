@@ -909,7 +909,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
 
                 Status.LOADING -> {
-                    activity?.let { ProgressUtils.showProgressDialog(it) }
+                    if (isAdded && activity != null) {
+                        activity?.let { ProgressUtils.showProgressDialog(it) }
+                    }
                 }
             }
         }
