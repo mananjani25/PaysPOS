@@ -2,47 +2,42 @@ package com.pays.pos.ui.fragments.phoneOrder
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Point
 import android.os.Bundle
-import android.text.Editable
 import android.text.TextUtils
-import android.text.TextWatcher
-import android.text.style.UnderlineSpan
 import android.util.Log
 import android.util.Patterns
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.*
-import androidx.lifecycle.viewModelScope
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.pays.pos.BuildConfig
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.snackbar.Snackbar
 import com.pays.pos.R
-import com.pays.pos.data.entities.TbAddress
 import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbPhones
 import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.pays.pos.data.remote.Constants
-import com.pays.pos.data.remote.Constants.AUTH_TOKEN
 import com.pays.pos.data.remote.Constants.DELIVERY
-import com.pays.pos.data.remote.Constants.IS_CLOCKOUT
-import com.pays.pos.data.remote.Constants.ORDER_COMPLETED
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PICK_UP
-import com.pays.pos.databinding.FragmentLoginBinding
 import com.pays.pos.databinding.FragmentPhoneOrderBinding
-import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.activities.MainActivity
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.CartFragment
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.loginscreen.LoginViewModel
 import com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter
 import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
@@ -50,19 +45,7 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
-import com.pays.pos.utils.statusUtils.Status
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.messaging.FirebaseMessaging
-import com.pays.pos.data.remote.Constants.ORDER_TYPE
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import java.util.ArrayList
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -363,6 +346,8 @@ class PhoneOrderFragment : Fragment() {
                     data?.email = MethodUtils.getText(binding.edtEmail)
                     data?.enroll_to_loyalty = selectedCustomer?.enroll_to_loyalty ?: true
                     data?.final_reward = selectedCustomer?.final_reward ?: 0
+                    data?.isTokenized = selectedCustomer?.isTokenized ?: false
+                    data?.cardToken = selectedCustomer?.cardToken ?: ""
 
                     val phone = CreateCustomerRequestModel.Customer.Phone(
                         id = if ((selectedCustomer?.phones?.size ?: 0) > 0) {

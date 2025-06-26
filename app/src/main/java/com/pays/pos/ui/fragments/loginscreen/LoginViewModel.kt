@@ -16,7 +16,6 @@ import com.pays.pos.data.remote.Constants.AUTH_TOKEN
 import com.pays.pos.data.remote.Constants.BASE_URL_NEW
 import com.pays.pos.data.remote.Constants.EMAIL
 import com.pays.pos.data.remote.Constants.LOCATION_ID
-import com.pays.pos.data.remote.Constants.LOCATION_NAME
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.TERMINAL_NAME
 import com.pays.pos.data.remote.Constants.USERNAME
@@ -211,6 +210,8 @@ class LoginViewModel @Inject constructor(
                                     same_as_billing_address = customerListReposne.data.same_as_billing_address,
                                     final_reward = customerListReposne.data.final_reward,
                                     company = customerListReposne.data.company,
+                                    isTokenized = customerListReposne.data.isTokenized,
+                                    cardToken = customerListReposne.data.cardToken,
                                     isSelcted = true,
                                     futureDataAndTime = futureDataAndTime
                                 )
