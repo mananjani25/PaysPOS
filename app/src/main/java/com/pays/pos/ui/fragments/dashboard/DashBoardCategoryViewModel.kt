@@ -6357,10 +6357,21 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
 
-        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
-        if (customerId != -1) {
-            orderAttributeRequestModel.customer_id = "" + customerId
+        Log.e("customerID", "createOrderRequest: 1", )
+        if (cartModel.orderType == DINE_IN){
+            orderAttributeRequestModel.customer_id = ""
+        }else{
+            val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+            if (customerId != -1) {
+                orderAttributeRequestModel.customer_id = "" + customerId
+            }else{
+                orderAttributeRequestModel.customer_id = ""
+            }
         }
+//        val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
+//        if (customerId != -1) {
+//            orderAttributeRequestModel.customer_id = "" + customerId
+//        }
 
         /*  orderAttributeRequestModel.paymentAttributes =
               paymentAttributes(
@@ -7247,6 +7258,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = MethodUtils.roundOffAmountDouble(ttotalDiscount)
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
+            if (cartModel.orderType == DINE_IN){
+                customer_id = ""
+            }
 
             val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
             if (customerId != -1) {
