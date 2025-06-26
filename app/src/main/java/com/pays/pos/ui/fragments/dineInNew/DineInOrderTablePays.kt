@@ -11117,8 +11117,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 lineFeed(2)
             }
 
-            appendText(""+getOrderDetailsResponse?.orderTypeName)
-            lineFeed(2)
+            if (kitchenSettingModel.showOrderType){
+                appendText(""+getOrderDetailsResponse?.orderTypeName)
+                lineFeed(2)
+            }
             appendText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
             lineFeed(2)
@@ -11127,8 +11129,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 //        setCharacterSize(1,1)
             setAlignment(0)
-            appendText("Employee:${getOrderDetailsResponse?.employee?.name}")
-            lineFeed(2)
+            if(kitchenSettingModel.showTeamMember){
+                appendText("Employee:${getOrderDetailsResponse?.employee?.name}")
+                lineFeed(2)
+            }
             appendText("${ getReceiptFormatDateFromUTCServer(
                 requireContext(),
                 getOrderDetailsResponse?.createdAt.toString()
@@ -11227,12 +11231,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-            if (getOrderDetailsResponse?.note?.isNotEmpty() == true) {
-                lineFeed(2)
-                setAlignment(1)
-                appendText("Order Note")
-                lineFeed(1)
-                appendText(getOrderDetailsResponse?.note?:"")
+            if (kitchenSettingModel.showOrderNote){
+                if (getOrderDetailsResponse?.note?.isNotEmpty() == true) {
+                    lineFeed(2)
+                    setAlignment(1)
+                    appendText("Order Note")
+                    lineFeed(1)
+                    appendText(getOrderDetailsResponse?.note?:"")
+                }
             }
 
 
@@ -13298,21 +13304,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
 
-
-
-
-
-
             var orderNote = ""
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 orderNote = getOrderDetailsResponse?.note.toString()
             }
-
-
-
-
-
-
 
             when(printerType) {
                 CommonPrinterTypes.SunmiCloudPrinter -> {
@@ -13368,12 +13363,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 CommonPrinterTypes.SunmiInnerPrinter -> {
                     SunmiPrintHelper.getInstance().initPrinter()
                     SunmiPrintHelper.getInstance().lineWrap(1)
-
                     PrintSunmiUtils.apply {
                         headerText(orderIdToPrint)
 
-                        headerText(orderTypeToPrint)
-                        SunmiPrintHelper.getInstance().lineWrap(1)
+                        if (kitchenSettingModel.showOrderType){
+                            headerText(orderTypeToPrint)
+                            SunmiPrintHelper.getInstance().lineWrap(1)                        }
+
 
                         if (isUpdatedLabel.isNotEmpty())
                             headerText(isUpdatedLabel)
@@ -13382,7 +13378,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         SunmiPrintHelper.getInstance().lineWrap(1)
                         normalTextLarge(receiptId)
-                        normalTextLarge(employee)
+
+                        if (kitchenSettingModel.showTeamMember){
+                            normalTextLarge(employee)
+                        }
                         normalTextLarge(orderTime)
 
                         printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
@@ -13391,8 +13390,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         addOrdersForKitchenDineInInner(item, listItemWithGuest,prefProvider.isOldSunmiFrameworkVersion())
                         SunmiPrintHelper.getInstance().lineWrap(1)
 
-                        if(orderNote.isNotEmpty())
-                            orderNoteInnerLarge(orderNote)
+                        if (kitchenSettingModel.showOrderNote){
+                            if(orderNote.isNotEmpty())
+                                orderNoteInnerLarge(orderNote)
+                        }
 
                         Log.e("Items fired call","Items fired call in SUNMI")
                         dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
@@ -13406,8 +13407,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         lineBreak()
 
-                        printCenter(orderTypeToPrint, isBold = true, fontSize = FONT_B)
-                        lineBreak()
+                        if (kitchenSettingModel.showOrderType){ 
+                            printCenter(orderTypeToPrint, isBold = true, fontSize = FONT_B)
+                            lineBreak()
+                        }
 
                         if(isUpdatedLabel.isNotEmpty())
                         {
@@ -13421,8 +13424,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         printLeft(receiptId)
                         lineBreak()
 
-                        printLeft(employee)
-                        lineBreak()
+                        if(kitchenSettingModel.showTeamMember){
+                            printLeft(employee)
+                            lineBreak()
+                        }
 
                         printLeft(orderTime)
                         lineBreak()
@@ -13439,12 +13444,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         lineBreak()
-                        if(orderNote.isNotEmpty()) {
-                            printCenter("OrderNote", isBold = true, fontSize = FONT_B)
-                            lineBreak()
-                            printCenter(orderNote, isBold = true, fontSize = FONT_B)
-                        }
-                        lineBreak()
+
+                            if(orderNote.isNotEmpty() && kitchenSettingModel.showOrderNote) {
+                                printCenter("OrderNote", isBold = true, fontSize = FONT_B)
+                                lineBreak()
+                                printCenter(orderNote, isBold = true, fontSize = FONT_B)
+                                lineBreak()
+                            }
+
                         lineBreak()
 
                        // dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
