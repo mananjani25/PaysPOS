@@ -5372,12 +5372,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             Log.d(TAG,"Gift Card Observer -> amountDashboard: ${dashboardViewModel.totalPrice}")
                             Log.d(TAG,"Gift Card Observer -> checkSplitCount: ${splitValue}")
 
-                            val actualTotalAmount = WholetotalPrice / isSelectedCount
+                            val actualTotalAmount = if (isAmountWiseSplit) {
+                                amountWiseSplit
+                            } else {
+                                WholetotalPrice / isSelectedCount
+                            }
+
                             val isSplitEnabled = prefProvider.getValueboolean(SPLIT_ENABLE, false) || (splitValue > -1)
                             val giftCardNumber = binding.edtGiftCardNumber.text.toString().trim()
 
                             Log.d(TAG,"Gift Card Observer -> actualTotalAmount: ${actualTotalAmount}")
                             Log.d(TAG,"Gift Card Observer -> isSplitEnabled: ${isSplitEnabled}")
+                            Log.d(TAG,"Gift Card Observer -> isAmountWiseSplit: ${isAmountWiseSplit}")
+                            Log.d(TAG,"Gift Card Observer -> amountWiseSplit: ${amountWiseSplit}")
                             Log.d(TAG,"Gift Card Observer -> giftCardNumber: ${giftCardNumber}")
 
                             val newAmt = if (actualTotalAmount >= it.data.amount) {
@@ -5387,7 +5394,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
 
                             if (actualTotalAmount >= it.data.amount) {
-                                if (isSplitEnabled) {
+                                if (isSplitEnabled || isAmountWiseSplit) {
                                     Log.d(TAG, "check isSplitEnabled")
                                     handleGiftCardRedemption(newAmt, giftCardNumber)
                                 } else {
