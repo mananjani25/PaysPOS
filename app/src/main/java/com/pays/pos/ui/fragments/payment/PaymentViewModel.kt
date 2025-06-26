@@ -3149,7 +3149,12 @@ open class PaymentViewModel @Inject constructor(
             // Tip Before Transaction conditions for surcharge calculation for both ( CASH DISCOUNT / SURCHARGE -> on / off)
             val finalTipWithSurcharge = tipAmount + MethodUtils.calculateCashDiscount(tipAmount,prefProvider)
             tipWithSurchargePercentage = finalTipWithSurcharge
-            cash_discount_or_surcharge += finalTipWithSurcharge - tipAmount
+            if (cashdiscountType.isNotEmpty()) {
+                cash_discount_or_surcharge += finalTipWithSurcharge - tipAmount
+            } else {
+                cash_discount_or_surcharge = 0.0
+            }
+
             //END Tip Before
 
             tipsAdjusted = false
