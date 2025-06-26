@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.pays.pos.R
@@ -84,7 +85,6 @@ class KitchenPrinterListAdapter : RecyclerView.Adapter<KitchenPrinterListAdapter
                     listner.onDeletePrinter(dataList[layoutPosition])
                 }
             }
-
             binding.swtOrderId.setOnCheckedChangeListener(object :
                 CompoundButton.OnCheckedChangeListener {
                 override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
@@ -93,19 +93,36 @@ class KitchenPrinterListAdapter : RecyclerView.Adapter<KitchenPrinterListAdapter
                      }*/
 
                     if (buttonView!!.isPressed) {
-                        if (dataList[layoutPosition].type != AVAILABLE) {
-                            if (isChecked) {
+                        if ( layoutPosition!= RecyclerView.NO_POSITION &&  layoutPosition < dataList.size) {
+                            if (dataList[layoutPosition].type != AVAILABLE) {
+                                if (isChecked) {
+                                    buttonView!!.isChecked = false
+                                    listner.onUpdateKitchenPrinterStatus(
+                                        dataList[layoutPosition],
+                                        isChecked,
+                                        KITCHEN
+                                    )
+                                } else {
+                                    buttonView!!.isChecked = true
+                                    listner.onUpdateKitchenPrinterStatus(
+                                        dataList[layoutPosition],
+                                        isChecked,
+                                        KITCHEN
+                                    )
+                                }
+                            } else if (isChecked && !(dataList.get(layoutPosition).isActive)) {
                                 buttonView!!.isChecked = false
-                                listner.onUpdateKitchenPrinterStatus(dataList[layoutPosition], isChecked, KITCHEN)
-                            } else {
-                                buttonView!!.isChecked = true
-                                listner.onUpdateKitchenPrinterStatus(dataList[layoutPosition], isChecked, KITCHEN)
+                                listner.onPrinterActive(
+                                    dataList.get(layoutPosition),
+                                    layoutPosition
+                                )
+                                /*dataList.removeAt(layoutPosition)
+                            notifyDataSetChanged()*/
                             }
-                        } else if (isChecked && !(dataList.get(layoutPosition).isActive)) {
-                            buttonView!!.isChecked = false
-                            listner.onPrinterActive(dataList.get(layoutPosition), layoutPosition)
-                            /*dataList.removeAt(layoutPosition)
-                        notifyDataSetChanged()*/
+                        } else {
+                            // Safe fallback if list is empty or position invalid
+                            Log.e("KitchenSwitch", "Invalid adapter position or empty list. Prevented crash.")
+                            Toast.makeText(buttonView?.context, "Something went wrong. Please try again.", Toast.LENGTH_SHORT).show()
                         }
 
                     }
