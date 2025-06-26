@@ -195,20 +195,14 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     }
 
 
-    private fun addNote() {
+    private fun  addNote() {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
             item?.let {
-                if (!it.note.equals(
-                        binding.edtNote.text.toString().trim()
-                    ) && prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, "").isNotEmpty()
+                if (!it.note.equals(binding.edtNote.text.toString().trim()) && prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, "").isNotEmpty()
                 ) {
                     it.isItemEdited = true
-
-                    prefProvider.setValueboolean(
-                        Constants.DO_PRINT,
-                        true
-                    )
+                    prefProvider.setValueboolean(Constants.DO_PRINT, true)
                 }
             }
 
@@ -216,6 +210,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             putBoolean("isOrderNote", isOrderNote)
             headerItemPosition?.let { putInt("headerPos", it) }
             if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
+                prefProvider.setValueboolean(Constants.DO_DINE_NOTE_PRINT, true)
                 dashBoardCategoryViewModel.isItemEditing = false
             }
         }

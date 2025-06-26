@@ -35,6 +35,7 @@ object Constants {
     const val GIFT_CARD_TEMP_STORE = "gift_card_temp_store"
 
     const val DO_PRINT: String = "DO_PRINT"
+    const val DO_DINE_NOTE_PRINT: String = "DO_DINE_NOTE_PRINT"
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
